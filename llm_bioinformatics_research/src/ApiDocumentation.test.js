@@ -3,11 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ApiDocumentation from './ApiDocumentation';
 
-// Helper component to wrap ApiDocumentation with Router
+// A helper component to wrap ApiDocumentation with Router
 const renderWithRouter = (ui) => {
   return render(<Router>{ui}</Router>);
 };
-
 
 test('renders the API Documentation page and checks for the external link', () => {
     renderWithRouter(<ApiDocumentation />);

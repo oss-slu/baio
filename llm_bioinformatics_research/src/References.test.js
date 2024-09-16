@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import References from './References'; // Adjust the import path as needed
+import References from './References'; 
 
-// Helper to wrap the component in Router for testing
+// A helper component to wrap References with Router
 const renderWithRouter = (ui) => {
   return render(<Router>{ui}</Router>);
 };
@@ -29,6 +29,4 @@ test('renders references with links and checks "Back to Home" button', () => {
   // Simulate button click
   fireEvent.click(backButton);
   
-  // Check if the navigate function was called
-  // Note: Navigation test will work if you have a mock or actual routing setup.
 });
