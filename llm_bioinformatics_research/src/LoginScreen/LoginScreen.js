@@ -73,7 +73,6 @@ function LoginScreen() {
         </Typography>
         <form onSubmit={handleSubmit} noValidate>
           <TextField
-        <TextField
             id="email"
             label="Email"
             type="email"
