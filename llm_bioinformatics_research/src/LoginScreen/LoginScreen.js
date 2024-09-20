@@ -73,6 +73,7 @@ function LoginScreen() {
         </Typography>
         <form onSubmit={handleSubmit} noValidate>
           <TextField
+        <TextField
             id="email"
             label="Email"
             type="email"
@@ -109,6 +110,7 @@ function LoginScreen() {
                 </IconButton>
               ),
             }}
+            // Add testid to the TextField component
             inputProps={{
               'data-testid': 'password-input',
             }}
