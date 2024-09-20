@@ -7,13 +7,16 @@ function HomeScreen() {
     <>
       <AppBar position="static" sx={{ bgcolor: blue[500] }}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" sx={{ flexGrow: 0 }}>
             Better Bioinformatics
           </Typography>
-          <Button sx={{ color: 'white' }}>Home</Button>
-          <Button sx={{ color: 'white' }}>Guidelines</Button>
-          <Button sx={{ color: 'white' }}>API documentation</Button>
-          <Button sx={{ color: 'white' }}>User Profile</Button>
+
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button sx={{ color: 'white' }}>Home</Button>
+            <Button sx={{ color: 'white' }}>Guidelines</Button>
+            <Button sx={{ color: 'white' }}>API documentation</Button>
+            <Button sx={{ color: 'white' }}>User Profile</Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
