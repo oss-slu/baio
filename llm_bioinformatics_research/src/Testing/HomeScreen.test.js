@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import HomeScreen from './HomeScreen';
+import HomeScreen from '../HomeScreen';
 import '@testing-library/jest-dom/extend-expect';
 
 test('checks if the API documentation button exists', () => {

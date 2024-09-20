@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import HomeScreen from './HomeScreen';
+import HomeScreen from './HomeScreen/HomeScreen';
 import './App.css';
 
 function App() {
