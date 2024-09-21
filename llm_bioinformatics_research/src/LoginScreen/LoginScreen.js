@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ function LoginScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,6 +53,7 @@ function LoginScreen() {
 
     if (isEmailValid && isPasswordValid) {
       console.log('Form submitted');
+      navigate('/home');
     }
   };
 
@@ -69,7 +72,7 @@ function LoginScreen() {
           Login
         </Typography>
         <form onSubmit={handleSubmit} noValidate>
-        <TextField
+          <TextField
             id="email"
             label="Email"
             type="email"
