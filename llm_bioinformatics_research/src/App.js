@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { Button, Container, Typography, AppBar, Toolbar, Tabs, Tab } from '@mui/material';
-import ApiDocumentation from './ApiDocumentation';
-import References from './References';
+import ApiDocumentation from './ApiDocumentation/ApiDocumentation';
+import References from './References/References';
+import { blue } from '@mui/material/colors';
 
 function HomePage() {
   return (
@@ -23,12 +24,15 @@ function HomePage() {
 function App() {
   return (
     <Router>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ bgcolor: blue[500] }}>
         <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Better Bioinformatics
+          </Typography>
           <Tabs>
-            <Tab label="Home" component={Link} to="/" />
-            <Tab label="API Documentation" component={Link} to="/api-documentation" />
-            <Tab label="References" component={Link} to="/references" />
+            <Tab label="Home" component={Link} to="/" sx={{ color: 'white' }}/>
+            <Tab label="API Documentation" component={Link} to="/api-documentation" sx={{ color: 'white' }} />
+            <Tab label="References" component={Link} to="/references" sx={{ color: 'white' }} />
           </Tabs>
         </Toolbar>
       </AppBar>
