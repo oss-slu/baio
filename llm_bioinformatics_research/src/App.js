@@ -50,6 +50,7 @@ function App() {
           <Route path="/home" element={<Layout><HomeScreen /></Layout>} />
           <Route path="/api-documentation" element={<Layout><ApiDocumentation /></Layout>} />
           <Route path="/references" element={<Layout><References /></Layout>} />
+
         </Routes>
       </div>
     </Router>
