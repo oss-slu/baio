@@ -2,12 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LoginScreen from '../LoginScreen/LoginScreen';
+import { MemoryRouter } from 'react-router-dom';
 
 console.log = jest.fn();
 
 describe('LoginScreen Component', () => {
   test('should show error for invalid email format', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const emailInput = screen.getByTestId('email-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -18,7 +21,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show no error for valid email format', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const emailInput = screen.getByTestId('email-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -29,7 +34,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error when email is empty', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const emailInput = screen.getByTestId('email-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -40,7 +47,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error for password that is too short', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -51,7 +60,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error for missing uppercase letter in password', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -62,7 +73,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error for missing lowercase letter in password', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -73,7 +86,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error for missing number in password', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -84,7 +99,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show error for password missing special character', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -95,7 +112,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should show no error for valid password', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
 
@@ -106,7 +125,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should call console.log on valid submission', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const emailInput = screen.getByTestId('email-input');
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
@@ -119,7 +140,9 @@ describe('LoginScreen Component', () => {
   });
 
   test('should not call console.log on invalid submission', () => {
-    render(<LoginScreen />);
+    render(
+      <MemoryRouter><LoginScreen /></MemoryRouter>
+    );
     const emailInput = screen.getByTestId('email-input');
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /login/i });
