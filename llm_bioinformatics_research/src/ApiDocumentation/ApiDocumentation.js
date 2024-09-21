@@ -31,9 +31,8 @@ const ApiDocumentation = () => {
   );
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        API Documentation
+    <Container sx={{ mt: 6 }}>
+      <Typography variant="h4" gutterBottom>API Documentation
       </Typography>
       <TextField
         label="Search APIs"

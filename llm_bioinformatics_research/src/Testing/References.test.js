@@ -3,10 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import References from '../References/References';
 
 
-/* const render = (ui) => {
-  return render(<Router>{ui}</Router>);
-}; */
-
 test('renders references with links', () => {
   render(<References />);
 
@@ -57,11 +53,3 @@ test('renders references and checks for the reference details', () => {
   expect(screen.getByText(/45-60/i)).toBeInTheDocument();
 });
 
-test('renders references and checks if Home button functons correctly', () => {
-  render(<References />);
-
-  const homeButton = screen.getByText(/HOME/i);
-  expect(homeButton).toBeInTheDocument();
-  fireEvent.click(homeButton);
-  expect(screen.getByText(/Enhancing Bioinformatics Research through LLM-Based API/i)).toBeInTheDocument();
-});

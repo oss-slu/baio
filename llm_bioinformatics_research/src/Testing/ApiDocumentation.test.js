@@ -3,9 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ApiDocumentation from '../ApiDocumentation/ApiDocumentation';
 
-/* const render = (ui) => {
-  return render(<Router>{ui}</Router>);
-}; */
 
 test('renders the API Documentation page and checks for the external link', () => {
     render(<ApiDocumentation />);
@@ -37,10 +34,6 @@ test('renders the API Documentation page and checks for the API details', () => 
   expect(screen.getByText(/Product API/i)).toBeInTheDocument();
   expect(screen.getByText(/Fetch details about products, including prices and stock availability./i)).toBeInTheDocument();
   expect(screen.getByText(/Usage: Fetch details about products, including prices and stock availability./i)).toBeInTheDocument();
-  //expect(screen.getByText(/Endpoint:\/api\/products/i)).toBeInTheDocument();
-  //expect(screen.getByText(/Method: GET/i)).toBeInTheDocument();
-  //expect(screen.getByText(/Parameters: id \(optional\), category/i)).toBeInTheDocument();
-  //expect(screen.getByText(/Example: GET \/api\/products\?id=123/i)).toBeInTheDocument();
 });
 
 test('renders the API Documentation page and checks for the "No APIs found" message', () => {

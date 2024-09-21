@@ -1,6 +1,6 @@
 import React from 'react';
 import {Container, Typography, Paper, TextField } from '@mui/material';
-
+import Box from '@mui/material/Box';
 const references = [
   {
     author: "Smith, J.",
@@ -20,6 +20,7 @@ const references = [
     pages: "45-60",
     link: "https://www.sciencedirect.com/science/article/pii/S0168952519301126" 
   }
+
 ];
 
 function References() {
@@ -32,7 +33,7 @@ function References() {
   });
 
   return (
-    <Container>
+    <Container sx={{ mt: 6 }}>
       <Typography variant="h4" gutterBottom>
         References
       </Typography>
@@ -46,8 +47,8 @@ function References() {
         onChange={(e) => setSearchQuery(e.target.value)}
       />  
       <Paper elevation={3} style={{ padding: '20px', marginBottom: '20px' }}>
-        <ul>
-    
+        <Box>
+          
           {filteredReferences.length > 0 ? (
             filteredReferences.map((ref, index) => (
               <li key={index}>
@@ -57,7 +58,7 @@ function References() {
           ) : (
             <Typography>No references found</Typography>
           )}
-        </ul>
+        </Box>
       </Paper>
     </Container>
   );
