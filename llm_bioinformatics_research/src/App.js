@@ -26,8 +26,8 @@ const Layout = ({ children }) => {
             <Button component ={Link} to="/home" sx={{ color: 'white' }}>Home</Button>
             <Button sx={{ color: 'white' }}>Guidelines</Button>
             <Button component={Link} to="/api-documentation" sx={{ color: 'white' }}>API documentation</Button>
-            <Button sx={{ color: 'white' }}>User Profile</Button>
             <Button component={Link} to="/references" sx={{ color: 'white' }}>References</Button>
+            <Button sx={{ color: 'white' }}>User Profile</Button>
           </Box>
         </Toolbar>
       </AppBar>
