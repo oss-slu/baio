@@ -1,25 +1,11 @@
 import React from 'react';
-import { Container, Box, Typography, Paper, TextField, AppBar, Toolbar, Button, Grid } from '@mui/material';
-import { blue, grey } from '@mui/material/colors';
+import { Container, Box, Typography, Paper, TextField, Grid } from '@mui/material';
+import { grey } from '@mui/material/colors';
+
 
 function HomeScreen() {
   return (
     <>
-      <AppBar position="static" sx={{ bgcolor: blue[500] }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 0 }}>
-            Better Bioinformatics
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button sx={{ color: 'white' }}>Home</Button>
-            <Button sx={{ color: 'white' }}>Guidelines</Button>
-            <Button sx={{ color: 'white' }}>API documentation</Button>
-            <Button sx={{ color: 'white' }}>User Profile</Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
       <Container maxWidth="lg" sx={{ mt: 3, mb: 10 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
@@ -98,3 +84,4 @@ function HomeScreen() {
 }
 
 export default HomeScreen;
+
