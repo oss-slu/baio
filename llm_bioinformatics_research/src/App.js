@@ -8,6 +8,8 @@ import HomeScreen from './HomeScreen/HomeScreen';  // Import HomeScreen
 import ApiDocumentation from './ApiDocumentation/ApiDocumentation';  
 import References from './References/References'; 
 import { Link, useLocation } from 'react-router-dom';
+import { Avatar } from '@mui/material';
+import profileImage from './UserIcon.png';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -27,7 +29,7 @@ const Layout = ({ children }) => {
             <Button sx={{ color: 'white' }}>Guidelines</Button>
             <Button component={Link} to="/api-documentation" sx={{ bgcolor: location.pathname === '/api-documentation' ? grey[500] : 'blue[500]', color: 'white', m: 1 }}>API documentation</Button>
             <Button component={Link} to="/references" sx={{ bgcolor: location.pathname === '/references' ? grey[500] : 'blue[500]', color: 'white', m: 1 }}>References</Button>
-            <Button sx={{ color: 'white' }}>User Profile</Button>
+            <Avatar alt="User Profile" src={profileImage}  sx={{ width: 40, height: 40, m: 1 }}  />
           </Box>
         </Toolbar>
       </AppBar>
@@ -50,7 +52,6 @@ function App() {
           <Route path="/home" element={<Layout><HomeScreen /></Layout>} />
           <Route path="/api-documentation" element={<Layout><ApiDocumentation /></Layout>} />
           <Route path="/references" element={<Layout><References /></Layout>} />
-
         </Routes>
       </div>
     </Router>
