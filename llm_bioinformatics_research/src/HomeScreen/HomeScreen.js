@@ -53,7 +53,7 @@ function HomeScreen() {
               elevation={3}
               sx={{
                 p: 4,
-                minHeight: '300px',
+                minHeight: '100px',
                 bgcolor: grey[100],
                 border: '1px solid',
                 borderColor: grey[400],
