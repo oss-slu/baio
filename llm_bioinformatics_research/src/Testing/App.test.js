@@ -8,4 +8,3 @@ test('renders login screen', () => {
   const loginButton = screen.getByTestId('login-button'); 
   expect(loginButton).toBeInTheDocument();
 });
-
