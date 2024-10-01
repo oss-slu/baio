@@ -21,16 +21,12 @@ jobs:
         with:
           node-version: '16'  # Specify the Node.js version
 
-      # Step 3: List directory structure for debugging
-      - name: List Directory Structure
-        run: ls -R
-
-      # Step 4: Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: Enhancing-Bioinformatics-Research-through-LLM/llm_bioinformatics_research
+        working-directory: ./llm_bioinformatics_research
 
-      # Step 5: Run tests
+      # Step 4: Run tests
       - name: Run tests
         run: npm test
-        working-directory: Enhancing-Bioinformatics-Research-through-LLM/llm_bioinformatics_research
+        working-directory: ./llm_bioinformatics_research
