@@ -1,103 +1,84 @@
 import React from 'react';
-import { Container, Box, Typography, Paper, TextField, Grid, IconButton } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import { Edit, Refresh, Upload, Send} from '@mui/icons-material';
+import { Box, Typography, Paper, TextField, Grid, IconButton } from '@mui/material';
+import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
+import './HomeScreen.css'; 
 
-const CustomPaper = ({ children, title, height }) => (
+const CustomPaper = ({ children, title }) => (
   <Paper
     elevation={3}
-    sx={{
-      p: 2,
-      bgcolor: grey[300],
-      border: '1px solid',
-      borderColor: grey[400],
-      height: height || 'auto',
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: height ? 1 : 0,
-    }}
+    className="custom-paper"
   >
     {title && <Typography variant="h6">{title}</Typography>}
     {children}
   </Paper>
 );
 
-const ReadOnlyTextField = ({ placeholder, rows }) => (
-  <TextField
-    fullWidth
-    multiline
-    rows={rows}
-    variant="outlined"
-    placeholder={placeholder}
-    sx={{ mt: 2, flexGrow: 1, overflowY: 'auto' }}
-    InputProps={{
-      readOnly: true,
-    }}
-  />
-);
-
-
-function HomeScreen() {
+const HomeScreen = () => {
   return (
-    <>
-      <Container maxWidth={false} sx={{ mt: 2, mb: 2, minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-        {/*AI Chat and Response */}
-        <Grid container spacing={1} sx={{ flexGrow: 1 }}> 
-          <Grid item xs={12} md={8}>
-            <CustomPaper title="AI Chat and Response" height="525px">
-              <ReadOnlyTextField placeholder="AI Output" rows={16} />
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
-              <IconButton aria-label="Edit"><Edit /></IconButton>
-              <IconButton aria-label="Refresh"><Refresh /></IconButton>
-              </Box>
-            </CustomPaper>
-          </Grid>
+    <Box className="home-screen">
+      <Grid container spacing={2} sx={{ flexGrow: 1, p: 1 }}>
+        <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <CustomPaper title="AI Chat and Response" sx={{ flexGrow: 1 }}>
+            {/* AI Output */}
+            <Box className="ai-output">
+              <Typography className="output-text">AI Output</Typography>
+            </Box>
 
-          {/* Associated Links and API Recommendation */}
-          <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            
-            <CustomPaper title="Associated Links for the generated chat" height="300px">
-              <ReadOnlyTextField placeholder="Links Output" rows={8} />
-            </CustomPaper>
+            {/* Edit and Refresh Buttons */}
+            <Box className="button-container">
+              <IconButton aria-label="Edit" className="icon-button"><Edit /></IconButton>
+              <IconButton aria-label="Refresh" className="icon-button"><Refresh /></IconButton>
+            </Box>
 
-            <CustomPaper title="API Recommendation Panel">
-              <ReadOnlyTextField placeholder="API Recommendations Output" rows={4} />
-            </CustomPaper>
-          </Grid>
+            {/* Text Input and Actions */}
+            <Box className="input-actions">
+              <IconButton aria-label='Upload'><Upload /></IconButton>
+              <TextField variant="outlined" placeholder="Text Input" fullWidth className="text-input" />
+              <IconButton aria-label="Send"><Send /></IconButton>
+            </Box>
+          </CustomPaper>
         </Grid>
 
-        {/* Text Input and Error Detection */}
-        <Grid container spacing={1} sx={{ mt: 0 }}>
-          <Grid item xs={12} md={8}>
-            <CustomPaper height="auto">
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <IconButton aria-label='Upload'><Upload /></IconButton>
-                <TextField fullWidth placeholder="Text Input" variant="outlined" sx={{ mx: 1 }} />
-                <IconButton aria-label="Send"><Send /></IconButton>
-              </Box>
-            </CustomPaper>
-          </Grid>
+        <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', height: '95%' }}>
+          <Grid container spacing= {5} sx={{ flexGrow: 1}}>
+            {/* Associated Links Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="Associated Links for the generated chat">
+                <Box className="panel-content">
+                  <Typography className="output-text">Links Output</Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
 
-          <Grid item xs={12} md={4}>
-            <CustomPaper title="Error detection" height="55px" />
+            {/* API Recommendation Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="API Recommendation Panel">
+                <Box className="panel-content">
+                  <Typography className="output-text">
+                    API Recommendations Output
+                  </Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
+
+            {/* Error Detection Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="Error detection Panel" className="error-detection">
+                <Box className="panel-content">
+                  <Typography className="output-text">Error detection Output</Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
           </Grid>
         </Grid>
-      </Container>
+      </Grid>
 
       {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          p: 2,
-          bgcolor: grey[200],
-          mt: 'auto',
-          textAlign: 'center',
-        }}
-      >
-        <Typography>Footer</Typography>
+      <Box className="footer">
+        <Typography variant="body1">Footer</Typography>
       </Box>
-    </>
+    </Box>
   );
-}
+};
 
 export default HomeScreen;

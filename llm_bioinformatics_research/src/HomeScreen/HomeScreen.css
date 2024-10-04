@@ -1,0 +1,75 @@
+.home-screen {
+  height: 97vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.main-content {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+.ai-chat {
+  display: flex;
+  flex-direction: column;
+  width: 100%; 
+}
+
+.custom-paper {
+  padding: 16px;
+  background-color: #e0e0e0; 
+  border: 1px solid #b0bec5; 
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-output {
+  flex-grow: 1;
+  background-color: #cfd8dc; 
+  border: 1px solid #b0bec5; 
+  margin-bottom: 16px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.icon-button {
+  margin-right: 8px;
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-input {
+  margin-right: 16px; 
+}
+
+.panel-content {
+  background-color: #cfd8dc; 
+  border: 1px solid #b0bec5; 
+  flex-grow: 1;
+}
+
+.output-text {
+  padding: 8px;
+  color: #757575;
+}
+
+.error-detection {
+  height: 10px;
+}
+
+.footer {
+  height: 64px;
+  background-color: #e0e0e0;
+  padding: 16px;
+  text-align: center;
+}
