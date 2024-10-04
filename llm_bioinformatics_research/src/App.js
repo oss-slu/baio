@@ -4,9 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {Box, Typography, AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import LoginScreen from './LoginScreen/LoginScreen';
-import HomeScreen from './HomeScreen/HomeScreen';  // Import HomeScreen
+import HomeScreen from './HomeScreen/HomeScreen';  
 import ApiDocumentation from './ApiDocumentation/ApiDocumentation';  
 import References from './References/References'; 
+import SignupScreen from './SignupScreen/SignupScreen';
 import { Link, useLocation } from 'react-router-dom';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
@@ -33,14 +34,10 @@ const Layout = ({ children }) => {
         </Toolbar>
       </AppBar>
       )}
-
-    {children}
-  </>
+      {children}
+    </>
   );
 };
-
-
-
 
 function App() {
   return (
@@ -51,9 +48,12 @@ function App() {
           <Route path="/home" element={<Layout><HomeScreen /></Layout>} />
           <Route path="/api-documentation" element={<Layout><ApiDocumentation /></Layout>} />
           <Route path="/references" element={<Layout><References /></Layout>} />
+          <Route path="/signup" element={<SignupScreen />} />
+          <Route path="/login" element={<LoginScreen />} />
         </Routes>
       </div>
     </Router>
   );
 }
+
 export default App;

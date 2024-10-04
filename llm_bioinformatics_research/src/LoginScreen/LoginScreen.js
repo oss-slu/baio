@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -109,7 +109,6 @@ function LoginScreen() {
                 </IconButton>
               ),
             }}
-            // Add testid to the TextField component
             inputProps={{
               'data-testid': 'password-input',
             }}
@@ -130,7 +129,7 @@ function LoginScreen() {
             </Link>
           </Box>
           <Box sx={{ mt: 1, textAlign: 'center' }}>
-            <Link href="#" variant="body2">
+            <Link component={RouterLink} to="/signup" variant="body2">
               Sign Up
             </Link>
           </Box>
