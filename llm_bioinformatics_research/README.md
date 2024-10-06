@@ -71,26 +71,28 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## Connecting to MongoDB Database
 
-1. Login to MongoDB
+Note: users must request database admin for access
 
-2. Navigate to the "Better Bioinformatics" project
+1. Login to MongoDB.
+
+2. Navigate to the "Better Bioinformatics" project.
 
 ![alt text](<documentation_images/project.png>)
 
-3. Click the "Connect" button located under the BBIDevCluster
+3. Click the "Connect" button located under the BBIDevCluster.
 
 ![alt text](<documentation_images/connect.png>)
 
-4. In the menu, select "MongoDB for VS Code"
+4. In the menu, select "MongoDB for VS Code".
 
 ![alt text](<documentation_images/mongodb_vscode.png>)
 
-5. Copy the connection string located under "Connect to your MongoDB deployment"
+5. Copy the connection string located under "Connect to your MongoDB deployment".
 
 ![alt text](<documentation_images/connection_string.png>)
 
-6. Create a .env file in the root directory of the React project
+6. Create a .env file in the root directory of the React project.
 
-7. Save the connection sting in the variable "MONGO_URI"
+7. Save the connection sting in the variable "MONGO_URI". Replace `<db_username>` and `<db_password>` with the username and password provided to you by a database admin. 
 
 ![alt text](<documentation_images/env.png>)
