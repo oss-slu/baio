@@ -16,13 +16,15 @@
     "mongodb": "^6.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-github-login-button": "^1.0.1",
+    "react-google-button": "^0.8.0",
     "react-router-dom": "^6.26.2",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "prestart": "node killport.js 3000 5000",
-  "killport": "node killport.js",
+    "killport": "node killport.js",
     "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "start-frontend": "react-scripts start",
     "start-backend": "node server.js",

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box, IconButton } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import GoogleIcon from '@mui/icons-material/Google';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -16,9 +18,9 @@ function SignUpScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [retypePasswordError, setRetypePasswordError] = useState('');
-  
-  const [usernameTakenError, setUsernameTakenError] = useState(''); 
-  const [emailTakenError, setEmailTakenError] = useState('');       
+
+  const [usernameTakenError, setUsernameTakenError] = useState('');
+  const [emailTakenError, setEmailTakenError] = useState('');
 
   const navigate = useNavigate();
 
@@ -36,7 +38,6 @@ function SignUpScreen() {
       setEmailError('Email is required.');
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailError('Please enter a valid email address.');
@@ -102,7 +103,7 @@ function SignUpScreen() {
 
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5002); 
+          setTimeout(() => navigate('/login'), 5000); 
         } else if (response.status === 400) {
           if (data.message === "Username is already in use") {
             setUsernameTakenError("This username is already taken.");
@@ -237,6 +238,44 @@ function SignUpScreen() {
             </Typography>
           )}
         </form>
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<GoogleIcon />}
+              sx={{
+                mb: 2,
+                borderColor: '#db4437',
+                color: '#db4437',
+                borderRadius: '50px',
+                padding: '10px 20px',
+                textTransform: 'none',
+              }}
+            >
+              Sign in with Google
+            </Button>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<GitHubIcon />}
+              sx={{
+                borderColor: '#000',
+                color: '#000',
+                borderRadius: '50px',
+                padding: '10px 20px',
+                textTransform: 'none',
+              }}
+            >
+              Sign in with GitHub
+            </Button>
+          </Box>
+
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Link component={RouterLink} to="/login" variant="body2">
+              Already have an account? Login
+            </Link>
+          </Box>
       </Box>
     </Container>
   );
