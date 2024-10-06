@@ -12,13 +12,30 @@ function SignUpScreen() {
   const [retypePasswordVisible, setRetypePasswordVisible] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
 
+  const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [retypePasswordError, setRetypePasswordError] = useState('');
 
   const navigate = useNavigate();
 
+  // Username validation
+  const validateUsername = (username) => {
+    if (!username) {
+      setUsernameError('Username is required.');
+      return false;
+    }
+    setUsernameError('');
+    return true;
+  };
+
+  // Email validation
   const validateEmail = (email) => {
+    if (!email) {
+      setEmailError('Email is required.');
+      return false;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailError('Please enter a valid email address.');
@@ -28,6 +45,7 @@ function SignUpScreen() {
     return true;
   };
 
+  // Password validation
   const validatePassword = (password) => {
     if (password.length < 8) {
       setPasswordError('Password must be at least 8 characters long.');
@@ -53,6 +71,7 @@ function SignUpScreen() {
     return true;
   };
 
+  // Retype password validation
   const validateRetypePassword = (password, retypePassword) => {
     if (password !== retypePassword) {
       setRetypePasswordError('Passwords do not match.');
@@ -64,7 +83,13 @@ function SignUpScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateEmail(email) && validatePassword(password) && validateRetypePassword(password, retypePassword)) {
+
+    const isUsernameValid = validateUsername(username);
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    const isRetypePasswordValid = validateRetypePassword(password, retypePassword);
+
+    if (isUsernameValid && isEmailValid && isPasswordValid && isRetypePasswordValid) {
       try {
         const response = await fetch('http://localhost:5000/signup', {
           method: 'POST',
@@ -76,7 +101,7 @@ function SignUpScreen() {
         const data = await response.json();
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5002); 
+          setTimeout(() => navigate('/login'), 5002);
         } else {
           console.error('Signup failed:', data.message);
         }
@@ -100,6 +125,8 @@ function SignUpScreen() {
             margin="normal"
             value={username} 
             onChange={(e) => setUsername(e.target.value)} 
+            error={!!usernameError} 
+            helperText={usernameError}
             inputProps={{
               'data-testid': 'username-input',
             }}

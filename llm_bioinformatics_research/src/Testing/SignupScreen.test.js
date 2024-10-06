@@ -5,7 +5,23 @@ import SignupScreen from '../SignupScreen/SignupScreen';
 import '@testing-library/jest-dom/extend-expect';
 
 describe('SignupScreen', () => {
+
+  test('should show an error if the username is empty', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    const usernameInput = screen.getByTestId('username-input');
+    fireEvent.change(usernameInput, { target: { value: '' } });
+
+    const submitButton = screen.getByTestId('signup-button');
+    fireEvent.click(submitButton);
   
+    expect(screen.getByText('Username is required.')).toBeInTheDocument();
+  });
+
   test('should show no error for valid email format', () => {
     render(
       <MemoryRouter>
