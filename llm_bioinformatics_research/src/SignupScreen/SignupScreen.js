@@ -66,7 +66,7 @@ function SignUpScreen() {
     e.preventDefault();
     if (validateEmail(email) && validatePassword(password) && validateRetypePassword(password, retypePassword)) {
       try {
-        const response = await fetch('http://localhost:5001/signup', {
+        const response = await fetch('http://localhost:5000/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function SignUpScreen() {
         const data = await response.json();
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5001); 
+          setTimeout(() => navigate('/login'), 5002); 
         } else {
           console.error('Signup failed:', data.message);
         }
@@ -89,29 +89,108 @@ function SignUpScreen() {
   return (
     <Container maxWidth="sm">
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Typography variant="h4" gutterBottom>Sign Up</Typography>
+        <Typography id="signup-heading" variant="h4" gutterBottom data-testid="signup-heading">Sign Up</Typography>
         <form onSubmit={handleSubmit} noValidate>
-          <TextField id="username" label="Username" type="text" variant="outlined" fullWidth margin="normal"
-                     value={username} onChange={(e) => setUsername(e.target.value)} />
-          <TextField id="email" label="Email" type="email" variant="outlined" fullWidth margin="normal"
-                     value={email} onChange={(e) => setEmail(e.target.value)} error={!!emailError} helperText={emailError} />
-          <TextField id="password" label="Password" type={passwordVisible ? 'text' : 'password'} variant="outlined" fullWidth margin="normal"
-                     value={password} onChange={(e) => setPassword(e.target.value)} error={!!passwordError} helperText={passwordError}
-                     InputProps={{ endAdornment: (
-                       <IconButton aria-label="toggle password visibility" onClick={() => setPasswordVisible(!passwordVisible)} edge="end">
-                         {passwordVisible ? <VisibilityOff /> : <Visibility />}
-                       </IconButton>
-                     )}} />
-          <TextField id="retypePassword" label="Confirm Password" type={retypePasswordVisible ? 'text' : 'password'} variant="outlined" fullWidth margin="normal"
-                     value={retypePassword} onChange={(e) => setRetypePassword(e.target.value)} error={!!retypePasswordError} helperText={retypePasswordError} 
-                     InputProps={{ endAdornment: (
-                       <IconButton aria-label="toggle retype password visibility" onClick={() => setRetypePasswordVisible(!retypePasswordVisible)} edge="end">
-                         {retypePasswordVisible ? <VisibilityOff /> : <Visibility />}
-                       </IconButton>
-                     )}} />
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>Sign Up</Button>
+          <TextField 
+            id="username" 
+            label="Username" 
+            type="text" 
+            variant="outlined" 
+            fullWidth 
+            margin="normal"
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} 
+            inputProps={{
+              'data-testid': 'username-input',
+            }}
+          />
+          <TextField 
+            id="email" 
+            label="Email" 
+            type="email" 
+            variant="outlined" 
+            fullWidth 
+            margin="normal"
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            error={!!emailError} 
+            helperText={emailError}
+            inputProps={{
+              'data-testid': 'email-input',
+            }}
+          />
+          <TextField 
+            id="password" 
+            label="Password" 
+            type={passwordVisible ? 'text' : 'password'} 
+            variant="outlined" 
+            fullWidth 
+            margin="normal"
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            error={!!passwordError} 
+            helperText={passwordError}
+            inputProps={{
+              'data-testid': 'password-input',
+            }}
+            InputProps={{ 
+              endAdornment: (
+                <IconButton 
+                  aria-label="toggle password visibility" 
+                  onClick={() => setPasswordVisible(!passwordVisible)} 
+                  edge="end"
+                  data-testid="toggle-password-visibility"
+                >
+                  {passwordVisible ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              )
+            }}
+          />
+          <TextField 
+            id="retypePassword" 
+            label="Confirm Password" 
+            type={retypePasswordVisible ? 'text' : 'password'} 
+            variant="outlined" 
+            fullWidth 
+            margin="normal"
+            value={retypePassword} 
+            onChange={(e) => setRetypePassword(e.target.value)} 
+            error={!!retypePasswordError} 
+            helperText={retypePasswordError}
+            inputProps={{
+              'data-testid': 'retypePassword-input',
+            }}
+            InputProps={{ 
+              endAdornment: (
+                <IconButton 
+                  aria-label="toggle retype password visibility" 
+                  onClick={() => setRetypePasswordVisible(!retypePasswordVisible)} 
+                  edge="end"
+                  data-testid="toggle-retype-password-visibility"
+                >
+                  {retypePasswordVisible ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              )
+            }}
+          />
+          <Button 
+            id="signup-button" 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            fullWidth 
+            sx={{ mt: 2 }}
+            data-testid="signup-button"
+          >
+            Sign Up
+          </Button>
           {signupSuccess && (
-            <Typography variant="body1" color="success.main" sx={{ mt: 2 }}>
+            <Typography 
+              variant="body1" 
+              color="success.main" 
+              sx={{ mt: 2 }}
+              data-testid="signup-success-message"
+            >
               Successfully signed up! You will be redirected to the login page in 5 seconds.
             </Typography>
           )}
