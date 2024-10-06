@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Box, Typography, AppBar, Toolbar, Button } from '@mui/material';
+import {Box, Typography, AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import LoginScreen from './LoginScreen/LoginScreen';
 import HomeScreen from './HomeScreen/HomeScreen';  
@@ -9,6 +9,7 @@ import ApiDocumentation from './ApiDocumentation/ApiDocumentation';
 import References from './References/References'; 
 import SignupScreen from './SignupScreen/SignupScreen';
 import { Link, useLocation } from 'react-router-dom';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -17,21 +18,21 @@ const Layout = ({ children }) => {
   return (
     <>
       {!isLoginPage && (
-        <AppBar position="static" sx={{ bgcolor: blue[500] }}>
-          <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 0 }}>
-              Better Bioinformatics
-            </Typography>
+      <AppBar position="static" sx={{ bgcolor: blue[500] }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 0 }}>
+            Better Bioinformatics
+          </Typography>
 
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button component={Link} to="/home" sx={{ color: 'white' }}>Home</Button>
-              <Button sx={{ color: 'white' }}>Guidelines</Button>
-              <Button component={Link} to="/api-documentation" sx={{ color: 'white' }}>API documentation</Button>
-              <Button component={Link} to="/references" sx={{ color: 'white' }}>References</Button>
-              <Button sx={{ color: 'white' }}>User Profile</Button>
-            </Box>
-          </Toolbar>
-        </AppBar>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button component ={Link} to="/home" sx={{ bgcolor: location.pathname === '/home' ? blue[800] : blue[500], color: 'white', m: 1 }}>Home</Button>
+            <Button sx={{ color: 'white' }}>Guidelines</Button>
+            <Button component={Link} to="/api-documentation" sx={{ bgcolor: location.pathname === '/api-documentation' ? blue[800] : blue[500], color: 'white', m: 1 }}>API documentation</Button>
+            <Button component={Link} to="/references" sx={{ bgcolor: location.pathname === '/references' ? blue[800] : blue[500], color: 'white', m: 1 }}>References</Button>
+            <IconButton sx={{ color: 'white' }}><PersonOutlineIcon /></IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
       )}
       {children}
     </>

@@ -1,87 +1,84 @@
 import React from 'react';
-import { Container, Box, Typography, Paper, TextField, Grid } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Box, Typography, Paper, TextField, Grid, IconButton } from '@mui/material';
+import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
+import './HomeScreen.css'; 
 
+const CustomPaper = ({ children, title }) => (
+  <Paper
+    elevation={3}
+    className="custom-paper"
+  >
+    {title && <Typography variant="h6">{title}</Typography>}
+    {children}
+  </Paper>
+);
 
-function HomeScreen() {
+const HomeScreen = () => {
   return (
-    <>
-      <Container maxWidth="lg" sx={{ mt: 3, mb: 10 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 2,
-                height: '100%',
-                bgcolor: grey[100],
-                border: '1px solid',
-                borderColor: grey[400],
-              }}
-            >
-              <Typography variant="h6">Code Snippet (Input)</Typography>
-              <TextField
-                multiline
-                fullWidth
-                rows={10}
-                placeholder="Enter code here..."
-                variant="outlined"
-                sx={{ mt: 2 }}
-              />
-            </Paper>
-          </Grid>
+    <Box className="home-screen">
+      <Grid container spacing={2} sx={{ flexGrow: 1, p: 1 }}>
+        <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <CustomPaper title="AI Chat and Response" sx={{ flexGrow: 1 }}>
+            {/* AI Output */}
+            <Box className="ai-output">
+              <Typography className="output-text">AI Output</Typography>
+            </Box>
 
-          <Grid item xs={12} md={6}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 2,
-                height: '100%',
-                bgcolor: grey[100],
-                border: '1px solid',
-                borderColor: grey[400],
-              }}
-            >
-              <Typography variant="h6">API Recommendation Panel</Typography>
-            </Paper>
-          </Grid>
+            {/* Edit and Refresh Buttons */}
+            <Box className="button-container">
+              <IconButton aria-label="Edit" className="icon-button"><Edit /></IconButton>
+              <IconButton aria-label="Refresh" className="icon-button"><Refresh /></IconButton>
+            </Box>
 
-          <Grid item xs={12} />
+            {/* Text Input and Actions */}
+            <Box className="input-actions">
+              <IconButton aria-label='Upload'><Upload /></IconButton>
+              <TextField variant="outlined" placeholder="Text Input" fullWidth className="text-input" />
+              <IconButton aria-label="Send"><Send /></IconButton>
+            </Box>
+          </CustomPaper>
+        </Grid>
 
-          <Grid item xs={12} sx={{ mt: 3 }}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 4,
-                minHeight: '300px',
-                bgcolor: grey[100],
-                border: '1px solid',
-                borderColor: grey[400],
-              }}
-            >
-              <Typography variant="h6">Error detection and Correction Panel</Typography>
-            </Paper>
+        <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', height: '95%' }}>
+          <Grid container spacing= {5} sx={{ flexGrow: 1}}>
+            {/* Associated Links Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="Associated Links for the generated chat">
+                <Box className="panel-content">
+                  <Typography className="output-text">Links Output</Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
+
+            {/* API Recommendation Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="API Recommendation Panel">
+                <Box className="panel-content">
+                  <Typography className="output-text">
+                    API Recommendations Output
+                  </Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
+
+            {/* Error Detection Panel */}
+            <Grid item xs={12} sx={{ flexGrow: 1 }}>
+              <CustomPaper title="Error detection Panel" className="error-detection">
+                <Box className="panel-content">
+                  <Typography className="output-text">Error detection Output</Typography>
+                </Box>
+              </CustomPaper>
+            </Grid>
           </Grid>
         </Grid>
-      </Container>
+      </Grid>
 
-      <Box
-        component="footer"
-        sx={{
-          p: 2,
-          bgcolor: grey[200],
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          textAlign: 'center',
-        }}
-      >
-        <Typography>Footer</Typography>
+      {/* Footer */}
+      <Box className="footer">
+        <Typography variant="body1">Footer</Typography>
       </Box>
-    </>
+    </Box>
   );
-}
+};
 
 export default HomeScreen;
-
