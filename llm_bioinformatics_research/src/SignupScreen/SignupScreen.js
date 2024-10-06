@@ -16,10 +16,12 @@ function SignUpScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [retypePasswordError, setRetypePasswordError] = useState('');
+  
+  const [usernameTakenError, setUsernameTakenError] = useState(''); 
+  const [emailTakenError, setEmailTakenError] = useState('');       
 
   const navigate = useNavigate();
 
-  // Username validation
   const validateUsername = (username) => {
     if (!username) {
       setUsernameError('Username is required.');
@@ -29,7 +31,6 @@ function SignUpScreen() {
     return true;
   };
 
-  // Email validation
   const validateEmail = (email) => {
     if (!email) {
       setEmailError('Email is required.');
@@ -45,7 +46,6 @@ function SignUpScreen() {
     return true;
   };
 
-  // Password validation
   const validatePassword = (password) => {
     if (password.length < 8) {
       setPasswordError('Password must be at least 8 characters long.');
@@ -71,7 +71,6 @@ function SignUpScreen() {
     return true;
   };
 
-  // Retype password validation
   const validateRetypePassword = (password, retypePassword) => {
     if (password !== retypePassword) {
       setRetypePasswordError('Passwords do not match.');
@@ -98,13 +97,23 @@ function SignUpScreen() {
           },
           body: JSON.stringify({ user_name: username, email: email, password: password }),
         });
+
         const data = await response.json();
+
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5002);
+          setTimeout(() => navigate('/login'), 5002); 
+        } else if (response.status === 400) {
+          if (data.message === "Username is already in use") {
+            setUsernameTakenError("This username is already taken.");
+          }
+          if (data.message === "Email is already in use") {
+            setEmailTakenError("This email is already in use.");
+          }
         } else {
           console.error('Signup failed:', data.message);
         }
+
       } catch (error) {
         console.error('Failed to connect to the server:', error);
       }
@@ -124,9 +133,12 @@ function SignUpScreen() {
             fullWidth 
             margin="normal"
             value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            error={!!usernameError} 
-            helperText={usernameError}
+            onChange={(e) => { 
+              setUsername(e.target.value);
+              setUsernameTakenError(''); 
+            }} 
+            error={!!usernameError || !!usernameTakenError} 
+            helperText={usernameError || usernameTakenError}
             inputProps={{
               'data-testid': 'username-input',
             }}
@@ -139,9 +151,12 @@ function SignUpScreen() {
             fullWidth 
             margin="normal"
             value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            error={!!emailError} 
-            helperText={emailError}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailTakenError(''); 
+            }} 
+            error={!!emailError || !!emailTakenError} 
+            helperText={emailError || emailTakenError}
             inputProps={{
               'data-testid': 'email-input',
             }}
