@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, Container, Typography, Box, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import GoogleIcon from '@mui/icons-material/Google';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import { useNavigate } from 'react-router-dom';
 
 function SignUpScreen() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [retypePassword, setRetypePassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [retypePasswordError, setRetypePasswordError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [retypePasswordVisible, setRetypePasswordVisible] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (signupSuccess) {
-      const timer = setTimeout(() => {
-        navigate('/login');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [signupSuccess, navigate]);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [retypePasswordError, setRetypePasswordError] = useState('');
+
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,173 +62,59 @@ function SignUpScreen() {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    const isRetypePasswordValid = validateRetypePassword(password, retypePassword);
-
-    if (isEmailValid && isPasswordValid && isRetypePasswordValid) {
-      setSignupSuccess(true);
+    if (validateEmail(email) && validatePassword(password) && validateRetypePassword(password, retypePassword)) {
+      try {
+        const response = await fetch('http://localhost:5001/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_name: username, email: email, password: password }),
+        });
+        const data = await response.json();
+        if (response.status === 201) {
+          setSignupSuccess(true);
+          setTimeout(() => navigate('/login'), 5001); 
+        } else {
+          console.error('Signup failed:', data.message);
+        }
+      } catch (error) {
+        console.error('Failed to connect to the server:', error);
+      }
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}
-      >
-        <Typography variant="h4" gutterBottom data-testid="signup-heading">
-          Sign Up
-        </Typography>
-
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <Typography variant="h4" gutterBottom>Sign Up</Typography>
         <form onSubmit={handleSubmit} noValidate>
-          <TextField
-            id="username"
-            label="Username"
-            type="text"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            inputProps={{
-              'data-testid': 'username-input',
-            }}
-          />
-          <TextField
-            id="email"
-            label="Email"
-            type="email"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!emailError}
-            helperText={emailError}
-            inputProps={{
-              'data-testid': 'email-input',
-            }}
-          />
-          <TextField
-            id="password"
-            label="Password"
-            type={passwordVisible ? 'text' : 'password'}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={passwordError !== ''}
-            helperText={passwordError}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setPasswordVisible(!passwordVisible)}
-                  edge="end"
-                >
-                  {passwordVisible ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-            inputProps={{
-              'data-testid': 'password-input',
-            }}
-          />
-          <TextField
-            id="retypePassword"
-            label="Confirm Password"
-            type={retypePasswordVisible ? 'text' : 'password'}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={retypePassword}
-            onChange={(e) => setRetypePassword(e.target.value)}
-            error={retypePasswordError !== ''}
-            helperText={retypePasswordError || (password === retypePassword && retypePassword ? '✓ Passwords match' : '')}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  aria-label="toggle retype password visibility"
-                  onClick={() => setRetypePasswordVisible(!retypePasswordVisible)}
-                  edge="end"
-                >
-                  {retypePasswordVisible ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-            inputProps={{
-              'data-testid': 'retype-password-input',
-            }}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
-            data-testid="signup-button"
-          >
-            Sign Up
-          </Button>
-
+          <TextField id="username" label="Username" type="text" variant="outlined" fullWidth margin="normal"
+                     value={username} onChange={(e) => setUsername(e.target.value)} />
+          <TextField id="email" label="Email" type="email" variant="outlined" fullWidth margin="normal"
+                     value={email} onChange={(e) => setEmail(e.target.value)} error={!!emailError} helperText={emailError} />
+          <TextField id="password" label="Password" type={passwordVisible ? 'text' : 'password'} variant="outlined" fullWidth margin="normal"
+                     value={password} onChange={(e) => setPassword(e.target.value)} error={!!passwordError} helperText={passwordError}
+                     InputProps={{ endAdornment: (
+                       <IconButton aria-label="toggle password visibility" onClick={() => setPasswordVisible(!passwordVisible)} edge="end">
+                         {passwordVisible ? <VisibilityOff /> : <Visibility />}
+                       </IconButton>
+                     )}} />
+          <TextField id="retypePassword" label="Confirm Password" type={retypePasswordVisible ? 'text' : 'password'} variant="outlined" fullWidth margin="normal"
+                     value={retypePassword} onChange={(e) => setRetypePassword(e.target.value)} error={!!retypePasswordError} helperText={retypePasswordError} 
+                     InputProps={{ endAdornment: (
+                       <IconButton aria-label="toggle retype password visibility" onClick={() => setRetypePasswordVisible(!retypePasswordVisible)} edge="end">
+                         {retypePasswordVisible ? <VisibilityOff /> : <Visibility />}
+                       </IconButton>
+                     )}} />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>Sign Up</Button>
           {signupSuccess && (
-            <Typography
-              variant="body1"
-              color="success.main"
-              sx={{ mt: 2 }}
-              data-testid="signup-success-message"
-            >
+            <Typography variant="body1" color="success.main" sx={{ mt: 2 }}>
               Successfully signed up! You will be redirected to the login page in 5 seconds.
             </Typography>
           )}
-
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<GoogleIcon />}
-              sx={{
-                mb: 2,
-                borderColor: '#db4437',
-                color: '#db4437',
-                borderRadius: '50px',
-                padding: '10px 20px',
-                textTransform: 'none',
-              }}
-            >
-              Sign in with Google
-            </Button>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<GitHubIcon />}
-              sx={{
-                borderColor: '#000',
-                color: '#000',
-                borderRadius: '50px',
-                padding: '10px 20px',
-                textTransform: 'none',
-              }}
-            >
-              Sign in with GitHub
-            </Button>
-          </Box>
-
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Link component={RouterLink} to="/login" variant="body2">
-              Already have an account? Login
-            </Link>
-          </Box>
         </form>
       </Box>
     </Container>

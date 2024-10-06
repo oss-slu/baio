@@ -5,14 +5,14 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 
 const app = express();
-const port = 5000;
+const port = 5001;
 const saltRounds = 10;
 
 app.use(cors());  
 app.use(express.json());  
 
 const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 async function connectDB() {
   try {
