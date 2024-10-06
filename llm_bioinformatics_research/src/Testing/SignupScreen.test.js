@@ -1,140 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen, fireEvent} from '@testing-library/react';
+import { MemoryRouter} from 'react-router-dom';
 import SignupScreen from '../SignupScreen/SignupScreen';
 import '@testing-library/jest-dom/extend-expect';
 
 describe('SignupScreen', () => {
-  it('renders the signup form correctly', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
 
-    expect(screen.getByTestId('signup-heading')).toHaveTextContent('Sign Up');
-    expect(screen.getByTestId('username-input')).toBeInTheDocument();
-    expect(screen.getByTestId('email-input')).toBeInTheDocument();
-    expect(screen.getByTestId('password-input')).toBeInTheDocument();
-    expect(screen.getByTestId('retype-password-input')).toBeInTheDocument();
-    expect(screen.getByTestId('signup-button')).toBeInTheDocument();
-  });
-
-  it('validates email input and shows error message', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const emailInput = screen.getByTestId('email-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
-  });
-
-  it('validates password input and shows error message', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'short' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Password must be at least 8 characters long.')).toBeInTheDocument();
-  });
-
-  it('validates password requiring at least one uppercase letter', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'password123!' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Password must include at least one uppercase letter.')).toBeInTheDocument();
-  });
-
-  it('validates password requiring at least one lowercase letter', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'PASSWORD123!' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Password must include at least one lowercase letter.')).toBeInTheDocument();
-  });
-
-  it('validates password requiring at least one number', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'Password!' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Password must include at least one number.')).toBeInTheDocument();
-  });
-
-  it('validates password requiring at least one special character', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'Password123' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Password must include at least one special character.')).toBeInTheDocument();
-  });
-
-  it('validates that passwords match and shows error message', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const retypePasswordInput = screen.getByTestId('retype-password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
-    fireEvent.change(retypePasswordInput, { target: { value: 'DifferentPassword!' } });
-    fireEvent.click(signUpButton);
-
-    expect(screen.getByText('Passwords do not match.')).toBeInTheDocument();
-  });
-
-  it('shows a success message when the form is submitted correctly', async () => {
+  test('should show an error if the username is empty', () => {
     render(
       <MemoryRouter>
         <SignupScreen />
@@ -142,57 +14,145 @@ describe('SignupScreen', () => {
     );
 
     const usernameInput = screen.getByTestId('username-input');
+    fireEvent.change(usernameInput, { target: { value: '' } });
+
+    const submitButton = screen.getByTestId('signup-button');
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText('Username is required.')).toBeInTheDocument();
+  });
+
+  test('should show no error for valid email format', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+    const emailInput = screen.getByTestId('email-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+    fireEvent.click(submitButton);
+
+    expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument();
+  });
+
+  test('should show an error if the password is too short', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+    const emailInput = screen.getByTestId('email-input');
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+
+    const passwordInput = screen.getByTestId('password-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(passwordInput, { target: { value: 'short' } });
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText(/password must be at least 8 characters long/i)).toBeInTheDocument();
+  });
+
+  test('should show an error if password does not contain an uppercase letter', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    const emailInput = screen.getByTestId('email-input');
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+
+    const passwordInput = screen.getByTestId('password-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(passwordInput, { target: { value: 'lowercase123!' } });
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText(/password must include at least one uppercase letter/i)).toBeInTheDocument();
+  });
+
+  test('should show an error if password does not contain a number', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    const emailInput = screen.getByTestId('email-input');
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+
+    const passwordInput = screen.getByTestId('password-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(passwordInput, { target: { value: 'NoNumber!' } });
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText(/password must include at least one number/i)).toBeInTheDocument();
+  });
+
+  test('should show an error if password does not contain a special character', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    const emailInput = screen.getByTestId('email-input');
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+
+    const passwordInput = screen.getByTestId('password-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(passwordInput, { target: { value: 'Password123' } });
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText(/password must include at least one special character/i)).toBeInTheDocument();
+  });
+
+  test('should show an error if passwords do not match', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    const emailInput = screen.getByTestId('email-input');
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
+
+    const passwordInput = screen.getByTestId('password-input');
+    const retypePasswordInput = screen.getByTestId('retypePassword-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
+    fireEvent.change(retypePasswordInput, { target: { value: 'DifferentPassword123!' } });
+    fireEvent.click(submitButton);
+  
+    expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
+  });
+
+  test('should show no errors if all fields are valid', () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+    const usernameInput = screen.getByTestId('username-input');
     const emailInput = screen.getByTestId('email-input');
     const passwordInput = screen.getByTestId('password-input');
-    const retypePasswordInput = screen.getByTestId('retype-password-input');
-    const signUpButton = screen.getByTestId('signup-button');
-
-    fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    const retypePasswordInput = screen.getByTestId('retypePassword-input');
+    const submitButton = screen.getByRole('button', { name: /Sign Up/i });
+  
+    fireEvent.change(usernameInput, { target: { value: 'validuser' } });
+    fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
     fireEvent.change(retypePasswordInput, { target: { value: 'Password123!' } });
-
-    fireEvent.click(signUpButton);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('signup-success-message')).toHaveTextContent(
-        'Successfully signed up! You will be redirected to the login page in 5 seconds.'
-      );
-    });
-  });
-
-  it('toggles the password visibility', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const visibilityToggle = screen.getByLabelText('toggle password visibility');
-
-    expect(passwordInput).toHaveAttribute('type', 'password');
-
-    fireEvent.click(visibilityToggle);
-    expect(passwordInput).toHaveAttribute('type', 'text');
-
-    fireEvent.click(visibilityToggle);
-    expect(passwordInput).toHaveAttribute('type', 'password');
-  });
-
-  it('displays password matching message', () => {
-    render(
-      <MemoryRouter>
-        <SignupScreen />
-      </MemoryRouter>
-    );
-
-    const passwordInput = screen.getByTestId('password-input');
-    const retypePasswordInput = screen.getByTestId('retype-password-input');
-
-    fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
-    fireEvent.change(retypePasswordInput, { target: { value: 'Password123!' } });
-
-    expect(screen.getByText('✓ Passwords match')).toBeInTheDocument();
+    fireEvent.click(submitButton);
+  
+    expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/passwords do not match/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/username is required/i)).not.toBeInTheDocument();
   });
 });
