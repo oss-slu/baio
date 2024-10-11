@@ -5,6 +5,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import config from './../config.json';
+import './SignupScreen.css';
 
 function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ function SignUpScreen() {
   const [usernameTakenError, setUsernameTakenError] = useState('');
   const [emailTakenError, setEmailTakenError] = useState('');
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const port = config.port;
 
   const validateUsername = (username) => {
@@ -134,163 +135,173 @@ function SignUpScreen() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Typography id="signup-heading" variant="h4" gutterBottom data-testid="signup-heading">Sign Up</Typography>
+    <Container maxWidth="sm" className="signup-container">
+      <Box className="signup-box">
+        <Typography id="signup-heading" variant="h4" gutterBottom data-testid="signup-heading">
+          Sign Up
+        </Typography>
         <form onSubmit={handleSubmit} noValidate>
-          <TextField 
-            id="username" 
-            label="Username" 
-            type="text" 
-            variant="outlined" 
-            fullWidth 
+          <TextField
+            id="username"
+            label="Username"
+            type="text"
+            variant="outlined"
+            fullWidth
             margin="normal"
-            value={username} 
-            onChange={(e) => { 
+            value={username}
+            onChange={(e) => {
               setUsername(e.target.value);
-              setUsernameTakenError(''); 
-            }} 
-            error={!!usernameError || !!usernameTakenError} 
+              setUsernameTakenError('');
+            }}
+            error={!!usernameError || !!usernameTakenError}
             helperText={usernameError || usernameTakenError}
             inputProps={{
               'data-testid': 'username-input',
             }}
           />
-          <TextField 
-            id="email" 
-            label="Email" 
-            type="email" 
-            variant="outlined" 
-            fullWidth 
+          <TextField
+            id="email"
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
             margin="normal"
-            value={email} 
+            value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setEmailTakenError(''); 
-            }} 
-            error={!!emailError || !!emailTakenError} 
+              setEmailTakenError('');
+            }}
+            error={!!emailError || !!emailTakenError}
             helperText={emailError || emailTakenError}
             inputProps={{
               'data-testid': 'email-input',
             }}
           />
-          <TextField 
-            id="password" 
-            label="Password" 
-            type={passwordVisible ? 'text' : 'password'} 
-            variant="outlined" 
-            fullWidth 
+          <TextField
+            id="password"
+            label="Password"
+            type={passwordVisible ? 'text' : 'password'}
+            variant="outlined"
+            fullWidth
             margin="normal"
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            error={!!passwordError} 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={!!passwordError}
             helperText={passwordError}
             inputProps={{
               'data-testid': 'password-input',
             }}
-            InputProps={{ 
+            InputProps={{
               endAdornment: (
-                <IconButton 
-                  aria-label="toggle password visibility" 
-                  onClick={() => setPasswordVisible(!passwordVisible)} 
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
                   edge="end"
                   data-testid="toggle-password-visibility"
                 >
                   {passwordVisible ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
-              )
+              ),
             }}
           />
-          <TextField 
-            id="retypePassword" 
-            label="Confirm Password" 
-            type={retypePasswordVisible ? 'text' : 'password'} 
-            variant="outlined" 
-            fullWidth 
+          <TextField
+            id="retypePassword"
+            label="Confirm Password"
+            type={retypePasswordVisible ? 'text' : 'password'}
+            variant="outlined"
+            fullWidth
             margin="normal"
-            value={retypePassword} 
-            onChange={(e) => setRetypePassword(e.target.value)} 
-            error={!!retypePasswordError} 
+            value={retypePassword}
+            onChange={(e) => setRetypePassword(e.target.value)}
+            error={!!retypePasswordError}
             helperText={retypePasswordError}
             inputProps={{
               'data-testid': 'retypePassword-input',
             }}
-            InputProps={{ 
+            InputProps={{
               endAdornment: (
-                <IconButton 
-                  aria-label="toggle retype password visibility" 
-                  onClick={() => setRetypePasswordVisible(!retypePasswordVisible)} 
+                <IconButton
+                  aria-label="toggle retype password visibility"
+                  onClick={() => setRetypePasswordVisible(!retypePasswordVisible)}
                   edge="end"
                   data-testid="toggle-retype-password-visibility"
                 >
                   {retypePasswordVisible ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
-              )
+              ),
             }}
           />
-          <Button 
-            id="signup-button" 
-            type="submit" 
-            variant="contained" 
-            color="primary" 
-            fullWidth 
-            sx={{ mt: 2 }}
+          <Button
+            id="signup-button"
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            className="signup-button"
             data-testid="signup-button"
           >
             Sign Up
           </Button>
           {signupSuccess && (
-            <Typography 
-              variant="body1" 
-              color="success.main" 
-              sx={{ mt: 2 }}
+            <Typography
+              variant="body1"
+              color="success.main"
+              className="signup-success"
               data-testid="signup-success-message"
             >
               Successfully signed up! You will be redirected to the login page in 5 seconds.
             </Typography>
           )}
         </form>
-        <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<GoogleIcon />}
-              sx={{
-                mb: 2,
-                borderColor: '#db4437',
-                color: '#db4437',
-                borderRadius: '50px',
-                padding: '10px 20px',
-                textTransform: 'none',
-              }}
-            >
-              Sign in with Google
-            </Button>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<GitHubIcon />}
-              sx={{
-                borderColor: '#000',
-                color: '#000',
-                borderRadius: '50px',
-                padding: '10px 20px',
-                textTransform: 'none',
-              }}
-            >
-              Sign in with GitHub
-            </Button>
-          </Box>
-
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Link component={RouterLink} to="/login" variant="body2">
-              Already have an account? Login
-            </Link>
-          </Box>
+        <Box className="social-signup">
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<GoogleIcon />}
+            sx={{
+              mb: 2,
+              borderColor: '#db4437',
+              color: '#db4437',
+              borderRadius: '50px',
+              padding: '10px 20px',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#db4437',
+                color: '#fff',
+              },
+            }}
+          >
+            Sign in with Google
+          </Button>
+  
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<GitHubIcon />}
+            sx={{
+              borderColor: '#000',
+              color: '#000',
+              borderRadius: '50px',
+              padding: '10px 20px',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#000',
+                color: '#fff',
+              },
+            }}
+          >
+            Sign in with GitHub
+          </Button>
+        </Box>
+  
+        <Box className="login-link">
+          <Link component={RouterLink} to="/login" variant="body2">
+            Already have an account? Login
+          </Link>
+        </Box>
       </Box>
     </Container>
-  );
+  );  
 }
 
 export default SignUpScreen;

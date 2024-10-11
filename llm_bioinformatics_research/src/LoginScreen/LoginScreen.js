@@ -3,6 +3,7 @@ import { TextField, Button, Container, Typography, Box, IconButton, Link } from 
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import config from './../config.json';
+import './LoginScreen.css';
 
 function LoginScreen() {
   const [identifier, setIdentifier] = useState('');
@@ -33,7 +34,6 @@ function LoginScreen() {
 
       if (response.status === 200) {
         localStorage.setItem('authToken', data.token);
-
         navigate('/home');
       } else {
         setLoginError(data.message || 'Invalid email/username or password');
@@ -45,16 +45,8 @@ function LoginScreen() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}
-      >
+    <Container maxWidth="sm" className="login-container">
+      <Box className="login-box">
         <Typography variant="h4" gutterBottom data-testid="login-heading">
           Login
         </Typography>
@@ -97,7 +89,7 @@ function LoginScreen() {
             }}
           />
           {loginError && (
-            <Typography variant="body2" color="error" sx={{ mt: 1 }} data-testid="login-error">
+            <Typography variant="body2" color="error" className="login-error" data-testid="login-error">
               {loginError}
             </Typography>
           )}
@@ -106,17 +98,17 @@ function LoginScreen() {
             variant="contained"
             color="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            className="login-button"
             data-testid="login-button"
           >
             Login
           </Button>
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Box className="login-links">
             <Link href="#" variant="body2">
               Forgot Password?
             </Link>
           </Box>
-          <Box sx={{ mt: 1, textAlign: 'center' }}>
+          <Box className="signup-link">
             <Link component={RouterLink} to="/signup" variant="body2">
               Sign Up
             </Link>
