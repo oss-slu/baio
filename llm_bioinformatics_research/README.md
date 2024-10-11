@@ -96,3 +96,5 @@ Note: users must request database admin for access
 7. Save the connection sting in the variable "MONGO_URI". Replace `<db_username>` and `<db_password>` with the username and password provided to you by a database admin. 
 
 ![alt text](<documentation_images/env.png>)
+
+8. Save the secret key for JWT in the variable "JWT_SECRET" within the .env file. This can be any random string. For example: JWT_SECRET = "2839070519".
