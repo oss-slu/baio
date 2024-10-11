@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import config from './../config.json';
 
 function LoginScreen() {
   const [identifier, setIdentifier] = useState('');
@@ -9,6 +10,7 @@ function LoginScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
+  const port = config.port;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ function LoginScreen() {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/login', {
+      const response = await fetch('http://localhost:' + port + '/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

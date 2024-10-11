@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import config from './../config.json';
 
 function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -22,7 +23,8 @@ function SignUpScreen() {
   const [usernameTakenError, setUsernameTakenError] = useState('');
   const [emailTakenError, setEmailTakenError] = useState('');
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const port = config.port;
 
   const validateUsername = (username) => {
     if (!username) {
@@ -100,7 +102,7 @@ function SignUpScreen() {
 
     if (isUsernameValid && isEmailValid && isPasswordValid && isRetypePasswordValid) {
       try {
-        const response = await fetch('http://localhost:5001/signup', {
+        const response = await fetch('http://localhost:' + port + '/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

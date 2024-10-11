@@ -23,8 +23,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "prestart": "node killport.js 3000 5001",
-    "killport": "node killport.js",
     "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "start-frontend": "react-scripts start",
     "start-backend": "node server.js",
