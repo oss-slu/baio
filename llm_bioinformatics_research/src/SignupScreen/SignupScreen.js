@@ -27,6 +27,7 @@ function SignUpScreen() {
   const validateUsername = (username) => {
     if (!username) {
       setUsernameError('Username is required.');
+      setUsername('');
       return false;
     }
     setUsernameError('');
@@ -36,11 +37,13 @@ function SignUpScreen() {
   const validateEmail = (email) => {
     if (!email) {
       setEmailError('Email is required.');
+      setEmail('');
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailError('Please enter a valid email address.');
+      setEmail('');
       return false;
     }
     setEmailError('');
@@ -50,22 +53,27 @@ function SignUpScreen() {
   const validatePassword = (password) => {
     if (password.length < 8) {
       setPasswordError('Password must be at least 8 characters long.');
+      setPassword('');
       return false;
     }
     if (!/[A-Z]/.test(password)) {
       setPasswordError('Password must include at least one uppercase letter.');
+      setPassword('');
       return false;
     }
     if (!/[a-z]/.test(password)) {
       setPasswordError('Password must include at least one lowercase letter.');
+      setPassword('');
       return false;
     }
     if (!/\d/.test(password)) {
       setPasswordError('Password must include at least one number.');
+      setPassword('');
       return false;
     }
     if (!/[@$!%*#?&]/.test(password)) {
       setPasswordError('Password must include at least one special character.');
+      setPassword('');
       return false;
     }
     setPasswordError('');
@@ -75,6 +83,7 @@ function SignUpScreen() {
   const validateRetypePassword = (password, retypePassword) => {
     if (password !== retypePassword) {
       setRetypePasswordError('Passwords do not match.');
+      setRetypePassword('');
       return false;
     }
     setRetypePasswordError('');
@@ -103,18 +112,19 @@ function SignUpScreen() {
 
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5001); 
+          setTimeout(() => navigate('/login'), 5000);
         } else if (response.status === 400) {
           if (data.message === "Username is already in use") {
             setUsernameTakenError("This username is already taken.");
+            setUsername('');
           }
           if (data.message === "Email is already in use") {
             setEmailTakenError("This email is already in use.");
+            setEmail('');
           }
         } else {
           console.error('Signup failed:', data.message);
         }
-
       } catch (error) {
         console.error('Failed to connect to the server:', error);
       }
