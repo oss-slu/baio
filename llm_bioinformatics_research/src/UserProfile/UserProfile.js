@@ -55,19 +55,19 @@ const UserProfile = () => {
       <Box className="button-section">
         <Button
           onClick={() => setSection('profile')}
-          className={section === 'profile' ? 'selected-button' : 'default-button'}
+          className={section === 'profile' ? 'default-button' : 'selected-button'}
         >
           <ManageAccounts /> MyProfile
         </Button>
 
         <Button
           onClick={() => setSection('settings')}
-          className={section === 'settings' ? 'selected-button' : 'default-button'}
+          className={section === 'settings' ? 'default-button' : 'selected-button'}
         >
           <Settings /> Settings
         </Button>
 
-        <Button onClick={handleLogout} className="logout-button">
+        <Button onClick={handleLogout} className="logout-button" aria-label='logoutbutton'>
           <Logout /> Logout
         </Button>
       </Box>
@@ -76,10 +76,10 @@ const UserProfile = () => {
         <Box className="profile-section">
           <Box className="avatar-container">
             <Avatar alt="User Image" src={user.image} className="avatar" />
-            <IconButton className="edit-icon" component="label">
-              <EditIcon />
-              <input type="file" hidden accept="image/*" onChange={handleImageChange} />
-            </IconButton>
+              <IconButton className="edit-icon" component="label">
+                <EditIcon />
+                <input type="file" hidden accept="image/*" onChange={handleImageChange} data-testid ='avatar-upload' />
+              </IconButton>
           </Box>
 
           <TextField

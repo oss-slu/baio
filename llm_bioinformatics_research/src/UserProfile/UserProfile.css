@@ -1,5 +1,5 @@
 /* App Bar */
-.appBar {
+ .appBar {
     justify-content: center;
     background-color: #1976d2;
   }
@@ -18,7 +18,7 @@
   
   .default-button {
     color: black;
-    background-color: transparent;
+    background-color:  #1c71c6;
   }
   
   .default-button:hover {
@@ -26,8 +26,8 @@
   }
   
   .selected-button {
-    color: white;
-    background-color: #1976d2;
+    color: #1976d2;
+    background-color: #1c71c6;
   }
   
   .selected-button:hover {
@@ -36,7 +36,7 @@
   
   .logout-button {
     color: black;
-  }
+  } 
   
   .logout-button:hover {
     background-color: lightgray;
@@ -51,24 +51,24 @@
   }
   
   .avatar-container {
-    position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
   }
   
   .avatar {
     width: 100px;
     height: 100px;
-    margin-right: 16px;
   }
   
   .edit-icon {
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    margin-left: -20px;
     background-color: white;
+    border: 1px solid #ccc;
     border-radius: 50%;
-    border: 2px solid black;
+    padding: 4px;
   }
+  
   
   .edit-icon:hover {
     background-color: lightgray;
