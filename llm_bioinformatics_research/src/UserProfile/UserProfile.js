@@ -7,7 +7,7 @@ import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
 import './UserProfile.css';
 
 const UserProfile = () => {
-  const [section, setSection] = useState('profile');
+  const [section, setSection] = useState('profile'); // Default section is set to 'profile'
   const [user, setUser] = useState({
     image: '',
     name: 'John Doe',
@@ -55,14 +55,14 @@ const UserProfile = () => {
       <Box className="button-section">
         <Button
           onClick={() => setSection('profile')}
-          className={section === 'profile' ? 'default-button' : 'selected-button'}
+          className={section === 'profile' ? 'selected-button' : 'default-button'}
         >
-          <ManageAccounts /> MyProfile
+          <ManageAccounts /> My Profile
         </Button>
 
         <Button
           onClick={() => setSection('settings')}
-          className={section === 'settings' ? 'default-button' : 'selected-button'}
+          className={section === 'settings' ? 'selected-button' : 'default-button'} 
         >
           <Settings /> Settings
         </Button>
@@ -76,10 +76,10 @@ const UserProfile = () => {
         <Box className="profile-section">
           <Box className="avatar-container">
             <Avatar alt="User Image" src={user.image} className="avatar" />
-              <IconButton className="edit-icon" component="label">
-                <EditIcon />
-                <input type="file" hidden accept="image/*" onChange={handleImageChange} data-testid ='avatar-upload' />
-              </IconButton>
+            <IconButton className="edit-icon" component="label">
+              <EditIcon />
+              <input type="file" hidden accept="image/*" onChange={handleImageChange} data-testid ='avatar-upload' />
+            </IconButton>
           </Box>
 
           <TextField

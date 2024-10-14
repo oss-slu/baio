@@ -18,7 +18,7 @@
   
   .default-button {
     color: black;
-    background-color:  #1c71c6;
+    background-color: white;
   }
   
   .default-button:hover {
@@ -26,19 +26,21 @@
   }
   
   .selected-button {
-    color: #1976d2;
-    background-color: #1c71c6;
+    color: white;
+    background-color: #1976d2;
   }
   
   .selected-button:hover {
-    background-color: #115293;
+    color: white;
+    background-color: #1976d2;
   }
   
   .logout-button {
     color: black;
-  } 
+  }
   
   .logout-button:hover {
+    color: white;
     background-color: lightgray;
   }
   
