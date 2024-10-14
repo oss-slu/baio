@@ -16,7 +16,7 @@ describe('UserProfile Component', () => {
 
     expect(screen.getByText(/User Profile/i)).toBeInTheDocument();
 
-    expect(screen.getByText(/MyProfile/i)).toBeInTheDocument();
+    expect(screen.getByText(/My Profile/i)).toBeInTheDocument();
     expect(screen.getByText(/Settings/i)).toBeInTheDocument();
     expect(screen.getByText(/Logout/i)).toBeInTheDocument();
 
