@@ -57,25 +57,7 @@
     align-items: center;
     margin-bottom: 20px;
   }
-  
-  .avatar {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .edit-icon {
-    margin-left: -20px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    padding: 4px;
-  }
-  
-  
-  .edit-icon:hover {
-    background-color: lightgray;
-  }
-  
+   
   /* Input Fields */
   .input-field {
     width: 80%;

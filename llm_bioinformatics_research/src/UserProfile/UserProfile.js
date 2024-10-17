@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
+import blue from '@mui/material/colors/blue';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -53,32 +54,71 @@ const UserProfile = () => {
       </AppBar>
 
       <Box className="button-section">
+
         <Button
           onClick={() => setSection('profile')}
-          className={section === 'profile' ? 'selected-button' : 'default-button'}
+          sx={{
+            color: section === 'profile' ? 'white' : 'black',
+            backgroundColor: section === 'profile' ? blue[500] : 'transparent',
+            '&:hover': {
+              backgroundColor: section === 'profile' ? blue[700] : 'lightgray',
+            },
+          }}
         >
-          <ManageAccounts /> My Profile
+          <ManageAccounts /> MyProfile
         </Button>
 
         <Button
           onClick={() => setSection('settings')}
-          className={section === 'settings' ? 'selected-button' : 'default-button'} 
+          sx={{
+            color: section === 'settings' ? 'white' : 'black',
+            backgroundColor: section === 'settings' ? blue[500] : 'transparent',
+            '&:hover': {
+              backgroundColor: section === 'settings' ? blue[700] : 'lightgray',
+            },
+          }}
         >
           <Settings /> Settings
         </Button>
 
-        <Button onClick={handleLogout} className="logout-button" aria-label='logoutbutton'>
+        <Button
+          onClick={handleLogout}
+          sx={{
+            color: 'black','&:hover': {
+            backgroundColor: 'lightgray',
+            },
+          }}
+        >
           <Logout /> Logout
         </Button>
       </Box>
 
       {section === 'profile' && (
         <Box className="profile-section">
-          <Box className="avatar-container">
-            <Avatar alt="User Image" src={user.image} className="avatar" />
-            <IconButton className="edit-icon" component="label">
+          <Box sx={{ position: 'relative', display: 'inline-block' }}>
+            <Avatar
+              alt="User Image"
+              src={user.image} 
+              sx={{ width: '15vh', height: '15vh', mr: 2 }}
+            />
+            <IconButton
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                bgcolor: 'white',
+                borderRadius: '50%',
+                '&:hover': {
+                  bgcolor: 'lightgray',
+                },
+                border: '1px solid black',
+                width: '5vh',
+                height: '5vh',
+              }}
+              component="label"
+            >
               <EditIcon />
-              <input type="file" hidden accept="image/*" onChange={handleImageChange} data-testid ='avatar-upload' />
+              <input type="file" hidden accept="image/*" onChange={handleImageChange} />
             </IconButton>
           </Box>
 
