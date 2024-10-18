@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box, Typography, Button, IconButton, TextField, MenuItem, Select, FormControl, InputLabel, AppBar, Toolbar, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -6,23 +6,37 @@ import { useNavigate } from 'react-router-dom';
 import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
 import blue from '@mui/material/colors/blue';
 import './UserProfile.css';
+import ThemeContext from '../ThemeContext';
 
 const UserProfile = () => {
-  const [section, setSection] = useState('profile'); // Default section is set to 'profile'
+  const [section, setSection] = useState('profile'); 
   const [user, setUser] = useState({
     image: '',
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '123-456-7890',
     location: 'New York, USA',
-    theme: 'light',
+    theme: 'system', 
     language: 'en'
   });
+
+  const { toggleTheme } = useContext(ThemeContext); 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
+
+    if (name === 'theme') {
+      // Call toggleTheme based on selected value
+      if (value === 'light') {
+        toggleTheme('light');
+      } else if (value === 'dark') {
+        toggleTheme('dark');
+      } else {
+        toggleTheme('system');
+      }
+    }
   };
 
   const handleImageChange = (e) => {
@@ -30,7 +44,7 @@ const UserProfile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUser({ ...user, image: reader.result }); 
+        setUser({ ...user, image: reader.result });
       };
       reader.readAsDataURL(file);
     }
@@ -54,7 +68,6 @@ const UserProfile = () => {
       </AppBar>
 
       <Box className="button-section">
-
         <Button
           onClick={() => setSection('profile')}
           sx={{
@@ -84,8 +97,9 @@ const UserProfile = () => {
         <Button
           onClick={handleLogout}
           sx={{
-            color: 'black','&:hover': {
-            backgroundColor: 'lightgray',
+            color: 'black',
+            '&:hover': {
+              backgroundColor: 'lightgray',
             },
           }}
         >
@@ -98,7 +112,7 @@ const UserProfile = () => {
           <Box sx={{ position: 'relative', display: 'inline-block' }}>
             <Avatar
               alt="User Image"
-              src={user.image} 
+              src={user.image}
               sx={{ width: '15vh', height: '15vh', mr: 2 }}
             />
             <IconButton
@@ -106,12 +120,10 @@ const UserProfile = () => {
                 position: 'absolute',
                 bottom: 0,
                 right: 0,
-                bgcolor: 'white',
+                bgcolor: 'background.paper',
                 borderRadius: '50%',
-                '&:hover': {
-                  bgcolor: 'lightgray',
-                },
-                border: '1px solid black',
+                border: '1px solid',
+                borderColor: 'divider',
                 width: '5vh',
                 height: '5vh',
               }}
@@ -160,9 +172,12 @@ const UserProfile = () => {
       {section === 'settings' && (
         <Box className="settings-section">
           <FormControl className="input-field" margin="normal">
-            <InputLabel>Theme</InputLabel>
+            <InputLabel id="theme">Theme</InputLabel>
             <Select
+              labelId="theme"
+              label="Theme"
               name="theme"
+              id="theme"
               value={user.theme}
               onChange={handleInputChange}
             >
@@ -172,9 +187,12 @@ const UserProfile = () => {
             </Select>
           </FormControl>
           <FormControl className="input-field" margin="normal">
-            <InputLabel>Language</InputLabel>
+            <InputLabel id="language">Language</InputLabel>
             <Select
+              labelId="language"
+              label="Language"
               name="language"
+              id="language"
               value={user.language}
               onChange={handleInputChange}
             >

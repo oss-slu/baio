@@ -1,14 +1,15 @@
-import React, {createContext, useState, useMemo} from 'react';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
+import React, { createContext, useState, useMemo, useEffect } from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const ThemeContext = createContext();
 
-export const ThemeContextProvider = ({children}) => {
-    const [themeMode, setThemeMode] = useState('light');
+export const ThemeContextProvider = ({ children }) => {
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [themeMode, setThemeMode] = useState(prefersDarkMode ? 'dark' : 'light');
 
-    const toggleTheme = (mode) => {
-        setThemeMode(mode);
-    }
+    const toggleTheme = () => {
+        setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    };
 
     const theme = useMemo(() => createTheme({
         palette: {
@@ -16,12 +17,17 @@ export const ThemeContextProvider = ({children}) => {
         },
     }), [themeMode]);
 
+    useEffect(() => {
+        document.body.className = themeMode === 'light' ? 'light-theme' : 'dark-theme';
+    }, [themeMode]);
+
     return (
-        <ThemeContext.Provider value={{themeMode, toggleTheme}}>
+        <ThemeContext.Provider value={{ themeMode, toggleTheme }}>
             <ThemeProvider theme={theme}>
                 {children}
             </ThemeProvider>
         </ThemeContext.Provider>
     );
+};
 
-    export default ThemeContext;
+export default ThemeContext;

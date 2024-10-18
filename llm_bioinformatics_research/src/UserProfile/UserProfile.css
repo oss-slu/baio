@@ -16,33 +16,6 @@
     justify-content: space-around;
   }
   
-  .default-button {
-    color: black;
-    background-color: white;
-  }
-  
-  .default-button:hover {
-    background-color: lightgray;
-  }
-  
-  .selected-button {
-    color: white;
-    background-color: #1976d2;
-  }
-  
-  .selected-button:hover {
-    color: white;
-    background-color: #1976d2;
-  }
-  
-  .logout-button {
-    color: black;
-  }
-  
-  .logout-button:hover {
-    color: white;
-    background-color: lightgray;
-  }
   
   /* Profile Section */
   .profile-section {
