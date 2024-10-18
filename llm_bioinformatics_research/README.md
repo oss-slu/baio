@@ -99,6 +99,8 @@ Note: users must request database admin for access
 
 8. Save the secret key for JWT in the variable "JWT_SECRET" within the .env file. This can be any random string. For example: JWT_SECRET = "2839070519".
 
-9. We have a config.json file within our src directory so that our frontend pages such as login and signup can dynamically access the port on which the backend is running and read and write to the database.
+## Configuration Details
+
+We have a config.json file within our src directory so that our frontend pages such as login and signup can dynamically access the port on which the backend is running and read and write to the database.
 
 ![Alt text](<documentation_images/config.json.png>)
