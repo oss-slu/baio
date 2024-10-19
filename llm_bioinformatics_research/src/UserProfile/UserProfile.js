@@ -20,7 +20,7 @@ const UserProfile = () => {
     language: 'en'
   });
 
-  const { toggleTheme } = useContext(ThemeContext); 
+  const { themeMode, toggleTheme } = useContext(ThemeContext); 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -28,7 +28,6 @@ const UserProfile = () => {
     setUser({ ...user, [name]: value });
 
     if (name === 'theme') {
-      // Call toggleTheme based on selected value
       if (value === 'light') {
         toggleTheme('light');
       } else if (value === 'dark') {
@@ -71,7 +70,7 @@ const UserProfile = () => {
         <Button
           onClick={() => setSection('profile')}
           sx={{
-            color: section === 'profile' ? 'white' : 'black',
+            color: themeMode === 'dark' || section === 'profile' ? 'white' : 'black',
             backgroundColor: section === 'profile' ? blue[500] : 'transparent',
             '&:hover': {
               backgroundColor: section === 'profile' ? blue[700] : 'lightgray',
@@ -84,7 +83,7 @@ const UserProfile = () => {
         <Button
           onClick={() => setSection('settings')}
           sx={{
-            color: section === 'settings' ? 'white' : 'black',
+            color: themeMode === 'dark' || section === 'settings' ? 'white' : 'black',
             backgroundColor: section === 'settings' ? blue[500] : 'transparent',
             '&:hover': {
               backgroundColor: section === 'settings' ? blue[700] : 'lightgray',
@@ -97,7 +96,7 @@ const UserProfile = () => {
         <Button
           onClick={handleLogout}
           sx={{
-            color: 'black',
+            color: themeMode === 'dark' ? 'white' : 'black',
             '&:hover': {
               backgroundColor: 'lightgray',
             },

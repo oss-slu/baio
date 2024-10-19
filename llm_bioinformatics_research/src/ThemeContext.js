@@ -7,8 +7,12 @@ export const ThemeContextProvider = ({ children }) => {
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const [themeMode, setThemeMode] = useState(prefersDarkMode ? 'dark' : 'light');
 
-    const toggleTheme = () => {
-        setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    const toggleTheme = (mode) => {
+        if (mode === 'light' || mode === 'dark') {
+            setThemeMode(mode);
+        } else {
+            setThemeMode(prefersDarkMode ? 'dark' : 'light');
+        }
     };
 
     const theme = useMemo(() => createTheme({

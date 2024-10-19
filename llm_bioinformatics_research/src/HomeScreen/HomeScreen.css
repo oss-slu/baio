@@ -85,11 +85,11 @@
 
 /* Dynamic Theme Variables */
 :root {
-  --panel-background: #f5f5f5; 
+  --panel-background: #f5f5f558; 
   --panel-border: #b0bec5;
   --ai-output-background: #e3f2fd;
-  --footer-background: #e0e0e0;
-  --text-color: #424242;
+  --footer-background: #23222217;
+  --text-color: #33333;
 }
 
 /* Dark Mode Overrides */
@@ -98,5 +98,5 @@
   --panel-border: #424242;    
   --ai-output-background: #37474f;
   --footer-background: #2c2c2c;
-  --text-color: #e0e0e0;
+  --text-color: #b9b9b9;
 }
