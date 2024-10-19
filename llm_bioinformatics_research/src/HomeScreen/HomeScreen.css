@@ -81,6 +81,7 @@
   padding: 16px;
   text-align: center;
   color: var(--text-color);
+  border: 1px solid var(--panel-border);
 }
 
 /* Dynamic Theme Variables */
@@ -95,8 +96,8 @@
 /* Dark Mode Overrides */
 [data-theme='dark'] {
   --panel-background: #2c2c2c; 
-  --panel-border: #424242;    
+  --panel-border: #c3c2c2;    
   --ai-output-background: #37474f;
-  --footer-background: #2c2c2c;
+  --footer-background: #232222;
   --text-color: #b9b9b9;
 }

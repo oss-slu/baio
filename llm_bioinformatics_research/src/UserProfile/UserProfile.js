@@ -137,7 +137,6 @@ const UserProfile = () => {
             label="Name"
             name="name"
             value={user.name}
-            onChange={handleInputChange}
             className="input-field"
             margin="normal"
           />
@@ -145,7 +144,6 @@ const UserProfile = () => {
             label="Email"
             name="email"
             value={user.email}
-            onChange={handleInputChange}
             className="input-field"
             margin="normal"
           />
