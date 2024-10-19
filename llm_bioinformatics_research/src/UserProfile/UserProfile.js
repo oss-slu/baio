@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
-import blue from '@mui/material/colors/blue';
+import {blue} from '@mui/material/colors';
 import './UserProfile.css';
 import ThemeContext from '../ThemeContext';
 
@@ -169,10 +169,11 @@ const UserProfile = () => {
       {section === 'settings' && (
         <Box className="settings-section">
           <FormControl className="input-field" margin="normal">
-            <InputLabel id="theme">Theme</InputLabel>
+            <InputLabel id="theme" >Theme</InputLabel>
             <Select
-              labelId="theme"
-              label="Theme"
+              data-testid="theme selector"
+              labelId="theme selector"
+              label="Theme Selector"
               name="theme"
               id="theme"
               value={user.theme}
@@ -186,6 +187,7 @@ const UserProfile = () => {
           <FormControl className="input-field" margin="normal">
             <InputLabel id="language">Language</InputLabel>
             <Select
+              data-testid="language selector"
               labelId="language"
               label="Language"
               name="language"
