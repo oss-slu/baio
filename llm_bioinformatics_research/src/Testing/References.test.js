@@ -1,55 +1,100 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import References from '../References/References';
 
+describe('References Component', () => {
+  it('renders without crashing', () => {
+    render(<References />);
+  });
 
-test('renders references with links', () => {
-  render(<References />);
+  it('displays all references initially', () => {
+    render(<References />);
+    const bioinformaticsTitles = screen.getAllByText('Understanding Bioinformatics');
+    expect(bioinformaticsTitles.length).toBeGreaterThan(0);
+    const genomicsTitles = screen.getAllByText('Advanced Techniques in Genomics');
+    expect(genomicsTitles.length).toBeGreaterThan(0);
+  });
 
-  expect(screen.getByText(/Understanding Bioinformatics/i)).toBeInTheDocument();
-  expect(screen.getByText(/Advanced Techniques in Genomics/i)).toBeInTheDocument();
+  it('filters references based on author', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: 'Smith' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
 
-  const bioinformaticsLink = screen.getByText(/Understanding Bioinformatics/i);
-  expect(bioinformaticsLink).toHaveAttribute('href', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8738975/');
-  
-  const genomicsLink = screen.getByText(/Advanced Techniques in Genomics/i);
-  expect(genomicsLink).toHaveAttribute('href', 'https://www.sciencedirect.com/science/article/pii/S0168952519301126');
+  it('filters references based on title', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: 'Bioinformatics' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
+
+  it('filters references based on journal', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: 'Bioinformatics Journal' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
+
+  it('filters references based on volume', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: '15' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
+
+  it('filters references based on pages', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: '123-130' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
+
+  it('filters references based on link', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: 'PMC8738975' } });
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.queryByText('Advanced Techniques in Genomics')).not.toBeInTheDocument();
+  });
+
+  it('shows "No references found" when no references match the search input', () => {
+    render(<References />);
+    const searchInput = screen.getByLabelText('Search References');
+    fireEvent.change(searchInput, { target: { value: 'Nonexistent Author' } });
+    expect(screen.queryByText('No references found')).toBeInTheDocument();
+  });
+
+  it('expands Accordion to show full citation details', () => {
+    render(<References />);
+    const firstAccordion = screen.getByRole('button', { name: /Understanding Bioinformatics/i });
+    fireEvent.click(firstAccordion);
+    expect(screen.getByText((content, element) => content.includes('Bioinformatics Journal, 15, 123-130'))).toBeVisible();
+  });
+
+  it('filters references based on year', () => {
+    render(<References />);
+    const filterSelect = screen.getByLabelText('Filter by Year');
+    fireEvent.mouseDown(filterSelect);
+    fireEvent.click(screen.getByText('2021'));
+    expect(screen.queryByText('Understanding Bioinformatics')).not.toBeInTheDocument();
+    expect(screen.getByText('Advanced Techniques in Genomics')).toBeInTheDocument();
+  });
+
+  it('shows all references when selecting "All Years" after applying a filter', async () => {
+    render(<References />);
+    const filterSelect = screen.getByLabelText('Filter by Year');
+    fireEvent.mouseDown(filterSelect);
+    fireEvent.click(screen.getByText('2021'));
+    fireEvent.mouseDown(screen.getByTestId('year-filter')); 
+    fireEvent.click(screen.getByText('All Years')); 
+    expect(screen.getByText('Understanding Bioinformatics')).toBeInTheDocument();
+    expect(screen.getByText('Advanced Techniques in Genomics')).toBeInTheDocument();
+  });
 });
-
-test('renders references and checks for the search functionality', () => {
-  render(<References />);
-
-  const searchInput = screen.getByLabelText(/Search References/i);
-  expect(searchInput).toBeInTheDocument();
-
-  fireEvent.change(searchInput, { target: { value: 'Smith' } });
-  expect(screen.getByText(/Smith, J./i)).toBeInTheDocument();
-  expect(screen.queryByText(/Doe, A./i)).toBeNull();
-});
-
-test('renders references and checks for the "No references found" message', () => {
-  render(<References />);
-
- 
-  const searchInput = screen.getByLabelText(/Search References/i);
-  fireEvent.change(searchInput, { target: { value: 'random' } });
-  expect(screen.getByText(/No references found/i)).toBeInTheDocument();
-});
-
-test('renders references and checks for the reference details', () => {
-  render(<References />);
-
-  expect(screen.getByText(/Smith, J./i)).toBeInTheDocument();
-  expect(screen.getByText(/2022/i)).toBeInTheDocument();
-  expect(screen.getByText(/Understanding Bioinformatics/i)).toBeInTheDocument();
-  expect(screen.getByText(/Bioinformatics Journal/i)).toBeInTheDocument();
-  expect(screen.getByText(/15/i)).toBeInTheDocument();
-  expect(screen.getByText(/123-130/i)).toBeInTheDocument();
-  expect(screen.getByText(/Doe, A./i)).toBeInTheDocument();
-  expect(screen.getByText(/2021/i)).toBeInTheDocument();
-  expect(screen.getByText(/Advanced Techniques in Genomics/i)).toBeInTheDocument();
-  expect(screen.getByText(/Genomics Review/i)).toBeInTheDocument();
-  expect(screen.getByText(/ 22/i)).toBeInTheDocument();
-  expect(screen.getByText(/45-60/i)).toBeInTheDocument();
-});
-
