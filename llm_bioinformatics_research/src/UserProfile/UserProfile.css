@@ -39,5 +39,12 @@
   /* Settings Section */
   .settings-section {
     margin-top: 24px;
+    position: relative;
   }
+
+  .update-button {
+    position: relative;
+  }
+
+  
   

@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
-import {blue} from '@mui/material/colors';
+import { blue } from '@mui/material/colors';
 import './UserProfile.css';
 import ThemeContext from '../ThemeContext';
 
@@ -16,7 +16,7 @@ const UserProfile = () => {
     email: 'john.doe@example.com',
     phone: '123-456-7890',
     location: 'New York, USA',
-    theme: 'system', 
+    theme: 'system' , 
     language: 'en'
   });
 
@@ -28,13 +28,7 @@ const UserProfile = () => {
     setUser({ ...user, [name]: value });
 
     if (name === 'theme') {
-      if (value === 'light') {
-        toggleTheme('light');
-      } else if (value === 'dark') {
-        toggleTheme('dark');
-      } else {
-        toggleTheme('system');
-      }
+      toggleTheme(value);
     }
   };
 
@@ -51,6 +45,11 @@ const UserProfile = () => {
 
   const handleLogout = () => {
     navigate('/login'); // Placeholder for actual logout logic
+  };
+
+  const handleUpdate = () => {
+    // Add logic to handle the update here
+    console.log('User updated:', user);
   };
 
   return (
@@ -77,7 +76,7 @@ const UserProfile = () => {
             },
           }}
         >
-          <ManageAccounts /> MyProfile
+          <ManageAccounts /> My Profile
         </Button>
 
         <Button
@@ -108,7 +107,7 @@ const UserProfile = () => {
 
       {section === 'profile' && (
         <Box className="profile-section">
-          <Box sx={{ position: 'relative', display: 'inline-block' }}>
+          <Box sx={{ position: 'relative', display: 'inline-block' }} className="avatar-container">
             <Avatar
               alt="User Image"
               src={user.image}
@@ -137,6 +136,7 @@ const UserProfile = () => {
             label="Name"
             name="name"
             value={user.name}
+            onChange={handleInputChange}
             className="input-field"
             margin="normal"
           />
@@ -144,6 +144,7 @@ const UserProfile = () => {
             label="Email"
             name="email"
             value={user.email}
+            onChange={handleInputChange}
             className="input-field"
             margin="normal"
           />
@@ -163,17 +164,19 @@ const UserProfile = () => {
             className="input-field"
             margin="normal"
           />
+          <Button variant="contained" color="primary" onClick={handleUpdate}>
+            Update
+          </Button>
         </Box>
       )}
 
       {section === 'settings' && (
-        <Box className="settings-section">
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="settings-section">
           <FormControl className="input-field" margin="normal">
-            <InputLabel id="theme" >Theme</InputLabel>
+            <InputLabel id="theme">Theme</InputLabel>
             <Select
-              data-testid="theme selector"
               labelId="theme selector"
-              label="Theme Selector"
+              label="Theme"
               name="theme"
               id="theme"
               value={user.theme}
@@ -187,7 +190,6 @@ const UserProfile = () => {
           <FormControl className="input-field" margin="normal">
             <InputLabel id="language">Language</InputLabel>
             <Select
-              data-testid="language selector"
               labelId="language"
               label="Language"
               name="language"
@@ -200,6 +202,9 @@ const UserProfile = () => {
               <MenuItem value="fr">French</MenuItem>
             </Select>
           </FormControl>
+          <Button className = "update-button" variant="contained" color="primary" onClick={handleUpdate} sx = {{marginTop: 2}}>
+            Update
+          </Button>
         </Box>
       )}
     </Box>
