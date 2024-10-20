@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from '../App';
 
-test('renders login screen', () => {
+test('renders login page', () => {
   render(<App />);
-  const loginButton = screen.getByTestId('login-button'); 
+  const loginButton = screen.getByText(/Login/i);
   expect(loginButton).toBeInTheDocument();
 });
