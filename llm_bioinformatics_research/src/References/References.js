@@ -42,7 +42,6 @@ function References() {
 
   return (
     <Container className="references-container">
-      <Typography variant="h4" gutterBottom>References</Typography>
       <Grid container spacing={2} alignItems="flex-end">
         <Grid item xs={9}>
           <TextField

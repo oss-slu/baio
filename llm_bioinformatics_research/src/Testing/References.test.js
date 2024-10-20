@@ -6,7 +6,6 @@ import References from '../References/References';
 describe('References Component', () => {
   it('renders without crashing', () => {
     render(<References />);
-    expect(screen.getByText('References')).toBeInTheDocument();
   });
 
   it('displays all references initially', () => {
