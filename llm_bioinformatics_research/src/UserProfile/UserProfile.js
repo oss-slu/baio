@@ -80,12 +80,8 @@ const UserProfile = () => {
  
 
   const handleUpdate = async () => {
-    if (!user.phone.trim()) {
-      setPhoneError('Phone number is required');
-      return;
-    }
-    if (!isPhoneValid(user.phone)) {
-      setPhoneError('Invalid phone number. Please enter in the format XXX-XXX-XXXX');
+    if (!isPhoneValid(user.phone) && user.phone !== '') {
+      setPhoneError('Invalid phone number. Please enter in the format XXX-XXX-XXXX or leave blank');
       return;
     }
     if (!isLocationValid(user.location)) {
