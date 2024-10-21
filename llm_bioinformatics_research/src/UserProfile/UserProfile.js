@@ -118,7 +118,10 @@ const UserProfile = () => {
             },
             body: JSON.stringify({
                 userId: userId,
-                ...updateFields, // Spread the fields that have changed
+                phone_number: user.phone,
+                location: user.location,
+                profile_photo: user.image,
+                theme: user.theme,
             }),
         });
 
