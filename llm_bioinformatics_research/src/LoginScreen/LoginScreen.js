@@ -34,6 +34,7 @@ function LoginScreen() {
 
       if (response.status === 200) {
         localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
         navigate('/home');
       } else {
         setLoginError(data.message || 'Invalid email/username or password');
