@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -49,7 +49,10 @@ app.post('/signup', async (req, res) => {
         const result = await collection.insertOne({
             user_name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            profile_photo: '', 
+            phone_number: '',
+            location: ''
         });
 
         res.status(201).json(result);
@@ -84,10 +87,48 @@ app.post('/login', async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.status(200).json({ token, user: { id: user._id, username: user.user_name, email: user.email } });
+        res.status(200).json({
+            token,
+            user: {
+                id: user._id,
+                username: user.user_name,
+                email: user.email,
+                profile_photo: user.profile_photo,
+                phone_number: user.phone_number,
+                location: user.location
+            }
+        });
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: "Server error. Please try again later." });
+    }
+});
+
+app.post('/profile', async (req, res) => {
+    try {
+        const { userId, profile_photo, phone_number, location } = req.body;
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        const result = await collection.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $set: {
+                    profile_photo: profile_photo,
+                    phone_number: phone_number,
+                    location: location
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ message: "No changes made or user not found." });
+        }
+
+        res.status(200).json({ message: "Profile updated successfully" });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ message: "Failed to update profile" });
     }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography, Button, IconButton, TextField, MenuItem, Select, FormControl, InputLabel, AppBar, Toolbar, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,25 +7,45 @@ import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
 import { blue } from '@mui/material/colors';
 import './UserProfile.css';
 import ThemeContext from '../ThemeContext';
+import config from '../config.json';
 
 const UserProfile = () => {
   const [section, setSection] = useState('profile'); 
   const [user, setUser] = useState({
     image: '',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
-    location: 'New York, USA',
-    theme: 'system' , 
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
+    theme: 'system', 
     language: 'en'
   });
+  const [phoneError, setPhoneError] = useState(''); 
 
   const { themeMode, toggleTheme } = useContext(ThemeContext); 
   const navigate = useNavigate();
+  const port = config.port;
+
+  useEffect(() => {
+    const savedUserData = JSON.parse(localStorage.getItem('userData'));
+    if (savedUserData) {
+      setUser((prevUser) => ({
+        ...prevUser,
+        name: savedUserData.username || '',
+        email: savedUserData.email || '',
+        phone: savedUserData.phone_number || '',
+        location: savedUserData.location || '',
+        image: savedUserData.profile_photo || ''
+      }));
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
+    if (name === 'phone') {
+      setPhoneError(''); 
+    }
 
     if (name === 'theme') {
       toggleTheme(value);
@@ -44,13 +64,46 @@ const UserProfile = () => {
   };
 
   const handleLogout = () => {
-    navigate('/login'); // Placeholder for actual logout logic
+    localStorage.removeItem('userData');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    navigate('/login');
   };
 
-  const handleUpdate = () => {
-    // Add logic to handle the update here
-    console.log('User updated:', user);
+  const handleUpdate = async () => {
+    if (!user.phone.trim()) {
+      setPhoneError('Phone number is required');
+      return;
+    }
+  
+    try {
+      const response = await fetch('http://localhost:' + port + '/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem('userId'), 
+          profile_photo: user.image,
+          phone_number: user.phone,
+          location: user.location,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update profile');
+      }
+  
+      alert('Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('An error occurred while updating the profile');
+    }
   };
+  
+
 
   return (
     <Box className="userProfile-container">
@@ -136,17 +189,17 @@ const UserProfile = () => {
             label="Name"
             name="name"
             value={user.name}
-            onChange={handleInputChange}
             className="input-field"
             margin="normal"
+            enabled
           />
           <TextField
             label="Email"
             name="email"
             value={user.email}
-            onChange={handleInputChange}
             className="input-field"
             margin="normal"
+            enabled
           />
           <TextField
             label="Phone Number"
@@ -155,6 +208,8 @@ const UserProfile = () => {
             onChange={handleInputChange}
             className="input-field"
             margin="normal"
+            error={Boolean(phoneError)} 
+            helperText={phoneError} 
           />
           <TextField
             label="Location"
@@ -202,7 +257,7 @@ const UserProfile = () => {
               <MenuItem value="fr">French</MenuItem>
             </Select>
           </FormControl>
-          <Button className = "update-button" variant="contained" color="primary" onClick={handleUpdate} sx = {{marginTop: 2}}>
+          <Button className="update-button" variant="contained" color="primary" onClick={handleUpdate} sx={{ marginTop: 2 }}>
             Update
           </Button>
         </Box>
@@ -211,4 +266,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default UserProfile

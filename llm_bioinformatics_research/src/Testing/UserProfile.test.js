@@ -30,7 +30,7 @@ describe('UserProfile Component with Theme Testing', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
 
-    const myProfileButton = screen.getByText(/MyProfile/i);
+    const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
     // Check that colors are set correctly for light theme
@@ -42,7 +42,7 @@ describe('UserProfile Component with Theme Testing', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'dark', toggleTheme });
 
-    const myProfileButton = screen.getByText(/MyProfile/i);
+    const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
     // Check that colors are set correctly for dark theme
