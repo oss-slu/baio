@@ -76,7 +76,8 @@ const UserProfile = () => {
   };
 
   const isPhoneValid = (phone) => /^\d{3}-\d{3}-\d{4}$/.test(phone); 
-  const isLocationValid = (location) => /^[A-Za-z\s]+,\s[A-Za-z\s]+$/.test(location); 
+  const isLocationValid = (location) => /^[A-Za-z\s.]+,\s[A-Za-z\s]+$/.test(location);
+ 
 
   const handleUpdate = async () => {
     if (!user.phone.trim()) {
@@ -88,7 +89,7 @@ const UserProfile = () => {
       return;
     }
     if (!isLocationValid(user.location)) {
-      setLocationError('Location is required');
+      setLocationError('Location is required Format: City, State');
       return;
     }
     const userData = JSON.parse(localStorage.getItem('userData'));
