@@ -21,6 +21,7 @@ const UserProfile = () => {
     language: 'en'
   });
   const [phoneError, setPhoneError] = useState(''); 
+  const [locationError, setLocationError] = useState(''); 
 
   const { themeMode, toggleTheme } = useContext(ThemeContext); 
   const navigate = useNavigate();
@@ -35,7 +36,8 @@ const UserProfile = () => {
         email: savedUserData.email || '',
         phone: savedUserData.phone_number || '',
         location: savedUserData.location || '',
-        image: savedUserData.profile_photo || ''
+        image: savedUserData.profile_photo || '',
+        theme: savedUserData.theme || 'light'
       }));
     }
   }, []);
@@ -45,6 +47,9 @@ const UserProfile = () => {
     setUser({ ...user, [name]: value });
     if (name === 'phone') {
       setPhoneError(''); 
+    }
+    if (name === 'location') {
+      setLocationError('');
     }
 
     if (name === 'theme') {
@@ -70,39 +75,67 @@ const UserProfile = () => {
     navigate('/login');
   };
 
+  const isPhoneValid = (phone) => /^\d{3}-\d{3}-\d{4}$/.test(phone); 
+  const isLocationValid = (location) => /^[A-Za-z\s]+,\s[A-Za-z\s]+$/.test(location); 
+
   const handleUpdate = async () => {
     if (!user.phone.trim()) {
       setPhoneError('Phone number is required');
       return;
     }
-  
-    try {
-      const response = await fetch('http://localhost:' + port + '/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem('userId'), 
-          profile_photo: user.image,
-          phone_number: user.phone,
-          location: user.location,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update profile');
-      }
-  
-      alert('Profile updated successfully');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('An error occurred while updating the profile');
+    if (!isPhoneValid(user.phone)) {
+      setPhoneError('Invalid phone number. Please enter in the format XXX-XXX-XXXX');
+      return;
     }
-  };
-  
+    if (!isLocationValid(user.location)) {
+      setLocationError('Location is required');
+      return;
+    }
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const userId = userData ? userData.id : null;
+
+    if (!userId) {
+      alert('User ID not found. Please log in again.');
+      return;
+    }
+
+    const updateFields = {};
+    if (user.image !== userData.profile_photo) updateFields.profile_photo = user.image;
+    if (user.phone !== userData.phone_number) updateFields.phone_number = user.phone;
+    if (user.location !== userData.location) updateFields.location = user.location;
+    if (user.theme !== userData.theme) updateFields.theme = user.theme;
+    
+    if (Object.keys(updateFields).length === 0) {
+        alert('No changes made.');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:' + port + '/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+                ...updateFields, // Spread the fields that have changed
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to update profile');
+        }
+
+        alert('Profile updated successfully');
+        // update local storage with the new values
+        localStorage.setItem('userData', JSON.stringify({ ...userData, ...updateFields }));
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('An error occurred while updating the profile');
+    }
+};
 
 
   return (
@@ -191,7 +224,7 @@ const UserProfile = () => {
             value={user.name}
             className="input-field"
             margin="normal"
-            enabled
+            InputProps={{ readOnly: true }} // Make name field read-only
           />
           <TextField
             label="Email"
@@ -199,7 +232,7 @@ const UserProfile = () => {
             value={user.email}
             className="input-field"
             margin="normal"
-            enabled
+            InputProps={{ readOnly: true }} // Make email field read-only
           />
           <TextField
             label="Phone Number"
@@ -218,6 +251,8 @@ const UserProfile = () => {
             onChange={handleInputChange}
             className="input-field"
             margin="normal"
+            error={Boolean(locationError)} 
+            helperText={locationError} 
           />
           <Button variant="contained" color="primary" onClick={handleUpdate}>
             Update

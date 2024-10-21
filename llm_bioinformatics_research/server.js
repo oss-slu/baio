@@ -52,7 +52,8 @@ app.post('/signup', async (req, res) => {
             password: hashedPassword,
             profile_photo: '', 
             phone_number: '',
-            location: ''
+            location: '',
+            theme: 'system'
         });
 
         res.status(201).json(result);
@@ -95,7 +96,8 @@ app.post('/login', async (req, res) => {
                 email: user.email,
                 profile_photo: user.profile_photo,
                 phone_number: user.phone_number,
-                location: user.location
+                location: user.location,
+                theme: user.theme
             }
         });
     } catch (error) {
@@ -106,7 +108,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/profile', async (req, res) => {
     try {
-        const { userId, profile_photo, phone_number, location } = req.body;
+        const { userId, profile_photo, phone_number, location, theme } = req.body;
         const database = client.db("user_information");
         const collection = database.collection("user_credentials");
 
@@ -116,7 +118,8 @@ app.post('/profile', async (req, res) => {
                 $set: {
                     profile_photo: profile_photo,
                     phone_number: phone_number,
-                    location: location
+                    location: location,
+                    theme: theme
                 }
             }
         );
