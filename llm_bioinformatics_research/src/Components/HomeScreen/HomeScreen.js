@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Paper, TextField, Grid, IconButton } from '@mui/material';
 import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
 import './HomeScreen.css'; 
+import { useNavigate } from 'react-router-dom';
 
 const CustomPaper = ({ children, title }) => (
   <Paper
@@ -13,7 +14,24 @@ const CustomPaper = ({ children, title }) => (
   </Paper>
 );
 
-const HomeScreen = () => {
+function HomeScreen ({ setIsLoggedIn }) {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBackNavigation = (event) => {
+      event.preventDefault();
+      const confirmLogout = window.confirm("Confirm Logout?");
+      if (confirmLogout) {
+        setIsLoggedIn(false);
+        navigate('/login', { replace: true }); 
+      }
+    };
+
+    window.addEventListener('popstate', handleBackNavigation);
+    return () => window.removeEventListener('popstate', handleBackNavigation);
+  }, [navigate, setIsLoggedIn]);
+
   return (
     <Box className="home-screen">
       <Grid container spacing={2} sx={{ flexGrow: 1, p: 1 }}>

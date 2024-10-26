@@ -5,7 +5,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import config from '../../config.json';
 import './LoginScreen.css';
 
-function LoginScreen() {
+function LoginScreen({ setIsLoggedIn }) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -35,7 +35,8 @@ function LoginScreen() {
       if (response.status === 200) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userData', JSON.stringify(data.user));
-        navigate('/home');
+        setIsLoggedIn(true);
+        navigate('/home', { replace: true });
       } else {
         setLoginError(data.message || 'Invalid email/username or password');
       }

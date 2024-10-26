@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import {Box, Typography, AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import LoginScreen from './Components/LoginScreen/LoginScreen';
@@ -45,6 +45,13 @@ const Layout = ({ children }) => {
 };
 
 function App() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  function ProtectedRoute({ isLoggedIn, children }) {
+    return isLoggedIn ? children : <Navigate to="/login" replace />;
+  }
+
   return (
 
     <Router>
@@ -52,11 +59,20 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<LoginScreen />} />
-          <Route path="/home" element={<Layout><HomeScreen /></Layout>} />
+          <Route
+              path="/home"
+              element={
+                <ProtectedRoute isLoggedIn={isLoggedIn}>
+                  <Layout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}>
+                    <HomeScreen setIsLoggedIn={setIsLoggedIn} />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
           <Route path="/api-documentation" element={<Layout><ApiDocumentation /></Layout>} />
           <Route path="/references" element={<Layout><References /></Layout>} />
           <Route path="/signup" element={<SignupScreen />} />
-          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/login" element={<LoginScreen setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile" element={<UserProfile />} />
         </Routes>
       </div>
