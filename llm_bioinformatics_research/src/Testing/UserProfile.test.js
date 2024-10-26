@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import UserProfile from '../UserProfile/UserProfile';
-import ThemeContext from '../ThemeContext';
+import UserProfile from '../Components/UserProfile/UserProfile';
+import ThemeContext from '../Context/ThemeContext';
 
 describe('UserProfile Component with Theme Testing', () => {
   const renderWithThemeContext = (ui, { theme = 'light', toggleTheme } = {}) => {
@@ -33,7 +33,6 @@ describe('UserProfile Component with Theme Testing', () => {
     const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
-    // Check that colors are set correctly for light theme
     expect(myProfileButton).toHaveStyle('color: white');
     expect(settingsButton).toHaveStyle('color: black');
   });
@@ -45,7 +44,6 @@ describe('UserProfile Component with Theme Testing', () => {
     const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
-    // Check that colors are set correctly for dark theme
     expect(myProfileButton).toHaveStyle('color: white');
     expect(settingsButton).toHaveStyle('color: white');
   });

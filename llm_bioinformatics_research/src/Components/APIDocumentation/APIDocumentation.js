@@ -22,7 +22,7 @@ const apis = [
   }
 ];
 
-const ApiDocumentation = () => {
+const APIDocumentation = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const filteredApis = apis.filter((api) => 
     api.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,4 +73,4 @@ const ApiDocumentation = () => {
   );
 };
 
-export default ApiDocumentation;
+export default APIDocumentation;

@@ -77,25 +77,25 @@ Note: users must request database admin for access
 
 2. Navigate to the "Better Bioinformatics" project.
 
-![alt text](<documentation_images/project.png>)
+![alt text](<DocumentationImages/Project.png>)
 
 3. Click the "Connect" button located under the BBIDevCluster.
 
-![alt text](<documentation_images/connect.png>)
+![alt text](<DocumentationImages/Connect.png>)
 
 4. In the menu, select "MongoDB for VS Code".
 
-![alt text](<documentation_images/mongodb_vscode.png>)
+![alt text](<DocumentationImages/MongoDB.png>)
 
 5. Copy the connection string located under "Connect to your MongoDB deployment".
 
-![alt text](<documentation_images/connection_string.png>)
+![alt text](<DocumentationImages/ConnectionString.png>)
 
 6. Create a .env file in the root directory of the React project.
 
 7. Save the connection sting in the variable "MONGO_URI". Replace `<db_username>` and `<db_password>` with the username and password provided to you by a database admin. 
 
-![alt text](<documentation_images/env.png>)
+![alt text](<DocumentationImages/Env.png>)
 
 8. Save the secret key for JWT in the variable "JWT_SECRET" within the .env file. This can be any random string. For example: JWT_SECRET = "2839070519".
 
@@ -103,4 +103,4 @@ Note: users must request database admin for access
 
 We have a config.json file within our src directory so that our frontend pages such as login and signup can dynamically access the port on which the backend is running and read and write to the database.
 
-![Alt text](<documentation_images/config.json.png>)
+![Alt text](<DocumentationImages/Config.png>)

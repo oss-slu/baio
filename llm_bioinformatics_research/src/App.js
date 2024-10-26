@@ -3,15 +3,15 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {Box, Typography, AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { blue } from '@mui/material/colors';
-import LoginScreen from './LoginScreen/LoginScreen';
-import HomeScreen from './HomeScreen/HomeScreen';  
-import ApiDocumentation from './ApiDocumentation/ApiDocumentation';  
-import References from './References/References'; 
-import SignupScreen from './SignupScreen/SignupScreen';
-import UserProfile from './UserProfile/UserProfile';
+import LoginScreen from './Components/LoginScreen/LoginScreen';
+import HomeScreen from './Components/HomeScreen/HomeScreen';  
+import ApiDocumentation from './Components/APIDocumentation/APIDocumentation';  
+import References from './Components/References/References'; 
+import SignupScreen from './Components/SignupScreen/SignupScreen';
+import UserProfile from './Components/UserProfile/UserProfile';
 import { Link, useLocation } from 'react-router-dom';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import { ThemeContextProvider  } from './ThemeContext';
+import { ThemeContextProvider  } from './Context/ThemeContext';
 
 const Layout = ({ children }) => {
   const location = useLocation();
