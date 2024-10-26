@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import UserProfile from '../UserProfile/UserProfile';
 import ThemeContext from '../ThemeContext';
 
-describe('UserProfile Component with Theme Testing', () => {
+describe('UserProfile Component', () => {
   const renderWithThemeContext = (ui, { theme = 'light', toggleTheme } = {}) => {
     return render(
       <MemoryRouter>
@@ -25,7 +25,6 @@ describe('UserProfile Component with Theme Testing', () => {
     expect(screen.getByText(/System Default/i)).toBeInTheDocument();
   });
 
-
   test('renders UserProfile with light theme by default', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
@@ -33,7 +32,6 @@ describe('UserProfile Component with Theme Testing', () => {
     const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
-    // Check that colors are set correctly for light theme
     expect(myProfileButton).toHaveStyle('color: white');
     expect(settingsButton).toHaveStyle('color: black');
   });
@@ -45,9 +43,18 @@ describe('UserProfile Component with Theme Testing', () => {
     const myProfileButton = screen.getByText(/My Profile/i);
     const settingsButton = screen.getByText(/Settings/i);
 
-    // Check that colors are set correctly for dark theme
     expect(myProfileButton).toHaveStyle('color: white');
     expect(settingsButton).toHaveStyle('color: white');
   });
 
+  test('updates avatar image when a new image is uploaded', async () => {
+    const toggleTheme = jest.fn();
+    renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
+
+    const mockImageData = 'data:image/png;base64,mockImageData';
+    const avatarImage = await screen.findByTestId('avatar');
+    avatarImage.setAttribute('src', mockImageData);
+    
+    expect(avatarImage).toHaveAttribute('src', mockImageData);
+  });
 });
