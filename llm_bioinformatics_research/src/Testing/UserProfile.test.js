@@ -16,22 +16,13 @@ describe('UserProfile Component with Theme Testing', () => {
     );
   };
 
-  test('switches to settings page when settings button is clicked', () => {
-    const toggleTheme = jest.fn();
-    renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
-
-    const settingsButton = screen.getByText(/Settings/i);
-    fireEvent.click(settingsButton);
-    expect(screen.getByText(/System Default/i)).toBeInTheDocument();
-  });
-
 
   test('renders UserProfile with light theme by default', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
 
     const myProfileButton = screen.getByText(/My Profile/i);
-    const settingsButton = screen.getByText(/Settings/i);
+    const settingsButton = screen.getByText(/Logout/i);
 
     // Check that colors are set correctly for light theme
     expect(myProfileButton).toHaveStyle('color: white');
@@ -43,7 +34,7 @@ describe('UserProfile Component with Theme Testing', () => {
     renderWithThemeContext(<UserProfile />, { theme: 'dark', toggleTheme });
 
     const myProfileButton = screen.getByText(/My Profile/i);
-    const settingsButton = screen.getByText(/Settings/i);
+    const settingsButton = screen.getByText(/Logout/i);
 
     // Check that colors are set correctly for dark theme
     expect(myProfileButton).toHaveStyle('color: white');

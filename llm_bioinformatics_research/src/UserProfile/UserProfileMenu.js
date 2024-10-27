@@ -4,6 +4,7 @@ import { PersonOutline as PersonOutlineIcon, Settings as SettingsIcon, Logout as
 import { useNavigate } from 'react-router-dom';
 import ThemeContext from '../ThemeContext';
 import './UserProfileMenu.css';
+import config from '../config.json';
 
 const UserProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -11,11 +12,13 @@ const UserProfileMenu = () => {
   const [user, setUser] = useState({
     image: '',
     name: '',
+    theme: 'system',
+    language: 'en'
   });
-  const [theme, setTheme] = useState('system');
-  const [language, setLanguage] = useState('en');
+  
   const { toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const port = config.port;
 
   useEffect(() => {
     const savedUserData = JSON.parse(localStorage.getItem('userData'));
@@ -23,9 +26,10 @@ const UserProfileMenu = () => {
       setUser({
         name: savedUserData.username || '',
         image: savedUserData.profile_photo || '',
+
+        theme: savedUserData.theme || 'system',
+        language: savedUserData.language || 'en'
       });
-      setTheme(savedUserData.theme || 'system');
-      setLanguage(savedUserData.language || 'en');
     }
   }, []);
 
@@ -44,28 +48,62 @@ const UserProfileMenu = () => {
     localStorage.removeItem('userId');
     navigate('/login');
   };
-
-  const handleThemeChange = (event) => {
-    const newTheme = event.target.value;
-    setTheme(newTheme);
-    toggleTheme(newTheme);
-    updateLocalStorage('theme', newTheme);
+  const handleThemeChange = async (e) => {
+    const newTheme = e.target.value;
+    setUser((prev) => ({ ...prev, theme: newTheme })); 
+    toggleTheme(newTheme); 
+    await updateUserSettings(newTheme, user.language); 
   };
 
-  const handleLanguageChange = (event) => {
-    const newLanguage = event.target.value;
-    setLanguage(newLanguage);
-    updateLocalStorage('language', newLanguage);
+  const handleLanguageChange = async (e) => {
+    const newLanguage = e.target.value;
+    setUser((prev) => ({ ...prev, language: newLanguage }));
   };
 
-  const updateLocalStorage = (key, value) => {
-    const userData = JSON.parse(localStorage.getItem('userData')) || {};
-    userData[key] = value;
-    localStorage.setItem('userData', JSON.stringify(userData));
-  };
-
-  const toggleSettings = () => {
-    setSettingsOpen((prev) => !prev);
+  const updateUserSettings = async (theme, language) => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const userId = userData ? userData.id : null;
+  
+    if (!userId) {
+      alert('User ID not found. Please log in again.');
+      return;
+    }
+  
+    try {
+      const response = await fetch('http://localhost:' + port + '/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          profile_photo: userData.profile_photo || '',
+          phone_number: userData.phone_number || '',
+          location: userData.location || '',
+          theme: theme,
+          language: language
+        }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update settings');
+      }
+  
+      const updatedUserData = { 
+        ...userData, 
+        theme, 
+        language 
+      };
+  
+      localStorage.setItem('userData', JSON.stringify(updatedUserData));
+  
+      console.log('Settings updated successfully:', updatedUserData);
+      alert('Updated successfully!');
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      alert('An error occurred while updating settings');
+    }
   };
 
   return (
@@ -77,12 +115,12 @@ const UserProfileMenu = () => {
           <PersonOutlineIcon />
         )}
       </IconButton>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu} className='menu'>
         <Box className="menu-header">
           <Avatar alt="User Image" src={user.image} className="user-avatar" />
           <Box sx={{ marginLeft: 2 }}>
             <Typography variant="body1">{user.name || 'Your name'}</Typography>
-            <Typography variant="body2" color="textSecondary">{user.name || 'Your name'}</Typography>
+            <Typography variant="body2" color="textSecondary">{'Your name'}</Typography>
           </Box>
           <IconButton onClick={handleCloseMenu} size="small" aria-label="close menu">
             <CloseIcon />
@@ -92,15 +130,9 @@ const UserProfileMenu = () => {
           <PersonOutlineIcon className="menu-item-icon" /> My Profile
           <ExpandMoreIcon style={{ marginLeft: 'auto', transform: 'rotate(-90deg)' }} />
         </MenuItem>
-        <MenuItem className="menu-item" onClick={toggleSettings}>
+        <MenuItem className="menu-item" onClick={() => setSettingsOpen(!settingsOpen)} aria-labelledby='settings menu'>
           <SettingsIcon className="menu-item-icon" /> Settings
-          <ExpandMoreIcon
-            style={{
-              transform: settingsOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-              transition: 'transform 0.3s',
-              marginLeft: 'auto',
-            }}
-          />
+          <ExpandMoreIcon className={`expand-more-icon ${settingsOpen ? 'open' : 'closed'}`}/>
         </MenuItem>
         {settingsOpen && (
           <Box sx={{ padding: '0 16px', paddingBottom: '3px' }}>
@@ -108,7 +140,7 @@ const UserProfileMenu = () => {
               <Grid item>
                 <FormControl variant="standard" sx={{ minWidth: 120 }}>
                   <InputLabel>Theme</InputLabel>
-                  <Select value={theme} onChange={handleThemeChange}>
+                  <Select value={user.theme} onChange={handleThemeChange} inputProps={{ 'aria-label': 'Theme' }}>
                     <MenuItem value="light">Light</MenuItem>
                     <MenuItem value="dark">Dark</MenuItem>
                     <MenuItem value="system">System Default</MenuItem>
@@ -118,7 +150,7 @@ const UserProfileMenu = () => {
               <Grid item>
                 <FormControl variant="standard" sx={{ minWidth: 120 }}>
                   <InputLabel>Language</InputLabel>
-                  <Select value={language} onChange={handleLanguageChange}>
+                  <Select value={user.language} onChange={handleLanguageChange}>
                     <MenuItem value="en">English</MenuItem>
                     <MenuItem value="es">Spanish</MenuItem>
                     <MenuItem value="fr">French</MenuItem>

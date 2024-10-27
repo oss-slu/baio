@@ -1,8 +1,7 @@
 :root {
-    --menu-background-color: #ffffff;
-    --menu-hover-background-color: #737373;
-    --text-color: #000000;
-    --text-secondary-color: #757575; 
+    --menu-hover-background-color: #f0f0f0; 
+    --text-secondary-color: #757575;
+    --menu-border-color: #e0e0e0; 
 }
 
 .menu-header {
@@ -10,11 +9,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem; 
+    border-bottom: 1px solid var(--menu-border-color); 
+    background-color: var(--menu-background-color);
 }
 
 .user-avatar {
     width: 5.75rem; 
     height: 5.75rem; 
+    border-radius: 50%; 
 }
 
 .menu-item {
@@ -28,13 +30,26 @@
 
 .menu-item:hover {
     background-color: var(--menu-hover-background-color);
-    color: #ffffff; 
+    color: var(--text-color); 
 }
 
 .menu-item-icon {
     margin-right: 0.75rem; 
+    color: var(--text-secondary-color); 
 }
 
+.expand-more-icon {
+    transition: transform 0.3s, color 0.3s; 
+    margin-left: auto;
+}
+
+.expand-more-icon.open {
+    transform: rotate(0deg);
+}
+
+.expand-more-icon.closed {
+    transform: rotate(-90deg);
+}
 
 @media (max-width: 768px) {
     .menu-item {
