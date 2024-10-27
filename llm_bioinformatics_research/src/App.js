@@ -10,8 +10,8 @@ import References from './References/References';
 import SignupScreen from './SignupScreen/SignupScreen';
 import UserProfile from './UserProfile/UserProfile';
 import { Link, useLocation } from 'react-router-dom';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { ThemeContextProvider  } from './ThemeContext';
+import UserProfileMenu from './UserProfile/UserProfileMenu';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
       <AppBar position="static" sx={{ bgcolor: blue[500] }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 0 }}>
-            Better Bioinformatics
+            Enhancing Bioinformatics
           </Typography>
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
             <Button component={Link} to="/home" sx={{ bgcolor: location.pathname === '/home' ? blue[800] : blue[500], 
@@ -33,13 +33,12 @@ const Layout = ({ children }) => {
               '&:hover': { backgroundColor: blue[600]}, color: 'white', m: 1 }}>API documentation</Button>
             <Button component={Link} to="/references" sx={{ bgcolor: location.pathname === '/references' ? blue[800] : blue[500], 
               '&:hover': { backgroundColor: blue[600]}, color: 'white', m: 1 }}>References</Button>
-            <IconButton component={Link} to="/profile" sx={{ bgcolor: location.pathname === '/profile' ? blue[800] : blue[500], 
-              '&:hover': { backgroundColor: blue[600]}, color: 'white', m: 1 }}><PersonOutlineIcon /> </IconButton>
+            <UserProfileMenu/>
           </Box>
         </Toolbar>
       </AppBar>
       )}
-      {children}
+      {children} 
     </>
   );
 };

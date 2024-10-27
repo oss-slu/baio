@@ -1,0 +1,43 @@
+:root {
+    --menu-background-color: #ffffff;
+    --menu-hover-background-color: #737373;
+    --text-color: #000000;
+    --text-secondary-color: #757575; 
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem; 
+}
+
+.user-avatar {
+    width: 5.75rem; 
+    height: 5.75rem; 
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem; 
+    width: 40vh; 
+    transition: background-color 0.3s ease; 
+    color: var(--text-color); 
+}
+
+.menu-item:hover {
+    background-color: var(--menu-hover-background-color);
+    color: #ffffff; 
+}
+
+.menu-item-icon {
+    margin-right: 0.75rem; 
+}
+
+
+@media (max-width: 768px) {
+    .menu-item {
+        width: 100%; 
+    }
+}
