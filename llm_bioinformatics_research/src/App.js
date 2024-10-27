@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate, Navigate} from 'react-router-dom';
 import {Box, Typography, AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import LoginScreen from './Components/LoginScreen/LoginScreen';
@@ -49,7 +49,14 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   function ProtectedRoute({ isLoggedIn, children }) {
-    return isLoggedIn ? children : <Navigate to="/login" replace />;
+    const navigate = useNavigate();
+    useEffect(() => {
+      if (!isLoggedIn) {
+        navigate('/login', { replace: true });
+      }
+    }, [isLoggedIn, navigate]);
+  
+    return isLoggedIn ? children : null;
   }
 
   return (
@@ -58,7 +65,7 @@ function App() {
       <ThemeContextProvider>
       <div className="App">
         <Routes>
-          <Route path="/" element={<LoginScreen />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
           <Route
               path="/home"
               element={
