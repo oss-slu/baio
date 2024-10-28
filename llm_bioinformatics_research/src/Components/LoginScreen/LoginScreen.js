@@ -107,7 +107,7 @@ function LoginScreen({ setIsLoggedIn }) {
           </Button>
           <Box className="login-links">
             <Link href="#" variant="body2">
-              Forgot Password?
+              Forgot Password
             </Link>
           </Box>
           <Box className="signup-link">

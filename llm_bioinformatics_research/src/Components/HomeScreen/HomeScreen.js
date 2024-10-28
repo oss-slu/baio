@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Paper, TextField, Grid, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
-import './HomeScreen.css'; 
+import './HomeScreen.css';
 import { useNavigate } from 'react-router-dom';
 
 const CustomPaper = ({ children, title }) => (
@@ -19,10 +19,7 @@ function HomeScreen({ setIsLoggedIn }) {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   useEffect(() => {
-
-    if (window.history.state === null) {
-      window.history.pushState({}, 'dummy');
-    }
+    window.history.pushState(null, document.title, window.location.href);
 
     const handlePopState = (event) => {
       event.preventDefault();
@@ -39,12 +36,12 @@ function HomeScreen({ setIsLoggedIn }) {
   const handleConfirmLogout = () => {
     setIsLoggedIn(false);
     setOpenDialog(false);
-    navigate('/login'); 
+    navigate('/login', { replace: true }); 
   };
 
   const handleCancelLogout = () => {
     setOpenDialog(false);
-    navigate(0); 
+    window.history.pushState(null, document.title, window.location.href);
   };
 
   return (
