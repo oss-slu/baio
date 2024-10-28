@@ -1,10 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import HomeScreen from '../Components/HomeScreen/HomeScreen';
 import '@testing-library/jest-dom/extend-expect';
 
-// Helper function to render HomeScreen with Router
 const renderWithRouter = (ui) => {
   return render(<Router>{ui}</Router>);
 };
@@ -66,7 +65,6 @@ describe('HomeScreen Component Structure Tests', () => {
 
 describe('HomeScreen Component Panel Sizes', () => {
   beforeAll(() => {
-    // Set window dimensions for layout testing
     Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1200 });
     Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 800 });
     window.dispatchEvent(new Event('resize'));
@@ -79,22 +77,58 @@ describe('HomeScreen Component Panel Sizes', () => {
     const mainWidth = mainContainer.clientWidth;
     const mainHeight = mainContainer.clientHeight;
 
-    // Find and measure panels
     const leftPanel = screen.getByText(/AI Chat and Response/i).closest('div');
     const linksPanel = screen.getByText(/Associated Links for the generated chat/i).closest('div');
     const apiPanel = screen.getByText(/API Recommendation Panel/i).closest('div');
     const errorPanel = screen.getByText(/Error detection Panel/i).closest('div');
 
-    // Assert width distribution (approximate expectations based on 8/12 and 4/12 ratios)
     expect(leftPanel.clientWidth).toBeGreaterThanOrEqual((mainWidth * 8) / 12); 
     expect(linksPanel.clientWidth).toBeGreaterThanOrEqual((mainWidth * 4) / 12);
     expect(apiPanel.clientWidth).toBeGreaterThanOrEqual((mainWidth * 4) / 12);
     expect(errorPanel.clientWidth).toBeGreaterThanOrEqual((mainWidth * 4) / 12);
 
-    // Assert height distribution
     expect(leftPanel.clientHeight).toBeCloseTo(mainHeight * 0.95, -1); // 95% of main height
     expect(linksPanel.clientHeight).toBeGreaterThanOrEqual(mainHeight * 0.33); 
     expect(apiPanel.clientHeight).toBeGreaterThanOrEqual(mainHeight * 0.33);
     expect(errorPanel.clientHeight).toBeGreaterThanOrEqual(mainHeight * 0.33);
+  });
+});
+
+describe('HomeScreen Component Dialog Functionality Tests', () => {
+  test('opens logout confirmation dialog on back button press', () => {
+    renderWithRouter(<HomeScreen />);
+    
+    fireEvent.popState(window);
+
+    expect(screen.getByText(/confirm logout/i)).toBeInTheDocument();
+    expect(screen.getByText(/are you sure you want to log out\?/i)).toBeInTheDocument();
+  });
+
+  test('closes the dialog and stays on page when "Cancel" is clicked', async () => {
+    renderWithRouter(<HomeScreen />);
+    
+    fireEvent.popState(window);
+
+    expect(screen.getByText(/confirm logout/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/cancel/i));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/confirm logout/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test('logs out and navigates to login page when "Logout" is clicked', () => {
+    const mockSetIsLoggedIn = jest.fn();
+    renderWithRouter(<HomeScreen setIsLoggedIn={mockSetIsLoggedIn} />);
+    
+    fireEvent.popState(window);
+
+    expect(screen.getByText(/confirm logout/i)).toBeInTheDocument();
+
+    const logoutButton = screen.getAllByText(/logout/i).find(button => button.tagName === 'BUTTON');
+    fireEvent.click(logoutButton);
+
+    expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
   });
 });
