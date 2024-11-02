@@ -247,6 +247,7 @@ const UserProfile = () => {
             alt="User Image"
             src={user.image}
             sx={{ width: '15vh', height: '15vh', mr: 2 }}
+            data-testid="avatar"
           />
           <IconButton
             sx={{
