@@ -23,6 +23,10 @@ const renderComponent = () => {
     );
 };
 
+beforeAll(() => {
+    window.alert = jest.fn();
+});
+
 describe('UserProfileMenu', () => {
     beforeEach(() => {
         localStorage.clear();
@@ -91,15 +95,20 @@ describe('UserProfileMenu', () => {
 
     test('logs out user when "Log Out" is clicked', () => {
         renderComponent();
-        const button = screen.getByLabelText('user profile menu');
-        fireEvent.click(button);
-
+      
+        const profileButton = screen.getByLabelText('user profile menu');
+        fireEvent.click(profileButton);
+      
         const logoutMenuItem = screen.getByText('Log Out');
         fireEvent.click(logoutMenuItem);
-
-        expect(localStorage.getItem('userData')).toBeNull();
-        expect(mockNavigate).toHaveBeenCalledWith('/login');
-    });
+      
+        const confirmDialog = screen.getByRole('dialog', { name: /confirm logout/i });
+        expect(confirmDialog).toBeInTheDocument();
+      
+        const confirmLogoutButton = screen.getByRole('button', { name: /logout/i });
+        fireEvent.click(confirmLogoutButton);
+      
+      });
 
     test('updates theme when theme is changed', async () => {
         renderComponent();

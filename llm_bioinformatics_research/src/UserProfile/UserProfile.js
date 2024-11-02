@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Typography, Button, IconButton, TextField, AppBar, Toolbar, Avatar } from '@mui/material';
+import { Box, Typography, Button, IconButton, TextField, AppBar, Toolbar, Avatar,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
@@ -96,7 +97,13 @@ const UserProfile = () => {
     if (user.location !== userData.location) updateFields.location = user.location;
 
     if (Object.keys(updateFields).length === 0) {
-      alert('No changes made.');
+      const popup = document.createElement('div');
+      popup.textContent = 'No changes made';
+      popup.classList.add('popup');
+      document.body.appendChild(popup);
+      setTimeout(() => {
+        document.body.removeChild(popup);
+      }, 3000);
       return;
     }
 
@@ -119,14 +126,37 @@ const UserProfile = () => {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to update profile');
       }
-
-      alert('Profile updated successfully');
+      const popup = document.createElement('div');
+      popup.textContent = 'User Data updated successfully!';
+      popup.classList.add('popup');
+      document.body.appendChild(popup);
+      setTimeout(() => {
+        document.body.removeChild(popup);
+      }, 3000);
       localStorage.setItem('userData', JSON.stringify({ ...userData, ...updateFields }));
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('An error occurred while updating the profile');
     }
   };
+
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const handleLogoutConfirmOpen = () => {
+    setLogoutConfirmOpen(true);
+  };
+
+  const handleLogoutConfirmClose = () => {
+    setLogoutConfirmOpen(false);
+  };
+
+  const [pageExitConfirmOpen, setPageExitConfirmOpen] = useState(false);
+  const handlePageExitConfirmOpen = () => {
+    setPageExitConfirmOpen(true);
+  }
+  
+  const handlePageExitConfirmClose = () => {
+    setPageExitConfirmOpen(false);
+  }
 
   return (
     <Box className="userProfile-container">
@@ -135,28 +165,39 @@ const UserProfile = () => {
           <Typography variant="h4" className="title">
             User Profile
           </Typography>
-          <IconButton color="inherit" onClick={() => navigate('/home')}>
+          <IconButton color="inherit" onClick={handlePageExitConfirmOpen}>
             <CloseIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
+      <Dialog
+        open={pageExitConfirmOpen}
+        onClose={handlePageExitConfirmClose}
+        aria-labelledby="page-exit-confirm-dialog-title"
+        aria-describedby="page-exit-confirm-dialog-description"
+      >
+        <DialogTitle id="page-exit-confirm-dialog-title">Exit User Profile</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="page-exit-confirm-dialog-description">
+            Are you sure you want to exit the User Profile page? Your changes will not be saved.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePageExitConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => navigate('/home')} color="primary" autoFocus>
+            Exit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
       <Box className="button-section">
         <Button
-          onClick={() => navigate('/profile')}
-          sx={{
-            color: 'white',
-            backgroundColor: blue[500],
-            '&:hover': {
-              backgroundColor: blue[700],
-            },
-          }}
-        >
-          <ManageAccounts /> My Profile
-        </Button>
-
-        <Button
-          onClick={handleLogout}
+          onClick={handleLogoutConfirmOpen}
           sx={{
             color: themeMode === 'dark' ? 'white' : 'black',
             '&:hover': {
@@ -167,6 +208,28 @@ const UserProfile = () => {
           <Logout /> Logout
         </Button>
       </Box>
+
+      <Dialog
+        open={logoutConfirmOpen}
+        onClose={handleLogoutConfirmClose}
+        aria-labelledby="logout-confirm-dialog-title"
+        aria-describedby="logout-confirm-dialog-description"
+      >
+        <DialogTitle id="logout-confirm-dialog-title">Confirm Logout</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-confirm-dialog-description">
+            Are you sure you want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="primary" autoFocus>
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Box className="profile-section">
         <Box sx={{ position: 'relative', display: 'inline-block' }} className="avatar-container">

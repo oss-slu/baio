@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Menu, MenuItem, IconButton, Avatar, Typography, FormControl, Select, InputLabel, Grid } from '@mui/material';
+import { Box, Menu, MenuItem, IconButton, Avatar, Typography, FormControl, Select, InputLabel, Grid,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
 import { PersonOutline as PersonOutlineIcon, Settings as SettingsIcon, Logout as LogoutIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import ThemeContext from '../ThemeContext';
@@ -98,12 +99,27 @@ const UserProfileMenu = () => {
   
       localStorage.setItem('userData', JSON.stringify(updatedUserData));
   
-      console.log('Settings updated successfully:', updatedUserData);
-      alert('Updated successfully!');
+      const popup = document.createElement('div');
+      popup.textContent = 'Settings updated successfully!';
+      popup.classList.add('popup');
+      document.body.appendChild(popup);
+      setTimeout(() => {
+        document.body.removeChild(popup);
+      }, 3000);
+      
     } catch (error) {
       console.error('Error updating settings:', error);
       alert('An error occurred while updating settings');
     }
+  };
+
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const handleLogoutConfirmOpen = () => {
+    setLogoutConfirmOpen(true);
+  };
+
+  const handleLogoutConfirmClose = () => {
+    setLogoutConfirmOpen(false);
   };
 
   return (
@@ -160,10 +176,32 @@ const UserProfileMenu = () => {
             </Grid>
           </Box>
         )}
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={handleLogoutConfirmOpen}>
           <LogoutIcon className="menu-item-icon" /> Log Out
         </MenuItem>
       </Menu>
+
+      <Dialog
+        open={logoutConfirmOpen}
+        onClose={handleLogoutConfirmClose}
+        aria-labelledby="logout-confirm-dialog-title"
+        aria-describedby="logout-confirm-dialog-description"
+      >
+        <DialogTitle id="logout-confirm-dialog-title">Confirm Logout</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-confirm-dialog-description">
+            Are you sure you want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="primary" autoFocus>
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

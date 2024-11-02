@@ -159,7 +159,7 @@ app.post('/home', async (req, res) => {
             return res.status(400).json({ message: "No changes made or user not found." });
         }
 
-        res.status(200).json({ message: "Settings updated successfully" });
+        
     } catch (error) {
         console.error("Error updating settings:", error);
         res.status(500).json({ message: "Failed to update settings" });
