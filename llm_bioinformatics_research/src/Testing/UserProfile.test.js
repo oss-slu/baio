@@ -21,19 +21,16 @@ describe('UserProfile Component with Theme Testing', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
 
-    const settingsButton = screen.getByText(/Logout/i);
-    // Check that colors are set correctly for light theme
-    expect(settingsButton).toHaveStyle('color: black');
+    const logoutButton = screen.getByText(/Logout/i);
+    expect(logoutButton).toHaveStyle('color: black');
   });
 
   test('changes button colors when dark theme is set', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'dark', toggleTheme });
 
-    
-    const settingsButton = screen.getByText(/Logout/i);
-    // Check that colors are set correctly for dark theme
-    expect(settingsButton).toHaveStyle('color: white');
+    const logoutButton = screen.getByText(/Logout/i);
+    expect(logoutButton).toHaveStyle('color: white');
   });
 
 });
