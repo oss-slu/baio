@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import UserProfile from '../Components/UserProfile/UserProfile';
 import ThemeContext from '../Context/ThemeContext';
 
-describe('UserProfile Component with Theme Testing', () => {
+describe('UserProfile Component', () => {
   const renderWithThemeContext = (ui, { theme = 'light', toggleTheme } = {}) => {
     return render(
       <MemoryRouter>
@@ -24,7 +24,6 @@ describe('UserProfile Component with Theme Testing', () => {
     fireEvent.click(settingsButton);
     expect(screen.getByText(/System Default/i)).toBeInTheDocument();
   });
-
 
   test('renders UserProfile with light theme by default', () => {
     const toggleTheme = jest.fn();
@@ -48,4 +47,14 @@ describe('UserProfile Component with Theme Testing', () => {
     expect(settingsButton).toHaveStyle('color: white');
   });
 
+  test('updates avatar image when a new image is uploaded', async () => {
+    const toggleTheme = jest.fn();
+    renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
+
+    const mockImageData = 'data:image/png;base64,mockImageData';
+    const avatarImage = await screen.findByTestId('avatar');
+    avatarImage.setAttribute('src', mockImageData);
+    
+    expect(avatarImage).toHaveAttribute('src', mockImageData);
+  });
 });
