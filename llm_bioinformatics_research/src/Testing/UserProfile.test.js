@@ -16,35 +16,22 @@ describe('UserProfile Component', () => {
     );
   };
 
-  test('switches to settings page when settings button is clicked', () => {
-    const toggleTheme = jest.fn();
-    renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
-
-    const settingsButton = screen.getByText(/Settings/i);
-    fireEvent.click(settingsButton);
-    expect(screen.getByText(/System Default/i)).toBeInTheDocument();
-  });
-
   test('renders UserProfile with light theme by default', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'light', toggleTheme });
 
-    const myProfileButton = screen.getByText(/My Profile/i);
-    const settingsButton = screen.getByText(/Settings/i);
+    const logoutButton = screen.getByText(/Logout/i);
+    expect(logoutButton).toHaveStyle('color: black');
 
-    expect(myProfileButton).toHaveStyle('color: white');
-    expect(settingsButton).toHaveStyle('color: black');
   });
 
   test('changes button colors when dark theme is set', () => {
     const toggleTheme = jest.fn();
     renderWithThemeContext(<UserProfile />, { theme: 'dark', toggleTheme });
 
-    const myProfileButton = screen.getByText(/My Profile/i);
-    const settingsButton = screen.getByText(/Settings/i);
+    const logoutButton = screen.getByText(/Logout/i);
+    expect(logoutButton).toHaveStyle('color: white');
 
-    expect(myProfileButton).toHaveStyle('color: white');
-    expect(settingsButton).toHaveStyle('color: white');
   });
 
   test('updates avatar image when a new image is uploaded', async () => {

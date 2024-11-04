@@ -135,6 +135,37 @@ app.post('/profile', async (req, res) => {
     }
 });
 
+app.post('/home', async (req, res) => {
+    const { userId, theme, language } = req.body;
+
+    try {
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        const result = await collection.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $set: {
+                    profile_photo,
+                    phone_number,
+                    location,
+                    theme: theme,
+                    language: language
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ message: "No changes made or user not found." });
+        }
+
+        
+    } catch (error) {
+        console.error("Error updating settings:", error);
+        res.status(500).json({ message: "Failed to update settings" });
+    }
+});
+
 function findAvailablePort(initialPort) {
     return new Promise((resolve, reject) => {
         const server = net.createServer();
