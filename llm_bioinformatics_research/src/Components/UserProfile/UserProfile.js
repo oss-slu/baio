@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { ManageAccounts, Settings, Logout } from '@mui/icons-material';
 import { blue } from '@mui/material/colors';
 import './UserProfile.css';
-import ThemeContext from '../ThemeContext';
-import config from '../config.json';
+import ThemeContext from '../../Context/ThemeContext';
+import config from '../../config.json';
 
 const UserProfile = () => {
   const [section, setSection] = useState('profile'); 
@@ -139,7 +139,6 @@ const UserProfile = () => {
         }
 
         alert('Profile updated successfully');
-        // update local storage with the new values
         localStorage.setItem('userData', JSON.stringify({ ...userData, ...updateFields }));
     } catch (error) {
         console.error('Error updating profile:', error);
@@ -235,7 +234,7 @@ const UserProfile = () => {
             value={user.name}
             className="input-field"
             margin="normal"
-            InputProps={{ readOnly: true }} // Make name field read-only
+            InputProps={{ readOnly: true }} 
           />
           <TextField
             label="Email"
@@ -243,7 +242,7 @@ const UserProfile = () => {
             value={user.email}
             className="input-field"
             margin="normal"
-            InputProps={{ readOnly: true }} // Make email field read-only
+            InputProps={{ readOnly: true }} 
           />
           <TextField
             label="Phone Number"

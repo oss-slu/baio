@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent} from '@testing-library/react';
 import { MemoryRouter} from 'react-router-dom';
-import SignupScreen from '../SignupScreen/SignupScreen';
+import SignupScreen from '../Components/SignupScreen/SignupScreen';
 import '@testing-library/jest-dom/extend-expect';
 
 describe('SignupScreen', () => {

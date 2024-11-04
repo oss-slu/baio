@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import References from '../References/References';
+import References from '../Components/References/References';
 
 describe('References Component', () => {
   it('renders without crashing', () => {

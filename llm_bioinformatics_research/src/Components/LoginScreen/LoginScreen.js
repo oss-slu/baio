@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import config from './../config.json';
+import config from '../../config.json';
 import './LoginScreen.css';
 
-function LoginScreen() {
+function LoginScreen({ setIsLoggedIn }) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -35,7 +35,8 @@ function LoginScreen() {
       if (response.status === 200) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userData', JSON.stringify(data.user));
-        navigate('/home');
+        setIsLoggedIn(true);
+        navigate('/home', { replace: true });
       } else {
         setLoginError(data.message || 'Invalid email/username or password');
       }
@@ -106,7 +107,7 @@ function LoginScreen() {
           </Button>
           <Box className="login-links">
             <Link href="#" variant="body2">
-              Forgot Password?
+              Forgot Password
             </Link>
           </Box>
           <Box className="signup-link">
