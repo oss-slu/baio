@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ApiDocumentation from '../ApiDocumentation/ApiDocumentation';
+import APIDocumentation from '../Components/APIDocumentation/APIDocumentation';
 
 
 test('renders the API Documentation page and checks for the external link', () => {
-    render(<ApiDocumentation />);
+    render(<APIDocumentation />);
 
     expect(screen.getByText(/API Documentation/i)).toBeInTheDocument();
     
@@ -17,7 +17,7 @@ test('renders the API Documentation page and checks for the external link', () =
   });
 
 test('renders the API Documentation page and checks for the search functionality', () => {
-  render(<ApiDocumentation />);
+  render(<APIDocumentation />);
 
   const searchInput = screen.getByLabelText(/Search APIs/i);
   expect(searchInput).toBeInTheDocument();
@@ -28,7 +28,7 @@ test('renders the API Documentation page and checks for the search functionality
 });
 
 test('renders the API Documentation page and checks for the API details', () => {
-  render(<ApiDocumentation />);
+  render(<APIDocumentation />);
 
   expect(screen.getByText(/Product API/i)).toBeInTheDocument();
   expect(screen.getByText(/Fetch details about products, including prices and stock availability./i)).toBeInTheDocument();
@@ -36,7 +36,7 @@ test('renders the API Documentation page and checks for the API details', () => 
 });
 
 test('renders the API Documentation page and checks for the "No APIs found" message', () => {
-  render(<ApiDocumentation />);
+  render(<APIDocumentation />);
 
   const searchInput = screen.getByLabelText(/Search APIs/i);
   fireEvent.change(searchInput, { target: { value: 'random' } });

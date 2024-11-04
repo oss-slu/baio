@@ -1,4 +1,3 @@
-/* App Bar */
  .appBar {
     justify-content: center;
     background-color: #1976d2;
@@ -9,7 +8,6 @@
     text-align: center;
   }
   
-  /* Button Section */
   .button-section {
     margin-top: 16px;
     margin-right: 10px;
@@ -17,8 +15,6 @@
     justify-content: right;
   }
   
-  
-  /* Profile Section */
   .profile-section {
     margin-top: 24px;
     display: flex;
@@ -32,11 +28,9 @@
     margin-bottom: 20px;
   }
    
-  /* Input Fields */
   .input-field {
     width: 80%;
   }
-
 
   .update-button {
     position: relative;

@@ -1,7 +1,8 @@
-import React from 'react';
-import { Box, Typography, Paper, TextField, Grid, IconButton } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Box, Typography, Paper, TextField, Grid, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
-import './HomeScreen.css'; 
+import './HomeScreen.css';
+import { useNavigate } from 'react-router-dom';
 
 const CustomPaper = ({ children, title }) => (
   <Paper
@@ -13,7 +14,36 @@ const CustomPaper = ({ children, title }) => (
   </Paper>
 );
 
-const HomeScreen = () => {
+function HomeScreen({ setIsLoggedIn }) {
+  const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = React.useState(false);
+
+  useEffect(() => {
+    window.history.pushState(null, document.title, window.location.href);
+
+    const handlePopState = (event) => {
+      event.preventDefault();
+      setOpenDialog(true);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  const handleConfirmLogout = () => {
+    setIsLoggedIn(false);
+    setOpenDialog(false);
+    navigate('/login', { replace: true }); 
+  };
+
+  const handleCancelLogout = () => {
+    setOpenDialog(false);
+    window.history.pushState(null, document.title, window.location.href);
+  };
+
   return (
     <Box className="home-screen">
       <Grid container spacing={2} sx={{ flexGrow: 1, p: 1 }}>
@@ -73,12 +103,31 @@ const HomeScreen = () => {
         </Grid>
       </Grid>
 
+      {/* Logout Confirmation Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCancelLogout}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+      >
+        <DialogTitle id="logout-dialog-title">{"Confirm Logout"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-dialog-description">
+            Are you sure you want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelLogout} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmLogout} color="secondary" autoFocus>Logout</Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Footer */}
       <Box className="footer">
         <Typography variant="body1">Footer</Typography>
       </Box>
     </Box>
   );
-};
+}
 
 export default HomeScreen;

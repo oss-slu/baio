@@ -20,8 +20,8 @@ This project aims to develop a tool leveraging large language models (LLMs) to r
 
 
 ## Current Team:
-Ajith Akuthota - Tech Lead
-Oam Khatavkar - Capstone
-Pranavi Kolouju - Capstone
-Om Patel - Capstone
+- Ajith Akuthota - Tech Lead
+- Oam Khatavkar - Capstone
+- Pranavi Kolouju - Capstone
+- Om Patel - Capstone
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import UserProfile from '../UserProfile/UserProfile';
-import ThemeContext from '../ThemeContext';
+import UserProfile from '../Components/UserProfile/UserProfile';
+import ThemeContext from '../Context/ThemeContext';
 
 describe('UserProfile Component', () => {
   const renderWithThemeContext = (ui, { theme = 'light', toggleTheme } = {}) => {
