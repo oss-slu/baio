@@ -10,8 +10,8 @@ import References from './Components/References/References';
 import SignupScreen from './Components/SignupScreen/SignupScreen';
 import UserProfile from './Components/UserProfile/UserProfile';
 import { Link, useLocation } from 'react-router-dom';
-import ThemeContextProvider from './Context/ThemeContext';
 import UserProfileMenu from './Components/UserProfile/UserProfileMenu';
+import { ThemeContextProvider } from './Context/ThemeContext';
 
 const Layout = ({ children }) => {
   const location = useLocation();
