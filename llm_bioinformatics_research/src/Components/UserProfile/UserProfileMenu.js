@@ -3,9 +3,9 @@ import { Box, Menu, MenuItem, IconButton, Avatar, Typography, FormControl, Selec
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
 import { PersonOutline as PersonOutlineIcon, Settings as SettingsIcon, Logout as LogoutIcon, Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import ThemeContext from '../ThemeContext';
 import './UserProfileMenu.css';
-import config from '../config.json';
+import config from '../../config';
+import ThemeContext from '../../Context/ThemeContext';
 
 const UserProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);

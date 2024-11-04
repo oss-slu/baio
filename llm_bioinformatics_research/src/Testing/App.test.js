@@ -16,7 +16,7 @@ describe('App Component', () => {
       removeListener: jest.fn(),
     }));
 
-    render(<App />);
+    render(<App/>);
     const loginButton = screen.getByTestId('login-button'); 
     expect(loginButton).toBeInTheDocument();
   });

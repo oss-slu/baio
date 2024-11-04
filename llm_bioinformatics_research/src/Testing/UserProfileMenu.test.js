@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import UserProfileMenu from '../UserProfile/UserProfileMenu';
+import UserProfileMenu from '../Components/UserProfile/UserProfileMenu';
 import { BrowserRouter as Router } from 'react-router-dom';
-import ThemeContext from '../ThemeContext';
+import ThemeContext from '../Context/ThemeContext';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
