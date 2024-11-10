@@ -13,6 +13,7 @@ import { Link, useLocation } from 'react-router-dom';
 import UserProfileMenu from './Components/UserProfile/UserProfileMenu';
 import { ThemeContextProvider } from './Context/ThemeContext';
 import ForgotPassword from './Components/ForgotPassword/ForgotPassword';
+import ResetPassword from './Components/ResetPassword/ResetPassword';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -80,6 +81,7 @@ function App() {
             <Route path="/login" element={<LoginScreen setIsLoggedIn={setIsLoggedIn} />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/forgot_password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
         </div>
       </ThemeContextProvider>
