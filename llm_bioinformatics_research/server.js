@@ -234,7 +234,7 @@ app.post('/reset-password', async (req, res) => {
             }
         );
 
-        res.status(200).json({ message: "Password reset successfully." });
+        res.status(200).json({ message: "Password reset successfully. Redirecting to login." });
     } catch (error) {
         console.error("Error resetting password:", error);
         res.status(500).json({ message: "Failed to reset password. Please try again later." });

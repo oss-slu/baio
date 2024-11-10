@@ -53,6 +53,9 @@ function ForgotPassword() {
       <p className="signUpText">
         Need a new account? <a href="/signup" className="signUpLink">Sign up</a>
       </p>
+      <p className="loginText">
+        Already have an account? <a href="/login" className="loginLink">Login</a>
+      </p>
     </div>
   );
 }

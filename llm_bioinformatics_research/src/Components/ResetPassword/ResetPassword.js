@@ -35,14 +35,14 @@ function ResetPassword() {
     const passwordValidationError = validatePassword(newPassword);
     setPasswordError(passwordValidationError);
     if (passwordValidationError) return;
-
+  
     if (newPassword !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match.");
       return;
     } else {
       setConfirmPasswordError('');
     }
-
+  
     try {
       const response = await fetch('http://localhost:' + port + '/reset-password', {
         method: 'POST',
@@ -51,11 +51,15 @@ function ResetPassword() {
         },
         body: JSON.stringify({ token, newPassword }),
       });
-
+  
       const data = await response.json();
       if (response.status === 200) {
         setMessage(data.message);
-        navigate('/login'); // Redirect to login after successful reset
+  
+        // Delay before redirecting to login page
+        setTimeout(() => {
+          navigate('/login'); // Redirect to login after 3 seconds
+        }, 3000); // 3 seconds delay
       } else {
         setError(data.message);
       }
