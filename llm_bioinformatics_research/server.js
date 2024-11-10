@@ -166,6 +166,28 @@ app.post('/home', async (req, res) => {
     }
 });
 
+// Add this route in server.js
+app.post('/forgot_password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        const user = await collection.findOne({ email: email });
+
+        if (!user) {
+            return res.status(404).json({ message: "Email not found" });
+        }
+
+        // Here, you could trigger sending a password reset email
+        res.status(200).json({ message: "Password reset link sent to the email" });
+    } catch (error) {
+        console.error("Error during forgot password process:", error);
+        res.status(500).json({ message: "Server error. Please try again later." });
+    }
+});
+
 function findAvailablePort(initialPort) {
     return new Promise((resolve, reject) => {
         const server = net.createServer();

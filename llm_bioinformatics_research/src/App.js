@@ -12,6 +12,7 @@ import UserProfile from './Components/UserProfile/UserProfile';
 import { Link, useLocation } from 'react-router-dom';
 import UserProfileMenu from './Components/UserProfile/UserProfileMenu';
 import { ThemeContextProvider } from './Context/ThemeContext';
+import ForgotPassword from './Components/ForgotPassword/ForgotPassword';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -78,6 +79,7 @@ function App() {
             <Route path="/signup" element={<SignupScreen />} />
             <Route path="/login" element={<LoginScreen setIsLoggedIn={setIsLoggedIn} />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/forgot_password" element={<ForgotPassword />} />
           </Routes>
         </div>
       </ThemeContextProvider>
