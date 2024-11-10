@@ -7,6 +7,7 @@ const cors = require('cors');
 const net = require('net');
 const fs = require('fs');
 const config = require('./src/config.json');
+const { spawn } = require('child_process');
 
 const app = express();
 let port = 5000;
@@ -165,6 +166,51 @@ app.post('/home', async (req, res) => {
         res.status(500).json({ message: "Failed to update settings" });
     }
 });
+
+const {spawn} = require('child_process');
+
+app.post('/home', (req, res) => {
+    const { text } = req.body;
+
+    // Validate that the text field is provided and not empty
+    if (!text || typeof text !== 'string' || text.trim() === '') {
+        return res.status(400).json({ error: "The 'text' field is required and must be non-empty." });
+    }
+
+    // Spawn a Python process to run the model script
+    const pythonProcess = spawn('python3', ['model.py']);
+
+    // Send the input text to the Python script
+    pythonProcess.stdin.write(JSON.stringify({ text }));
+    pythonProcess.stdin.end();
+
+    let output = '';
+
+    // Capture the output from the Python script
+    pythonProcess.stdout.on('data', (data) => {
+        output += data.toString();
+    });
+
+    // Handle errors from the Python script
+    pythonProcess.stderr.on('data', (data) => {
+        console.error("Error from Python script:", data.toString());
+    });
+
+    // Send the processed result back to the client once the script completes
+    pythonProcess.on('close', (code) => {
+        if (code === 0) {
+            try {
+                const result = JSON.parse(output);
+                res.status(200).json(result);
+            } catch (error) {
+                res.status(500).json({ error: "Error parsing response from model." });
+            }
+        } else {
+            res.status(500).json({ error: "Error processing text with the model." });
+        }
+    });
+});
+
 
 function findAvailablePort(initialPort) {
     return new Promise((resolve, reject) => {
