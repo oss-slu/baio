@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ForgotPassword.css"; // Import the CSS file
+import "./ForgotPassword.css";
 import config from '../../config.json';
 
 function ForgotPassword() {

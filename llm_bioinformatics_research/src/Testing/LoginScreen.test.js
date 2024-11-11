@@ -14,9 +14,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('LoginScreen', () => {
-  const setup = () => render(
+  const setup = (props = {}) => render(
     <MemoryRouter>
-      <LoginScreen />
+      <LoginScreen {...props} />
     </MemoryRouter>
   );
 
@@ -74,22 +74,31 @@ describe('LoginScreen', () => {
     });
   });
 
-  // test('successful login redirects to home page', async () => {
-  //   fetchMock.mockResponseOnce(JSON.stringify({ token: '12345' }));
+  test('successful login redirects to home page', async () => {
+    const setIsLoggedIn = jest.fn();
+    fetchMock.mockResponseOnce(JSON.stringify({ token: '12345', user: { id: 'user123', name: 'Test User' } }));
+
+    setup({ setIsLoggedIn });
   
-  //   render(
-  //     <MemoryRouter>
-  //       <LoginScreen />
-  //     </MemoryRouter>
-  //   );
+    await userEvent.type(screen.getByTestId('identifier-input'), 'test_user');
+    await userEvent.type(screen.getByTestId('password-input'), 'Test_123#');
+    await userEvent.click(screen.getByTestId('login-button'));
   
-  //   await userEvent.type(screen.getByTestId('identifier-input'), 'test_user');
-  //   await userEvent.type(screen.getByTestId('password-input'), 'Test_123#');
-  //   await userEvent.click(screen.getByTestId('login-button'));
-  
-  //   await waitFor(() => {
-  //     expect(Storage.prototype.setItem).toHaveBeenCalledWith('authToken', '12345');
-  //     expect(mockNavigate).toHaveBeenCalledWith('/home');
-  //   });
-  // });
+    await waitFor(() => {
+      expect(Storage.prototype.setItem).toHaveBeenCalledWith('authToken', '12345');
+      expect(Storage.prototype.setItem).toHaveBeenCalledWith('userData', JSON.stringify({ id: 'user123', name: 'Test User' }));
+      expect(setIsLoggedIn).toHaveBeenCalledWith(true);
+      expect(mockNavigate).toHaveBeenCalledWith('/home', { replace: true });
+    });
+  });
+
+  test('navigates to forgot password page on link click', async () => {
+    setup();
+    const forgotPasswordLink = screen.getByText(/forgot password/i);
+    userEvent.click(forgotPasswordLink);
+    await waitFor(() => {
+      expect(screen.getByText('Forgot Password')).toBeInTheDocument();
+    });
+  });
+
 });
