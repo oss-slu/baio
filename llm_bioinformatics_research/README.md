@@ -104,3 +104,7 @@ Note: users must request database admin for access
 We have a config.json file within our src directory so that our frontend pages such as login and signup can dynamically access the port on which the backend is running and read and write to the database.
 
 ![Alt text](<DocumentationImages/Config.png>)
+
+Within the .env file in the root directory of the React project, save "betterbioinformatics@gmail.com" in the variable "EMAIL_USER". Save the API key provided by an admin in the variable "SENDGRID_API_KEY". These two variables will be needed to successfully receive a password reset link.
+
+![Alt text](<DocumentationImages/resetPassword_configs.png>)
