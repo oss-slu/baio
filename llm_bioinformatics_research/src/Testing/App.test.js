@@ -2,6 +2,9 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
+// Mock axios once at the top of the file
+jest.mock('axios');
+
 describe('App Component', () => {
   afterEach(() => {
     jest.clearAllMocks(); 
@@ -16,7 +19,7 @@ describe('App Component', () => {
       removeListener: jest.fn(),
     }));
 
-    render(<App/>);
+    render(<App />);
     const loginButton = screen.getByTestId('login-button'); 
     expect(loginButton).toBeInTheDocument();
   });
