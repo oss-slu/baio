@@ -18,7 +18,7 @@ describe("ForgotPassword Component", () => {
       </Router>
     );
     expect(screen.getByText("Forgot Password")).toBeInTheDocument();
-    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /email/i })).toBeInTheDocument();
     expect(screen.getByText("SEND EMAIL")).toBeInTheDocument();
   });
 
@@ -28,7 +28,7 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByLabelText("Email");
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     expect(emailInput.value).toBe("test@example.com");
   });
@@ -44,7 +44,7 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByLabelText("Email");
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
     const submitButton = screen.getByText("SEND EMAIL");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
@@ -65,7 +65,7 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByLabelText("Email");
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
     const submitButton = screen.getByText("SEND EMAIL");
 
     fireEvent.change(emailInput, { target: { value: "unknown@example.com" } });
@@ -86,7 +86,7 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByLabelText("Email");
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
     const submitButton = screen.getByText("SEND EMAIL");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
