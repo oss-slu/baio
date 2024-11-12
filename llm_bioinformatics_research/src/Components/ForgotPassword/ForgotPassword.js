@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import "./ForgotPassword.css";
+import { Container, Box, Typography, TextField, Button, Link } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import config from '../../config.json';
+import './ForgotPassword.css';
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -24,9 +26,9 @@ function ForgotPassword() {
 
       const data = await response.json();
       if (response.status === 200) {
-        setMessage(data.message); // Display success message
+        setMessage(data.message);
       } else {
-        setError(data.message || "Email not found"); // Display error message if email not found
+        setError(data.message || "Email not found");
       }
     } catch (error) {
       console.error("Error sending password reset request:", error);
@@ -35,29 +37,55 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="container">
-      <h2 className="heading">Forgot Password</h2>
-      <form onSubmit={handleSubmit} className="form">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input"
-          required
-        />
-        <button type="submit" className="button">Send email</button>
-      </form>
-      {message && <p className="success-message">{message}</p>}
-      {error && <p className="error-message">{error}</p>}
-      <p className="signUpText">
-        Need a new account? <a href="/signup" className="signUpLink">Sign up</a>
-      </p>
-      <p className="loginText">
-        Already have an account? <a href="/login" className="loginLink">Login</a>
-      </p>
-    </div>
+    <Container maxWidth="sm" className="forgot-password-container">
+      <Box className="forgot-password-box">
+        <Typography variant="h4" className="forgot-password-heading">
+          Forgot Password
+        </Typography>
+        <form onSubmit={handleSubmit} noValidate className="forgot-password-form">
+          <TextField
+            id="email"
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="forgot-password-input"
+          />
+          
+          <div className="message-space">
+            {message && <Typography className="success-message">{message}</Typography>}
+            {error && <Typography className="error-message">{error}</Typography>}
+          </div>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            className="forgot-password-button"
+          >
+            SEND EMAIL
+          </Button>
+
+          <Box className="forgot-password-links">
+            <Link component={RouterLink} to="/login" className="forgot-password-link">
+              Already have an account? Login
+            </Link>
+          </Box>
+          <Box className="forgot-password-links">
+            <Link component={RouterLink} to="/signup" className="forgot-password-link">
+              Need a new account? Sign up
+            </Link>
+          </Box>
+        </form>
+      </Box>
+    </Container>
   );
 }
 
 export default ForgotPassword;
+

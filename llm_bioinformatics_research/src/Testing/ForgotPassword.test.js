@@ -18,8 +18,8 @@ describe("ForgotPassword Component", () => {
       </Router>
     );
     expect(screen.getByText("Forgot Password")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
-    expect(screen.getByText("Send email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByText("SEND EMAIL")).toBeInTheDocument();
   });
 
   it("updates email state on input change", () => {
@@ -28,7 +28,7 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByPlaceholderText("Email");
+    const emailInput = screen.getByLabelText("Email");
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     expect(emailInput.value).toBe("test@example.com");
   });
@@ -44,8 +44,8 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByPlaceholderText("Email");
-    const submitButton = screen.getByText("Send email");
+    const emailInput = screen.getByLabelText("Email");
+    const submitButton = screen.getByText("SEND EMAIL");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.click(submitButton);
@@ -65,8 +65,8 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByPlaceholderText("Email");
-    const submitButton = screen.getByText("Send email");
+    const emailInput = screen.getByLabelText("Email");
+    const submitButton = screen.getByText("SEND EMAIL");
 
     fireEvent.change(emailInput, { target: { value: "unknown@example.com" } });
     fireEvent.click(submitButton);
@@ -80,18 +80,18 @@ describe("ForgotPassword Component", () => {
       status: 400,
       json: async () => ({ message: "Token expired. Please request a new password reset link." }),
     });
-  
+
     render(
       <Router>
         <ForgotPassword />
       </Router>
     );
-    const emailInput = screen.getByPlaceholderText("Email");
-    const submitButton = screen.getByText("Send email");
-  
+    const emailInput = screen.getByLabelText("Email");
+    const submitButton = screen.getByText("SEND EMAIL");
+
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.click(submitButton);
-  
+
     const expiredTokenMessage = await screen.findByText("Token expired. Please request a new password reset link.");
     expect(expiredTokenMessage).toBeInTheDocument();
   });
@@ -102,10 +102,10 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    
-    const loginLink = screen.getByText("Login");
+
+    const loginLink = screen.getByText("Already have an account? Login");
     expect(loginLink.closest("a")).toHaveAttribute("href", "/login");
-    
+
     fireEvent.click(loginLink);
   });
 
@@ -115,10 +115,10 @@ describe("ForgotPassword Component", () => {
         <ForgotPassword />
       </Router>
     );
-    
-    const signUpLink = screen.getByText("Sign up");
+
+    const signUpLink = screen.getByText("Need a new account? Sign up");
     expect(signUpLink.closest("a")).toHaveAttribute("href", "/signup");
-    
+
     fireEvent.click(signUpLink);
   });
 });
