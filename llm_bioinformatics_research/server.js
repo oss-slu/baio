@@ -167,7 +167,6 @@ app.post('/home', async (req, res) => {
     }
 });
 
-const {spawn} = require('child_process');
 
 app.post('/home', (req, res) => {
     const { text } = req.body;
@@ -196,7 +195,7 @@ app.post('/home', (req, res) => {
         console.error("Error from Python script:", data.toString());
     });
 
-    // Send the processed result back to the client once the script completes
+    // Send the result back to the application once the script completes
     pythonProcess.on('close', (code) => {
         if (code === 0) {
             try {
