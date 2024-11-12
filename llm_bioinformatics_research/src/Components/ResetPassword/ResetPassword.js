@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box, IconButton } from '@mui/material';
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  IconButton
+} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import config from '../../config.json';
@@ -30,19 +37,18 @@ function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate passwords
+
     const passwordValidationError = validatePassword(newPassword);
     setPasswordError(passwordValidationError);
     if (passwordValidationError) return;
-  
+
     if (newPassword !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match.");
       return;
     } else {
       setConfirmPasswordError('');
     }
-  
+
     try {
       const response = await fetch('http://localhost:' + port + '/reset-password', {
         method: 'POST',
@@ -51,15 +57,13 @@ function ResetPassword() {
         },
         body: JSON.stringify({ token, newPassword }),
       });
-  
+
       const data = await response.json();
       if (response.status === 200) {
         setMessage(data.message);
-  
-        // Delay before redirecting to login page
         setTimeout(() => {
-          navigate('/login'); // Redirect to login after 3 seconds
-        }, 3000); // 3 seconds delay
+          navigate('/login');
+        }, 3000);
       } else {
         setError(data.message);
       }
@@ -72,10 +76,10 @@ function ResetPassword() {
   return (
     <Container maxWidth="sm" className="reset-container">
       <Box className="reset-box">
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" className="reset-heading">
           Reset Password
         </Typography>
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} noValidate className="reset-form">
           <TextField
             label="New Password"
             type={passwordVisible ? 'text' : 'password'}
@@ -120,16 +124,10 @@ function ResetPassword() {
               ),
             }}
           />
-          {error && (
-            <Typography variant="body2" color="error" className="reset-error">
-              {error}
-            </Typography>
-          )}
-          {message && (
-            <Typography variant="body2" color="success" className="reset-success">
-              {message}
-            </Typography>
-          )}
+          <div className="message-space">
+            {error && <Typography className="error-message">{error}</Typography>}
+            {message && <Typography className="success-message">{message}</Typography>}
+          </div>
           <Button
             type="submit"
             variant="contained"
