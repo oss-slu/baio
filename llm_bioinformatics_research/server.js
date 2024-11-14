@@ -208,6 +208,7 @@ app.post('/forgot_password', async (req, res) => {
 
 app.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
+    const saltRounds = 10;
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -220,6 +221,12 @@ app.post('/reset-password', async (req, res) => {
         const user = await collection.findOne({ _id: new ObjectId(userId), resetToken: token });
         if (!user || new Date() > user.tokenExpiry) {
             return res.status(400).json({ message: "Invalid or expired reset token." });
+        }
+
+        // Check if the new password is the same as the old password
+        const isSamePassword = await bcrypt.compare(newPassword, user.password);
+        if (isSamePassword) {
+            return res.status(400).json({ message: "New password must be different from the old password." });
         }
 
         // Hash the new password

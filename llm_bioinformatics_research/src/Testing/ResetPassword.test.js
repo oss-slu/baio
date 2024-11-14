@@ -121,6 +121,25 @@ describe("ResetPassword Component - Password Validation", () => {
     expect(screen.getByText("Passwords do not match.")).toBeInTheDocument();
   });
 
+  it("shows error when new password matches the old password", async () => {
+    fetch.mockResolvedValueOnce({
+      status: 400,
+      json: async () => ({ message: "New password must be different from the old password." }),
+    });
+
+    const newPasswordInput = screen.getByLabelText("New Password");
+    const confirmPasswordInput = screen.getByLabelText("Confirm Password");
+    const resetButton = screen.getByRole("button", { name: /reset password/i });
+
+    await userEvent.type(newPasswordInput, "OldPassword123!");
+    await userEvent.type(confirmPasswordInput, "OldPassword123!");
+    fireEvent.click(resetButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("New password must be different from the old password.")).toBeInTheDocument()
+    );
+  });
+
   it("does not show error when password meets all criteria", async () => {
     const newPasswordInput = screen.getByLabelText("New Password");
     const confirmPasswordInput = screen.getByLabelText("Confirm Password");

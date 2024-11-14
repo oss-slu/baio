@@ -38,6 +38,13 @@ function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Clear previous messages at the start of a new submission
+    setMessage('');
+    setError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+
+    // Validate password
     const passwordValidationError = validatePassword(newPassword);
     setPasswordError(passwordValidationError);
     if (passwordValidationError) return;
@@ -50,7 +57,7 @@ function ResetPassword() {
     }
 
     try {
-      const response = await fetch('http://localhost:' + port + '/reset-password', {
+      const response = await fetch(`http://localhost:${port}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
