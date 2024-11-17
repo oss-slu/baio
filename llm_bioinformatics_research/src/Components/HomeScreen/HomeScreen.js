@@ -18,6 +18,8 @@ function HomeScreen({ setIsLoggedIn }) {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const [config, setConfig] = useState(null);
+  const [backendUrl, setBackendUrl] = useState('');
 
   useEffect(() => {
     window.history.pushState(null, document.title, window.location.href);
@@ -46,6 +48,28 @@ function HomeScreen({ setIsLoggedIn }) {
     window.history.pushState(null, document.title, window.location.href);
   };
 
+  // finds URL for the backend server hosting the HuggingFace model
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/config.json');
+        if (!response.ok) throw new Error('Failed to fetch config.json');
+        const configData = await response.json();
+  
+        setConfig(configData);
+        const backendUrl = `http://localhost:${configData.backendPort}`;
+        setBackendUrl(backendUrl);
+        console.log('Backend URL:', backendUrl);
+      } catch (error) {
+        console.error('Error fetching config.json:', error);
+        alert('Failed to load configuration. Please try refreshing the page.');
+      }
+    };
+  
+    fetchConfig();
+  }, [])
+
+  // updates chat history 
   const handleSend = async () => {
     const trimmedMessage = inputMessage.trim();
     if (!trimmedMessage) return;
@@ -59,21 +83,36 @@ function HomeScreen({ setIsLoggedIn }) {
     setInputMessage('');
   };
 
+  // sends input to model and retrieves response
   const sendMessage = async (message) => {
+    if (!backendUrl) {
+      console.error('Backend URL not set yet!');
+      return { success: false, message: 'Backend URL is not configured. Please try again later.' };
+    }
+
     try {
-      const response = await axios.post('http://localhost:5001/predict', { input: message });
+      const response = await axios.post(`${backendUrl}/predict`, { input: message });
       console.log("Response from server:", response.data);
-      return { success: true, ...response.data };
+
+      if (response && response.data && response.data.success) { 
+        return { success: true, message: response.data.output || 'No output provided by the server.' }
+      } else { // Updated line
+        return { success: false, message: response.data?.message || 'Unexpected server response.' };
+      }
     } catch (error) {
       console.error('Error while fetching the response:', error);
-      return { success: false, message: 'Failed to get a response. Please try again.' };
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Failed to get a response. Please try again.' 
+      }; 
     }
   };
 
+  // allows the user to submit input with 'enter' key
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault();  // Prevents new line in the input
-      handleSend();  // Calls the send function
+      event.preventDefault(); 
+      handleSend();  
     }
   };
 
@@ -97,7 +136,7 @@ function HomeScreen({ setIsLoggedIn }) {
                 className="text-input"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={handleKeyDown}  // This enables Enter key submission
+                onKeyDown={handleKeyDown}
               />
               <IconButton aria-label="Send" onClick={handleSend}><Send /></IconButton>
             </Box>
