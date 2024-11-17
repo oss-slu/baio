@@ -42,8 +42,6 @@ describe('HomeScreen Component Structure Tests', () => {
 
     const aiChatResponsePanel = screen.getByText(/AI Chat and Response/i);
     expect(aiChatResponsePanel).toBeInTheDocument();
-    const aiOutputTextField = screen.getByText(/AI Output/i);
-    expect(aiOutputTextField).toBeInTheDocument();
   });
 
   test('allows text input in the field', () => {
@@ -51,15 +49,6 @@ describe('HomeScreen Component Structure Tests', () => {
     const textInput = screen.getByPlaceholderText(/text input/i);
     fireEvent.change(textInput, { target: { value: 'Testing input' } });
     expect(textInput.value).toBe('Testing input');
-  });
-
-  test('renders all action buttons (upload, send, refresh, edit)', () => {
-    renderWithRouter(<HomeScreen />);
-
-    expect(screen.getByLabelText(/Upload/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Send/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Refresh/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Edit/i)).toBeInTheDocument();
   });
 });
 

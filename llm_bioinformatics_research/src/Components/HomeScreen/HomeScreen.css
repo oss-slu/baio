@@ -29,7 +29,7 @@
   flex-grow: 1;
   background-color: var(--panel-background); 
   border: 1px solid var(--panel-border);        
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   padding: 16px;
   border-radius: 8px;
 }
@@ -94,4 +94,99 @@
   --ai-output-background: #37474f;
   --footer-background: #232222;
   --text-color: #b9b9b9;
+}
+
+.ai-output {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;  /* Allows scrolling */
+  max-height: 300px; /* Limit height and make it scrollable */
+  margin-bottom: 1rem;
+}
+
+.message {
+  margin: 0.5em;
+  padding: 0.5em;
+  border-radius: 10px;
+  color: white;
+  max-width: 80%;
+}
+
+/* HomeScreen.css */
+.home-screen {
+  height: 97vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+.custom-paper {
+  padding: 16px;
+  background-color: var(--panel-background); 
+  border: 1px solid var(--panel-border);    
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+  border-radius: 8px;
+}
+
+.ai-output {
+  flex-grow: 1;
+  overflow-y: auto; /* Allows scrolling */
+  min-height: 650px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column; /* Ensure top-down layout */
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-input {
+  flex-grow: 1;
+  margin-right: 8px;
+}
+
+.message {
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin: 5px;
+  width: fit-content;
+  max-width: 80%;
+}
+
+.message.user {
+  background-color: #2196f3; /* Matching the navbar */
+  color: white;
+  align-self: flex-end;
+}
+
+.message.ai {
+  background-color: rgba(0, 0, 0, 0.1); /* Matching the footer */
+  color: black;
+  align-self: flex-start;
+}
+
+.footer {
+  height: 64px;
+  background-color: #f5f5f5; /* Footer background */
+  padding: 16px;
+  text-align: center;
+  color: black;
 }
