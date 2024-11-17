@@ -7,6 +7,8 @@ const cors = require('cors');
 const net = require('net');
 const fs = require('fs');
 const config = require('./src/config.json');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
 let port = 5000;
@@ -166,6 +168,97 @@ app.post('/home', async (req, res) => {
     }
 });
 
+// Function to generate and send password reset link
+app.post('/forgot_password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        // Check if user exists
+        const user = await collection.findOne({ email: email });
+        if (!user) {
+            return res.status(404).json({ message: "Email not found" });
+        }
+
+        // Generate a secure reset token with an expiration
+        const resetToken = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' } // Token valid for 1 hour
+        );
+
+        // Save the token temporarily in the user's record (optional: set expiration)
+        await collection.updateOne(
+            { _id: user._id },
+            { $set: { resetToken, tokenExpiry: new Date(Date.now() + 3600000) } } // 1-hour expiry
+        );
+
+        // Send the reset email
+        const resetLink = `http://localhost:${port}/reset-password?token=${resetToken}`;
+        await sendPasswordResetEmail(email, resetLink);
+
+        res.status(200).json({ message: "Password reset link sent to your email." });
+    } catch (error) {
+        console.error("Error generating reset token:", error);
+        res.status(500).json({ message: "Server error. Please try again later." });
+    }
+});
+
+app.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    const saltRounds = 10;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        // Verify token by matching it with the stored token
+        const user = await collection.findOne({ _id: new ObjectId(userId), resetToken: token });
+        if (!user || new Date() > user.tokenExpiry) {
+            return res.status(400).json({ message: "Invalid or expired reset token." });
+        }
+
+        // Check if the new password is the same as the old password
+        const isSamePassword = await bcrypt.compare(newPassword, user.password);
+        if (isSamePassword) {
+            return res.status(400).json({ message: "New password must be different from the old password." });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        // Update user password and remove the reset token and expiry
+        await collection.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $set: { password: hashedPassword },
+                $unset: { resetToken: "", tokenExpiry: "" }
+            }
+        );
+
+        res.status(200).json({ message: "Password reset successfully. Redirecting to login." });
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        res.status(500).json({ message: "Failed to reset password. Please try again later." });
+    }
+});
+
+app.get('/reset-password', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).send("Invalid or missing token.");
+    }
+
+    // Redirect to the frontend app with the token as a query parameter
+    res.redirect(`http://localhost:3000/reset-password?token=${token}`);
+});
+
 function findAvailablePort(initialPort) {
     return new Promise((resolve, reject) => {
         const server = net.createServer();
@@ -207,3 +300,23 @@ findAvailablePort(port).then((availablePort) => {
 }).catch(err => {
     console.error("Failed to start server:", err);
 });
+
+async function sendPasswordResetEmail(toEmail, resetLink) {
+    const msg = {
+        to: toEmail,
+        from: process.env.EMAIL_USER, // Verified sender email in SendGrid
+        subject: 'Password Reset Request',
+        html: `<p>You requested a password reset.</p>
+               <p>Click the link below to reset your password:</p>
+               <a href="${resetLink}">${resetLink}</a>
+               <p>This link is valid for 1 hour.</p>`
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log("Password reset email sent to:", toEmail);
+    } catch (error) {
+        console.error("Error sending password reset email:", error);
+        throw new Error("Could not send reset email.");
+    }
+}
