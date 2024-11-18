@@ -72,13 +72,16 @@ function HomeScreen({ setIsLoggedIn }) {
   // updates chat history 
   const handleSend = async () => {
     const trimmedMessage = inputMessage.trim();
-    if (!trimmedMessage) return;
+    if (!trimmedMessage) {
+      setMessages(prev => [...prev, { type: 'ai', text: "Please enter some text to get a response." }]);
+      return;
+    }
     setMessages(prev => [...prev, { type: 'user', text: trimmedMessage }]);
     const response = await sendMessage(trimmedMessage);
     if (response.success) {
-      setMessages(prev => [...prev, { type: 'ai', text: "Successful input" }]);
-    } else {
       setMessages(prev => [...prev, { type: 'ai', text: response.message }]);
+    } else {
+      setMessages(prev => [...prev, { type: 'ai', text: "Unsuccessful" }]);
     }
     setInputMessage('');
   };
