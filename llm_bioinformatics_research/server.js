@@ -8,6 +8,7 @@ const net = require('net');
 const fs = require('fs');
 const config = require('./src/config.json');
 const { spawn } = require('child_process');
+
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -168,8 +169,6 @@ app.post('/home', async (req, res) => {
         res.status(500).json({ message: "Failed to update settings" });
     }
 });
-
-
 
 // Function to generate and send password reset link
 app.post('/forgot_password', async (req, res) => {
