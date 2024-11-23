@@ -1,3 +1,18 @@
+/*
+
+User Profile Menu Page Testing:
+
+This file tests the functionality of the Profile Menu: 
+~ tests that the page renders
+~ tests that the user profile menu is present and that it takes the user to the user profile menu when clicked
+~ tests that it pulls user information from local storage
+~ tests that the user profile button is present and that it takes the user to the profile page when clicked
+~ tests that the settings page is present and that it takes the user to the settings menu when clicked
+~ tests that the user is logged out when they click log out
+~ tests that the theme of the page is updated when it is changed in settings
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';

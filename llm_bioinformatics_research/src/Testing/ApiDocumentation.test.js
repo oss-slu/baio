@@ -1,3 +1,16 @@
+/*
+
+API Documentation Page Testing:
+
+This file tests the functionality of the API documentation page: 
+~ tests for the rendering of the page
+~ tests for API details
+~ tests for external links
+~ tests for search functionality
+~ tests for error message prompting
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import APIDocumentation from '../Components/APIDocumentation/APIDocumentation';

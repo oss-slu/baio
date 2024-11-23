@@ -1,3 +1,18 @@
+/*
+
+Forgot Password Page Testing:
+
+This file tests the functionality of the Forgot Password page: 
+~ tests that the page renders
+~ tests that the input field updates with email input
+~ tests that a success message is displayed when email is sent successfully
+~ tests that an error message is displayed when email is not found
+~ tests that an error message is displayed when token is expired
+~ tests that it navigates to the login page when 'Login' link is clicked
+~ tests that it navigates to the signup page when 'Sign up' link is clicked
+
+*/
+
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom';
