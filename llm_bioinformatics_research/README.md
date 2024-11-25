@@ -108,3 +108,7 @@ We have a config.json file within our src directory so that our frontend pages s
 Within the .env file in the root directory of the React project, save "betterbioinformatics@gmail.com" in the variable "EMAIL_USER". Save the API key provided by an admin in the variable "SENDGRID_API_KEY". These two variables will be needed to successfully receive a password reset link.
 
 ![Alt text](<DocumentationImages/resetPassword_configs.png>)
+
+Within the .env file in the root directory of the React project, create the variables: "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", and "SESSION_SECRET". These variables will be needed to successfully signup and login with Google authentication. The "GOOGLE_CLIENT_ID" and "GOOGLE_CLIENT_SECRET" will be provided by an admin. You may store any value in "SESSION_SECRET".
+
+![Alt text](<DocumentationImages/Google_Authentication_Configuration.png>)
