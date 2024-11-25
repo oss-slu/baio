@@ -5,6 +5,31 @@ import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
 import './HomeScreen.css';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * @file HomeScreen.js
+ *
+ * @description
+ * This file defines the `HomeScreen` React component, which serves as the primary user interface for 
+ * interacting with an AI model hosted on a backend server. The component features a chat interface where 
+ * users can input text and receive AI-generated responses. It also includes panels for displaying 
+ * associated links, API recommendations, and error detection outputs.
+ *
+ * @key_features
+ * - **AI Chat Interface**: Allows users to send messages and receive AI-generated responses.
+ * - **Dynamic Message Rendering**: Displays user and AI messages with scroll-to-view functionality.
+ * - **Backend Integration**: Communicates with a HuggingFace model hosted on a server via an API.
+ * - **Logout Confirmation**: Prompts the user to confirm before logging out.
+ * - **Panels for Additional Outputs**: Includes sections for links, API recommendations, and error detection.
+ * - **Custom Paper Component**: Reusable UI component for structured sections.
+ *
+ * @usage_instructions
+ * 1. Import the component and render it in your application.
+ *    `import HomeScreen from './HomeScreen';`
+ * 2. Pass the `setIsLoggedIn` function as a prop to manage authentication state.
+ * 3. Ensure the server configuration (`config.json`) includes the `backendPort`.
+ * 4. Customize the styles using `HomeScreen.css` as needed.
+ */
+
 const CustomPaper = ({ children, title }) => (
   <Paper elevation={3} className="custom-paper">
     {title && <Typography variant="h6">{title}</Typography>}

@@ -1,11 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import config from '../../config.json';
 import './SignupScreen.css';
+
+/**
+ * @file SignUpScreen.js
+ *
+ * @description
+ * The `SignUpScreen` React component provides a user interface for signing up for an account. 
+ * It includes form inputs for username, email, and password, along with client-side validation to 
+ * ensure all fields meet specific requirements. The component also offers options for social sign-in 
+ * using Google or GitHub, and redirects the user to the login screen upon successful sign-up.
+ *
+ * @key_features
+ * - **User Registration Form**: Includes inputs for username, email, password, and password confirmation.
+ * - **Validation**:
+ *   - Validates the username, email format, and password strength.
+ *   - Ensures the password and confirmation match.
+ * - **Error Handling**:
+ *   - Displays errors for invalid input fields.
+ *   - Checks for server-side errors like duplicate usernames or emails.
+ * - **Social Sign-In**: Provides Google and GitHub sign-in options.
+ * - **Redirection on Success**: Redirects users to the login page after successful registration.
+ *
+ * @usage_instructions
+ * 1. Import the component and include it in your routing setup.
+ *    `import SignUpScreen from './SignUpScreen';`
+ * 2. Configure the backend API to handle the `/signup` endpoint for user registration.
+ * 3. Ensure `config.json` contains the correct backend port and social OAuth endpoints.
+ * 4. Customize the styles using the accompanying `SignupScreen.css` file.
+ */
 
 function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -26,6 +55,18 @@ function SignUpScreen() {
 
   const navigate = useNavigate();
   const port = config.port;
+
+  const [generalError, setGeneralError] = useState('');
+
+  const location = useLocation();
+
+useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    if (error) {
+        setGeneralError(error);
+    }
+}, [location.search]);
 
   const validateUsername = (username) => {
     if (!username) {
@@ -140,6 +181,16 @@ function SignUpScreen() {
         <Typography id="signup-heading" variant="h4" gutterBottom data-testid="signup-heading">
           Sign Up
         </Typography>
+        {generalError && (
+          <Typography
+              variant="body1"
+              color="error"
+              className="signup-error"
+              data-testid="signup-error-message"
+          >
+              {generalError}
+          </Typography>
+      )}
         <form onSubmit={handleSubmit} noValidate>
           <TextField
             id="username"
@@ -254,11 +305,11 @@ function SignUpScreen() {
           )}
         </form>
         <Box className="social-signup">
-          <Button
-            variant="outlined"
-            fullWidth
-            startIcon={<GoogleIcon />}
-            sx={{
+        <Button
+          variant="outlined"
+          fullWidth
+          startIcon={<GoogleIcon />}
+          sx={{
               mb: 2,
               borderColor: '#db4437',
               color: '#db4437',
@@ -269,10 +320,11 @@ function SignUpScreen() {
                 backgroundColor: '#db4437',
                 color: '#fff',
               },
-            }}
-          >
-            Sign in with Google
-          </Button>
+          }}
+          onClick={() => window.location.href = 'http://localhost:' + port + '/auth/google/signup'}
+      >
+    Sign in with Google
+</Button>
   
           <Button
             variant="outlined"

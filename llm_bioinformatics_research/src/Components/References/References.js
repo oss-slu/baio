@@ -3,6 +3,26 @@ import { Container, Typography, Paper, TextField, Accordion, AccordionSummary, A
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import './References.css';
 
+/**
+ * @file References.js
+ *
+ * @description
+ * The `References` component provides a searchable and filterable interface for viewing academic or scientific references.
+ * Users can search for references by keywords or filter them by year, and view detailed information for each reference in an expandable format.
+ *
+ * @key_features
+ * - **Search Functionality**: Allows users to search references by author, title, journal, volume, pages, or link.
+ * - **Year Filter**: Filters references by publication year.
+ * - **Expandable Details**: Displays detailed information about each reference in an expandable accordion.
+ * - **Dynamic Rendering**: Updates the displayed references in real-time based on search and filter inputs.
+ *
+ * @usage_instructions
+ * 1. Import the component and include it in your React application.
+ *    `import References from './References';`
+ * 2. Ensure that the `references` array is populated with appropriate reference data.
+ * 3. Customize styles using the `References.css` file as needed.
+ */
+
 const references = [
   {
     author: "Smith, J.",

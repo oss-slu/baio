@@ -12,6 +12,30 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import config from '../../config.json';
 import './ResetPassword.css';
 
+/**
+ * @file ResetPassword.js
+ *
+ * @description
+ * This file defines the `ResetPassword` React component, which provides a user interface for resetting a password.
+ * Users can set a new password by entering and confirming it, with validation for password strength and matching.
+ * A secure token is used to authenticate the request, and upon success, users are redirected to the login screen.
+ *
+ * @key_features
+ * - **Password Validation**: Ensures the new password meets specific complexity requirements.
+ * - **Password Confirmation**: Validates that the confirmed password matches the new password.
+ * - **Secure Token Integration**: Uses a token from the URL query parameters to authenticate the reset request.
+ * - **Real-Time Error Feedback**: Displays validation errors for password fields and server responses.
+ * - **Password Visibility Toggle**: Allows users to show or hide their password input for better usability.
+ * - **Success Message and Redirection**: Displays a success message and redirects the user to the login page after a successful reset.
+ *
+ * @usage_instructions
+ * 1. Import the component and include it in your routing setup.
+ *    `import ResetPassword from './ResetPassword';`
+ * 2. Ensure the backend API endpoint (`/reset-password`) is configured to handle password reset requests.
+ * 3. Pass a valid token in the URL query parameters (e.g., `/reset-password?token=your-token-here`).
+ * 4. Customize styles using the accompanying `ResetPassword.css` file.
+ */
+
 function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
