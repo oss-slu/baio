@@ -1,3 +1,15 @@
+/*
+
+Reset Password Page Testing:
+
+This file tests the functionality of Reset Password page: 
+~ tests that the page renders
+~ tests that the form submits correctly when criteria for the new password are met
+~ tests that there is an error when the password does not meet the necessary criteria
+~ tests that there is an error when the new password matches the old password
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

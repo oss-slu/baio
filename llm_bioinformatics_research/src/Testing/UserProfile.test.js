@@ -1,3 +1,14 @@
+/*
+
+User Profile Page Testing:
+
+This file tests the functionality of the User Profile Page page: 
+~ tests that the page renders
+~ tests that the various components change appropriately when you switch between light mode and dark mode
+~ tests that a users avatar changes when they upload a new profile picture
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
