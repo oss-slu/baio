@@ -1,3 +1,16 @@
+/*
+
+Reference Page Testing:
+
+This file tests the functionality of Reference page: 
+~ tests that the page renders
+~ test that the search functionality works on all fields of the references
+~ tests that the accordian displays the full citations
+~ tests that the year filer works accordingly
+~ tests that there is an error when no items match the search criteria
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';

@@ -1,3 +1,20 @@
+/*
+
+Login Screen Page Testing:
+
+This file tests the functionality of the Login page: 
+~ tests that the page renders
+~ tests that all fields and buttons are visible
+~ tests for the input of email and password in input fields
+~ tests the toggle functionality of the password
+~ tests that an error message appears when form is submitted with empty fields
+~ tests that an error message appears when login is unsuccessful
+~ tests that the user is redirected to home page upon successful login
+~ test that navigation to forgot password page works as intended
+
+
+*/
+
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -1,3 +1,16 @@
+/*
+
+HomeScreen Page Testing:
+
+This file tests the functionality of Home Screen page: 
+~ tests that the page renders
+~ tests that all the panels of the model interaction component are present on the page
+~ tests that a user is able to insert text into the input field
+~ tests that a user is prompted with a log out confirmation box when they click back from the home page 
+  (stays on current page when canceled, directs the user to the login page when confirmed)
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';

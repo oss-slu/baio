@@ -1,3 +1,11 @@
+/*
+
+Theme Context Component:
+
+This file manages the theme context of the application (light and dark theme)
+
+*/
+
 import React, { createContext, useState, useMemo, useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 

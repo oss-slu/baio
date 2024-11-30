@@ -1,8 +1,17 @@
+/*
+
+App Component Testing:
+
+This file tests the functionality of the APP Component: 
+~ tests for the rending of the application
+~ tests that the application initialized to the login page
+
+*/
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-// Mock axios once at the top of the file
 jest.mock('axios');
 
 describe('App Component', () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Box, Typography, Paper, TextField, Grid, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import { Edit, Refresh, Upload, Send } from '@mui/icons-material';
+import { Edit, Refresh, Upload, Send, OpenInFull } from '@mui/icons-material';
 import './HomeScreen.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,6 +42,7 @@ function HomeScreen({ setIsLoggedIn }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false); // State to track input expansion
   const messagesEndRef = useRef(null);
   const [config, setConfig] = useState(null);
   const [backendUrl, setBackendUrl] = useState('');
@@ -73,7 +74,6 @@ function HomeScreen({ setIsLoggedIn }) {
     window.history.pushState(null, document.title, window.location.href);
   };
 
-  // finds URL for the backend server hosting the HuggingFace model
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -94,7 +94,6 @@ function HomeScreen({ setIsLoggedIn }) {
     fetchConfig();
   }, [])
 
-  // updates chat history 
   const handleSend = async () => {
     const trimmedMessage = inputMessage.trim();
     if (!trimmedMessage) {
@@ -111,7 +110,6 @@ function HomeScreen({ setIsLoggedIn }) {
     setInputMessage('');
   };
 
-  // sends input to model and retrieves response
   const sendMessage = async (message) => {
     if (!backendUrl) {
       console.error('Backend URL not set yet!');
@@ -124,7 +122,7 @@ function HomeScreen({ setIsLoggedIn }) {
 
       if (response && response.data && response.data.success) { 
         return { success: true, message: response.data.output || 'No output provided by the server.' }
-      } else { // Updated line
+      } else { 
         return { success: false, message: response.data?.message || 'Unexpected server response.' };
       }
     } catch (error) {
@@ -136,12 +134,15 @@ function HomeScreen({ setIsLoggedIn }) {
     }
   };
 
-  // allows the user to submit input with 'enter' key
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault(); 
       handleSend();  
     }
+  };
+
+  const toggleExpandInput = () => {
+    setIsExpanded(prev => !prev);
   };
 
   return (
@@ -166,6 +167,9 @@ function HomeScreen({ setIsLoggedIn }) {
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
+              <IconButton aria-label="Expand" onClick={toggleExpandInput}>
+                <OpenInFull />
+              </IconButton>
               <IconButton aria-label="Send" onClick={handleSend}><Send /></IconButton>
             </Box>
           </CustomPaper>
@@ -196,6 +200,24 @@ function HomeScreen({ setIsLoggedIn }) {
           </Grid>
         </Grid>
       </Grid>
+      <Dialog open={isExpanded} onClose={toggleExpandInput} fullWidth maxWidth="md">
+        <DialogTitle>Expanded Input</DialogTitle>
+        <DialogContent>
+          <TextField
+            variant="outlined"
+            placeholder="Type your message here..."
+            fullWidth
+            multiline
+            rows={10}
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={toggleExpandInput} color="primary">Close</Button>
+          <Button onClick={handleSend} color="secondary">Send</Button>
+        </DialogActions>
+      </Dialog>
       <Dialog open={openDialog} onClose={handleCancelLogout} aria-labelledby="logout-dialog-title" aria-describedby="logout-dialog-description">
         <DialogTitle id="logout-dialog-title">{"Confirm Logout"}</DialogTitle>
         <DialogContent>
@@ -212,7 +234,7 @@ function HomeScreen({ setIsLoggedIn }) {
         <Typography variant="body1">Footer</Typography>
       </Box>
     </Box>
-  );
+  ); 
 }
 
 export default HomeScreen;

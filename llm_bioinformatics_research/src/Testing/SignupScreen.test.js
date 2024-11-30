@@ -1,3 +1,17 @@
+/*
+
+Sign Up Page Testing:
+
+This file tests the functionality of Sign Up page: 
+~ tests that the page renders
+~ tests that there is an error when the username field is empty
+~ tests that there is an error when the email is not of a valid format
+~ tests that there is an error when the password does not matche specified criteria
+~ tests that their is an error when the password and the confirm password don't match
+~ tests that there is no error when all requirements are met
+
+*/
+
 import React from 'react';
 import { render, screen, fireEvent} from '@testing-library/react';
 import { MemoryRouter} from 'react-router-dom';
