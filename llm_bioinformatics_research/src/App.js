@@ -1,3 +1,40 @@
+/**
+ * @file App.js
+ * @description Entry point for the React application "Enhancing Bioinformatics".
+ *
+ * This file defines the main application component, routing structure, and layout.
+ * It includes the following features:
+ * - Navigation bar with links to Home, API Documentation, References, and User Profile.
+ * - Context-based theme management through `ThemeContextProvider`.
+ * - Protected routes that restrict access to certain pages based on the user's login status.
+ * - Integration of Material-UI components for styling and layout.
+ *
+ * Routes:
+ * - "/" - Redirects to the login screen.
+ * - "/home" - Displays the home screen (protected route).
+ * - "/api-documentation" - Displays API documentation.
+ * - "/references" - Displays references.
+ * - "/signup" - Registration screen for new users.
+ * - "/login" - Login screen.
+ * - "/profile" - User profile screen.
+ * - "/forgot_password" - Forgot password screen.
+ * - "/reset-password" - Password reset screen.
+ *
+ * Dependencies:
+ * - React Router for routing.
+ * - Material-UI for components and styling.
+ * - Context API for theme management.
+ * 
+ * Key Components:
+ * - `Layout`: A wrapper component for consistent styling and navigation (AppBar) across pages.
+ * - `ProtectedRoute`: A component that restricts access to certain routes based on the login state.
+ * - `ThemeContextProvider`: Provides theme-related context for the application.
+ *
+ * Usage:
+ * - This file is imported and rendered by `index.js`.
+ * - Add new routes or pages in the `Routes` section as needed.
+ */
+
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate, Navigate } from 'react-router-dom';
