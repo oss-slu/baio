@@ -1,3 +1,43 @@
+/**
+ * @file server.js
+ * @description A Node.js API server for user authentication and profile management.
+ * 
+ * Purpose:
+ * - This server provides endpoints for user authentication, signup, login, and profile management.
+ * - It supports sending password reset links and resetting user passwords using secure JWT tokens.
+ * - The server connects to a MongoDB database to store user credentials and profile data.
+ * - A SendGrid integration is used for sending password reset emails.
+ * 
+ * Features:
+ * - `/signup`: Allows users to sign up by providing a username, email, and password. The password is hashed before being stored.
+ * - `/login`: Allows users to log in by providing either their email or username, and a password. A JWT token is returned on successful login.
+ * - `/profile`: Updates the user's profile information (profile photo, phone number, location, and theme).
+ * - `/forgot_password`: Sends a password reset link to the user's email.
+ * - `/reset-password`: Resets the user's password using a secure reset token.
+ * 
+ * Key Functions:
+ * - `connectDB()`: Connects to the MongoDB database.
+ * - `findAvailablePort()`: Finds an available port to run the server on, checking if a given port is available.
+ * - `writePortToConfig()`: Updates the configuration file (`config.json`) with the chosen port.
+ * - `sendPasswordResetEmail()`: Sends a password reset email using SendGrid.
+ * 
+ * Dependencies:
+ * - `express`: Web framework for building REST APIs.
+ * - `bcrypt`: For securely hashing passwords.
+ * - `jsonwebtoken`: For creating and verifying JWT tokens.
+ * - `cors`: For handling cross-origin resource sharing (CORS).
+ * - `mongodb`: For interacting with the MongoDB database.
+ * - `@sendgrid/mail`: For sending emails via SendGrid.
+ * - `fs`: For reading and writing the configuration file.
+ * - `net`: For checking if a given port is available.
+ * - `dotenv`: For loading environment variables (e.g., MongoDB URI, SendGrid API key).
+ * 
+ * Notes:
+ * - The server uses MongoDB to store user credentials and other profile data (such as profile photo, phone number, location).
+ * - The SendGrid API is used to send emails, including password reset links.
+ * - The password reset link is valid for 1 hour.
+ */
+
 require('dotenv').config();
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
