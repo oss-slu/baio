@@ -7,6 +7,32 @@ import './UserProfileMenu.css';
 import config from '../../config';
 import ThemeContext from '../../Context/ThemeContext';
 
+/**
+ * @file UserProfileMenu.js
+ *
+ * @description
+ * The `UserProfileMenu` component provides a dropdown menu for managing user profile-related actions, including navigating to the profile page, adjusting settings, and logging out. Users can customize their theme and language preferences, which are saved to the backend and updated in the application.
+ *
+ * @key_features
+ * - **User Menu Dropdown**:
+ *   - Displays a user avatar or a placeholder icon if no image is available.
+ *   - Allows access to profile, settings, and logout options.
+ * - **Settings Management**:
+ *   - Theme selection: Light, Dark, or System Default.
+ *   - Language selection: English, Spanish, or French.
+ *   - Updates user preferences in the backend and local storage.
+ * - **Logout Functionality**:
+ *   - Clears user data from local storage and redirects to the login page.
+ * - **Responsive Design**:
+ *   - Adapts to various screen sizes using Material-UI components.
+ *
+ * @usage_instructions
+ * 1. Import and include the `UserProfileMenu` component in your application layout.
+ *    `import UserProfileMenu from './UserProfileMenu';`
+ * 2. Ensure the backend server supports the `/profile` endpoint for updating user settings.
+ * 3. Customize styles using the accompanying `UserProfileMenu.css` file.
+ */
+
 const UserProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);

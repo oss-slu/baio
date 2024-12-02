@@ -10,6 +10,37 @@ import './UserProfile.css';
 import ThemeContext from '../../Context/ThemeContext';
 import config from '../../config';
 
+/**
+ * @file UserProfile.js
+ *
+ * @description
+ * The `UserProfile` component allows users to view and update their profile information, including phone number, location, 
+ * and profile picture. It provides client-side validation for inputs and ensures changes are saved to the backend. 
+ * Users can also log out from this screen or exit the profile page with a confirmation prompt.
+ *
+ * @key_features
+ * - **Profile Display**:
+ *   - Displays the user's name, email, phone number, location, and profile picture.
+ *   - Provides an editable phone number and location input fields.
+ * - **Profile Picture Upload**:
+ *   - Users can upload a new profile picture with resizing functionality.
+ * - **Validation**:
+ *   - Ensures phone number follows the format `XXX-XXX-XXXX`.
+ *   - Validates location format as `City, State`.
+ * - **Update Functionality**:
+ *   - Sends updated profile information to the backend server.
+ * - **Logout Functionality**:
+ *   - Clears user data and redirects to the login page.
+ * - **Exit Confirmation**:
+ *   - Prompts users to confirm before exiting the profile page if changes are not saved.
+ *
+ * @usage_instructions
+ * 1. Import and include the `UserProfile` component in your application.
+ *    `import UserProfile from './UserProfile';`
+ * 2. Ensure the backend server is configured to handle profile updates at the `/profile` endpoint.
+ * 3. Customize the styles using the accompanying `UserProfile.css` file.
+ */
+
 const UserProfile = () => {
   const [user, setUser] = useState({
     image: '',

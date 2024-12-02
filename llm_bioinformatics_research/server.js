@@ -62,6 +62,10 @@ app.use(express.json());
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+
 async function connectDB() {
     try {
         await client.connect();
@@ -334,13 +338,160 @@ function writePortToConfig(availablePort) {
     });
 }
 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 findAvailablePort(port).then((availablePort) => {
     writePortToConfig(availablePort);
+
+    // Google Signup Strategy
+    passport.use('google-signup', new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: `http://localhost:${availablePort}/auth/google/signup/callback`
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            console.log("Google Profile (Signup):", profile);
+            const database = client.db("user_information");
+            const collection = database.collection("user_credentials");
+
+            // Check if email is already registered
+            const existingUser = await collection.findOne({ email: profile.emails[0].value });
+            
+            if (existingUser) {
+                return done(null, false, { message: 'The email associated with this Google account is already registered.' });
+            }
+
+            // If not, create a new user
+            const newUser = {
+                user_name: profile.displayName,
+                email: profile.emails[0].value,
+                password: '', // Not required for Google users
+                profile_photo: profile.photos[0]?.value || '', // Use Google profile photo
+                phone_number: '',
+                location: '',
+                theme: 'system',
+            };
+
+            const result = await collection.insertOne(newUser);
+
+            // Fetch the inserted document using insertedId
+            const insertedUser = await collection.findOne({ _id: result.insertedId });
+            
+            return done(null, insertedUser);
+
+        } catch (error) {
+            console.error("Google Signup Error:", error);
+            return done(error, null);
+        }
+    }));
+
+    // Google Login Strategy
+    passport.use('google-login', new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: `http://localhost:${availablePort}/auth/google/login/callback`
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            console.log("Google Profile (Login):", profile);
+            const database = client.db("user_information");
+            const collection = database.collection("user_credentials");
+
+            // Check if the user exists
+            const existingUser = await collection.findOne({ email: profile.emails[0].value });
+
+            if (!existingUser) {
+                return done(null, false, { message: 'No account found with this Google email. Please sign up first.' });
+            }
+
+            // If user exists, return the user
+            return done(null, existingUser);
+
+        } catch (error) {
+            console.error("Google Login Error:", error);
+            return done(error, null);
+        }
+    }));
+
     app.listen(availablePort, () => {
         console.log(`Server running on port ${availablePort}`);
     });
 }).catch(err => {
     console.error("Failed to start server:", err);
+});
+
+passport.serializeUser((user, done) => {
+    console.log("Serializing user:", user);
+    done(null, user._id); // Store only the user's `_id` in the session
+});
+
+// Deserialize user from the session
+passport.deserializeUser(async (id, done) => {
+    console.log("Deserializing user with ID:", id);
+    try {
+        const database = client.db("user_information");
+        const collection = database.collection("user_credentials");
+
+        // Find the user by ID
+        const user = await collection.findOne({ _id: new ObjectId(id) });
+
+        if (!user) {
+            return done(new Error("User not found"));
+        }
+        done(null, user); // Attach the user object to `req.user`
+    } catch (error) {
+        console.error("Error deserializing user:", error);
+        done(error, null);
+    }
+});
+
+// Separate Google authentication for signup
+app.get('/auth/google/signup', passport.authenticate('google-signup', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/signup/callback', (req, res, next) => {
+    passport.authenticate('google-signup', (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            // Redirect to signup page with error message in query string
+            return res.redirect(`http://localhost:3000/signup?error=${encodeURIComponent(info.message)}`);
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error("Signup Login Error:", err);
+                return next(err);
+            }
+            return res.redirect('http://localhost:3000/login');
+        });
+    })(req, res, next);
+});
+
+// Separate Google authentication for login
+app.get('/auth/google/login', passport.authenticate('google-login', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/login/callback', (req, res, next) => {
+    passport.authenticate('google-login', (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            // Redirect to login page with error message in query string
+            return res.redirect(`http://localhost:3000/login?error=${encodeURIComponent(info.message)}`);
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error("Login Error:", err);
+                return next(err);
+            }
+            return res.redirect('http://localhost:3000/home'); // Redirect to home page after successful login
+        });
+    })(req, res, next);
 });
 
 async function sendPasswordResetEmail(toEmail, resetLink) {

@@ -31,4 +31,12 @@
     margin-top: 8px;
     text-align: center;
   }
+
+  .social-login {
+    margin-top: 24px; /* Adjust the value as needed to move it further down */
+    width: 100%; /* Ensures the button aligns with other full-width components */
+    display: flex;
+    justify-content: center;
+}
+
   

@@ -2,8 +2,34 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, IconButton, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import GoogleIcon from '@mui/icons-material/Google';
 import config from '../../config.json';
 import './LoginScreen.css';
+
+/**
+ * @file LoginScreen.js
+ *
+ * @description
+ * This file defines the `LoginScreen` React component, which provides a user authentication interface.
+ * Users can log in using their email/username and password or via Google OAuth. The component validates
+ * input, handles login requests to the backend, and manages error feedback. Upon successful login, it 
+ * stores authentication tokens and redirects users to the home page.
+ *
+ * @key_features
+ * - **Email/Username and Password Login**: Allows users to log in using their credentials.
+ * - **Password Visibility Toggle**: Users can show or hide their password while typing.
+ * - **Error Handling**: Displays appropriate error messages for invalid credentials or server issues.
+ * - **Google OAuth Login**: Enables login using Google credentials via an OAuth flow.
+ * - **Redirection on Success**: Navigates the user to the home screen upon successful login.
+ * - **Responsive Design**: Styled using Material-UI for a modern and responsive layout.
+ *
+ * @usage_instructions
+ * 1. Import the component and render it in your application.
+ *    `import LoginScreen from './LoginScreen';`
+ * 2. Pass the `setIsLoggedIn` function as a prop to manage authentication state.
+ * 3. Ensure the server configuration (port and endpoints) is set correctly in `config.json`.
+ * 4. Customize the styles using `LoginScreen.css` as needed.
+ */
 
 function LoginScreen({ setIsLoggedIn }) {
   const [identifier, setIdentifier] = useState('');
@@ -105,6 +131,28 @@ function LoginScreen({ setIsLoggedIn }) {
           >
             Login
           </Button>
+          <Box className="social-login">
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<GoogleIcon />}
+              sx={{
+                mb: 2,
+                borderColor: '#db4437',
+                color: '#db4437',
+                borderRadius: '50px',
+                padding: '10px 20px',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: '#db4437',
+                  color: '#fff',
+                },
+              }}
+              onClick={() => window.location.href = 'http://localhost:' + port + '/auth/google/login'}
+            >
+              Login with Google
+            </Button>
+          </Box>
           <Box className="login-links">
             <Link component={RouterLink} to="/forgot_password" variant="body2">
               Forgot Password
