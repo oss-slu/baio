@@ -4,6 +4,27 @@ import { Link as RouterLink } from 'react-router-dom';
 import config from '../../config.json';
 import './ForgotPassword.css';
 
+/**
+ * @file ForgotPassword.js
+ *
+ * @description
+ * This file defines the `ForgotPassword` React component, which provides a password recovery interface
+ * for users who have forgotten their account credentials. It allows users to submit their email address
+ * to receive a password reset link and displays appropriate success or error messages based on the server response.
+ *
+ * @key_features
+ * - Input field for users to enter their email address.
+ * - Submits a password reset request to a server endpoint.
+ * - Displays dynamic messages for success or error feedback.
+ * - Includes navigation links to login and signup pages.
+ *
+ * @usage_instructions
+ * 1. Import the component into your React application.
+ *    `import ForgotPassword from './ForgotPassword';`
+ * 2. Ensure the server configuration (port and endpoint) is set correctly in `config.json`.
+ * 3. Use appropriate styling via the accompanying `ForgotPassword.css` file.
+ */
+
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");

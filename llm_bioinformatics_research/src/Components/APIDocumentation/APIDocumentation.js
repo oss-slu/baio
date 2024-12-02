@@ -1,6 +1,27 @@
 import React from 'react';
 import { Container, Typography, Paper, Link, TextField} from '@mui/material';
 
+/**
+ * @file APIDocumentation.js
+ *
+ * @description
+ * This file contains the `APIDocumentation` React component, which provides a user-friendly interface
+ * for viewing and searching through API details. The component renders a searchable list of APIs,
+ * including their descriptions, usage examples, endpoints, HTTP methods, and parameters.
+ *
+ * @key_features
+ * - Renders API details dynamically from an `apis` array.
+ * - Supports a search functionality to filter APIs based on user input.
+ * - Provides structured API information, including usage examples and endpoints.
+ * - Includes links to external documentation for further information.
+ *
+ * @usage_instructions
+ * 1. Import the component into your React application.
+ *    `import APIDocumentation from './APIDocumentation';`
+ * 2. Render the component wherever API documentation is needed.
+ * 3. Ensure the `apis` array contains the API details to display.
+ */
+
 const apis = [
   {
     name: "User API",
