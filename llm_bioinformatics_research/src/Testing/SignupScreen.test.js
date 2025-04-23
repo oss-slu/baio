@@ -13,10 +13,17 @@ This file tests the functionality of Sign Up page:
 */
 
 import React from 'react';
-import { render, screen, fireEvent} from '@testing-library/react';
-import { MemoryRouter} from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import SignupScreen from '../Components/SignupScreen/SignupScreen';
 import '@testing-library/jest-dom/extend-expect';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedNavigate,
+}));
+
+const mockedNavigate = jest.fn();
 
 describe('SignupScreen', () => {
 
@@ -32,7 +39,7 @@ describe('SignupScreen', () => {
 
     const submitButton = screen.getByTestId('signup-button');
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText('Username is required.')).toBeInTheDocument();
   });
 
@@ -62,10 +69,10 @@ describe('SignupScreen', () => {
 
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(passwordInput, { target: { value: 'short' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText(/password must be at least 8 characters long/i)).toBeInTheDocument();
   });
 
@@ -81,10 +88,10 @@ describe('SignupScreen', () => {
 
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(passwordInput, { target: { value: 'lowercase123!' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText(/password must include at least one uppercase letter/i)).toBeInTheDocument();
   });
 
@@ -100,10 +107,10 @@ describe('SignupScreen', () => {
 
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(passwordInput, { target: { value: 'NoNumber!' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText(/password must include at least one number/i)).toBeInTheDocument();
   });
 
@@ -119,10 +126,10 @@ describe('SignupScreen', () => {
 
     const passwordInput = screen.getByTestId('password-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(passwordInput, { target: { value: 'Password123' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText(/password must include at least one special character/i)).toBeInTheDocument();
   });
 
@@ -139,11 +146,11 @@ describe('SignupScreen', () => {
     const passwordInput = screen.getByTestId('password-input');
     const retypePasswordInput = screen.getByTestId('retypePassword-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
     fireEvent.change(retypePasswordInput, { target: { value: 'DifferentPassword123!' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
   });
 
@@ -158,15 +165,46 @@ describe('SignupScreen', () => {
     const passwordInput = screen.getByTestId('password-input');
     const retypePasswordInput = screen.getByTestId('retypePassword-input');
     const submitButton = screen.getByRole('button', { name: /Sign Up/i });
-  
+
     fireEvent.change(usernameInput, { target: { value: 'validuser' } });
     fireEvent.change(emailInput, { target: { value: 'validemail@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
     fireEvent.change(retypePasswordInput, { target: { value: 'Password123!' } });
     fireEvent.click(submitButton);
-  
+
     expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/passwords do not match/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/username is required/i)).not.toBeInTheDocument();
   });
+
+  test('should navigate to /login when the login button is clicked after successful signup', async () => {
+    render(
+      <MemoryRouter>
+        <SignupScreen />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByTestId('username-input'), { target: { value: 'validuser' } });
+    fireEvent.change(screen.getByTestId('email-input'), { target: { value: 'valid@email.com' } });
+    fireEvent.change(screen.getByTestId('password-input'), { target: { value: 'Password1!' } });
+    fireEvent.change(screen.getByTestId('retypePassword-input'), { target: { value: 'Password1!' } });
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 201,
+        json: () => Promise.resolve({}),
+      })
+    );
+
+    fireEvent.click(screen.getByTestId('signup-button'));
+
+    const successMessage = await screen.findByTestId('signup-success-message');
+    expect(successMessage).toBeInTheDocument();
+
+    const loginButton = screen.getByTestId('login-button');
+    fireEvent.click(loginButton);
+
+    expect(mockedNavigate).toHaveBeenCalledWith('/login');
+  });
+
 });
