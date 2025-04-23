@@ -43,7 +43,7 @@ function SignUpScreen() {
   const [retypePassword, setRetypePassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [retypePasswordVisible, setRetypePasswordVisible] = useState(false);
-  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(true);
 
   const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -60,13 +60,13 @@ function SignUpScreen() {
 
   const location = useLocation();
 
-useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const error = params.get('error');
     if (error) {
-        setGeneralError(error);
+      setGeneralError(error);
     }
-}, [location.search]);
+  }, [location.search]);
 
   const validateUsername = (username) => {
     if (!username) {
@@ -156,7 +156,6 @@ useEffect(() => {
 
         if (response.status === 201) {
           setSignupSuccess(true);
-          setTimeout(() => navigate('/login'), 5000);
         } else if (response.status === 400) {
           if (data.message === "Username is already in use") {
             setUsernameTakenError("This username is already taken.");
@@ -183,14 +182,14 @@ useEffect(() => {
         </Typography>
         {generalError && (
           <Typography
-              variant="body1"
-              color="error"
-              className="signup-error"
-              data-testid="signup-error-message"
+            variant="body1"
+            color="error"
+            className="signup-error"
+            data-testid="signup-error-message"
           >
-              {generalError}
+            {generalError}
           </Typography>
-      )}
+        )}
         <form onSubmit={handleSubmit} noValidate>
           <TextField
             id="username"
@@ -294,22 +293,36 @@ useEffect(() => {
             Sign Up
           </Button>
           {signupSuccess && (
-            <Typography
-              variant="body1"
-              color="success.main"
-              className="signup-success"
-              data-testid="signup-success-message"
-            >
-              Successfully signed up! You will be redirected to the login page in 5 seconds.
-            </Typography>
+            <>
+              <Typography
+                variant="body1"
+                color="success.main"
+                className="signup-success"
+                data-testid="signup-success-message"
+              >
+                Successfully signed up!
+              </Typography>
+              <Button
+                id="login-button"
+                type="button"
+                variant="contained"
+                color="primary"
+                fullWidth
+                className="login-button"
+                data-testid="login-button"
+                onClick={() => navigate('/login')}
+              >
+                Return to login
+              </Button>
+            </>
           )}
         </form>
         <Box className="social-signup">
-        <Button
-          variant="outlined"
-          fullWidth
-          startIcon={<GoogleIcon />}
-          sx={{
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<GoogleIcon />}
+            sx={{
               mb: 2,
               borderColor: '#db4437',
               color: '#db4437',
@@ -320,12 +333,12 @@ useEffect(() => {
                 backgroundColor: '#db4437',
                 color: '#fff',
               },
-          }}
-          onClick={() => window.location.href = 'http://localhost:' + port + '/auth/google/signup'}
-      >
-    Sign in with Google
-</Button>
-  
+            }}
+            onClick={() => window.location.href = 'http://localhost:' + port + '/auth/google/signup'}
+          >
+            Sign in with Google
+          </Button>
+
           <Button
             variant="outlined"
             fullWidth
@@ -345,7 +358,7 @@ useEffect(() => {
             Sign in with GitHub
           </Button>
         </Box>
-  
+
         <Box className="login-link">
           <Link component={RouterLink} to="/login" variant="body2">
             Already have an account? Login
@@ -353,7 +366,7 @@ useEffect(() => {
         </Box>
       </Box>
     </Container>
-  );  
+  );
 }
 
 export default SignUpScreen;
