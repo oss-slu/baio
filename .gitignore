@@ -48,13 +48,10 @@ dmypy.json
 .pytype/
 
 # Environment & Config
-.env            # Environment variables
-*.env           # Any other env files
+.env          
+*.env           
 *.ini
-*.toml
 *.cfg
-*.yaml
-*.yml
 *.json
 
 # Data & Models
