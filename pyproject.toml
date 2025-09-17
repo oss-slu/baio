@@ -8,67 +8,62 @@ version = "0.1.0"
 description = "BAIO (Bioinformatics AI for Open-set detection) - A cutting-edge metagenomic analysis platform that leverages foundation models for DNA sequence analysis"
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.8,<3.11"
+requires-python = ">=3.12,<3.13"
 
-# Core dependencies matching environment.yml
 dependencies = [
-    # Core ML/AI (CPU only)
+    # ---- Core / Python scientific stack (match environment.yml) ----
+    "numpy==2.2.*",
+    "scipy==1.14.*",
+    "numba==0.61.*",
+    "llvmlite==0.44.*",
+
+    # ML / DS
+    "scikit-learn==1.5.*",
+    "pandas==2.2.*",
+    "matplotlib==3.9.*",
+    "seaborn==0.13.*",
+    "plotly",
+
+    # Torch (CPU/MPS)
     "torch==2.5.1",
-    "transformers==4.56.1", 
-    "tokenizers==0.22.0",
-    "accelerate==1.10.1",
-    "datasets==4.0.0",
-    
-    # Scientific computing
-    "numpy==2.3.3",
-    "pandas==2.3.2", 
-    "scipy==1.16.1",
-    "scikit-learn==1.5.2",
-    "matplotlib==3.10.6",
-    "seaborn==0.13.2",
-    "plotly==6.3.0",
-    
-    # Bioinformatics
-    "biopython==1.85",
-    "pysam==0.23.3",
-    
-    # Clustering / dimensionality reduction
-    "hdbscan==0.8.40",
+
+    # I/O & storage
+    "pyarrow==17.*",
+    "h5py",
+    "zarr",
+
+    # App / tooling
+    "streamlit==1.39.*",
+    "tqdm",
+    "click",
+    "pyyaml",
+    "jsonschema",
+    "rich",
+
+    # Clustering / DR
+    "hdbscan==0.8.39",
     "umap-learn==0.5.7",
     
-    # Web interface
-    "streamlit==1.39.0",
-    
-    # File I/O / formats
-    "h5py==3.12.1",
-    "zarr==2.18.2", 
-    "pyarrow==17.0.0",
-    
-    # Utilities
-    "tqdm==4.67.1",
-    "click==8.1.7",
-    "pyyaml==6.0.2",
-    "jsonschema==4.25.1",
-    "rich==13.9.4",
-    
-    # Jupyter (from environment.yml)
-    "jupyter==1.1.1",
-    "jupyterlab==4.4.7", 
-    "ipywidgets==8.1.7",
-    
-    # Pip extras
-    "evo2>=0.3.0",
+    # Jupyter
+    "jupyter",
+    "jupyterlab",
+    "ipywidgets",
+
+    # Pip-only libs from env.yml
+    "transformers==4.56.1",
+    "tokenizers==0.22.0",
+    "accelerate>=0.30",
+    "datasets>=2.19",
 ]
 
 [project.optional-dependencies]
-# Development dependencies
 dev = [
-    "pytest==8.4.2",
-    "pytest-cov==7.0.0",
-    "black==25.1.0",
-    "flake8==7.3.0",
-    "mypy==1.10.0",
-    "isort==6.0.1",
+    "pytest",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
 ]
 
 [project.urls]
@@ -77,9 +72,10 @@ Repository = "https://github.com/oss-slu/baio"
 Issues = "https://github.com/oss-slu/baio/issues"
 Documentation = "https://github.com/oss-slu/baio/blob/main/docs/"
 
-[tool.setuptools]
-# Package discovery
-packages = ["metaseq", "app"]
+[tool.poetry]
+name = "baio"
+version = "0.1.0"
+package-mode = false
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -90,11 +86,11 @@ exclude = ["tests*", "docs*", "notebooks*", "runs*", "weights*", "examples*"]
 metaseq = ["*.yml", "*.yaml", "*.json"]
 app = ["*.yml", "*.yaml", "*.json"]
 
-# Development tools configuration
+# ---- Dev tool configs ----
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310']
-include = '\.pyi?$'
+target-version = ['py312']
+include = '\\.pyi?$'
 extend-exclude = '''
 /(
   # directories
@@ -131,7 +127,7 @@ exclude = [
 ]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = ">=3.12,<3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -155,6 +151,11 @@ module = [
     "plotly.*",
     "seaborn.*",
     "evo2.*",
+    "torch.*",
+    "transformers.*",
+    "accelerate.*",
+    "datasets.*",
+    "tokenizers.*",
 ]
 ignore_missing_imports = true
 
@@ -181,14 +182,14 @@ omit = [
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self.debug:",
-    "if settings.DEBUG",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:",
-    "class .*\bProtocol\):",
-    "@(abc\.)?abstractmethod",
+    'pragma: no cover',
+    'def __repr__',
+    'if self.debug:',
+    'if settings.DEBUG',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if 0:',
+    'if __name__ == .__main__.:',
+    'class .*\\bProtocol\\):',
+    '@(abc\\.)?abstractmethod',
 ]

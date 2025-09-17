@@ -4,62 +4,58 @@ channels:
   - bioconda
 
 dependencies:
-  # Python 3.8 or higher
-  - python>=3.8,<3.11
+  # Core
+  - python>=3.12,<3.13
 
-  # Core ML/AI (CPU only)
-  - pytorch=2.5.1          
-  - transformers=4.56.1
-  - tokenizers=0.22.0
-  - accelerate=1.10.1
-  - datasets=4.0.0
+  # Numeric stack compatible with Py3.12
+  - numpy=2.2
+  - scipy=1.14
+  - numba=0.61
+  - llvmlite=0.44
 
-  # Scientific computing
-  - numpy=2.3.3
-  - pandas=2.3.2
-  - scipy=1.16.1
-  - scikit-learn=1.5.2      
-  - matplotlib=3.10.6
-  - seaborn=0.13.2
-  - plotly=6.3.0
+  # ML / DS
+  - scikit-learn=1.5
+  - pandas=2.2
+  - matplotlib=3.9
+  - seaborn=0.13
+  - plotly
 
-  # Bioinformatics
-  - biopython=1.85
-  - pysam=0.23.3
+  # Torch (CPU/MPS on Apple Silicon)
+  - pytorch=2.5.1
 
-  # Clustering / dimensionality reduction
-  - hdbscan=0.8.40
-  - umap-learn=0.5.7
+  # I/O & storage
+  - pyarrow=17
+  - h5py
+  - zarr
 
-  # Web interface
-  - streamlit=1.39.0
+  # App / tooling
+  - streamlit=1.39
+  - tqdm
+  - click
+  - pyyaml
+  - jsonschema
+  - rich
 
-  # File I/O / formats
-  - h5py=3.12.1
-  - zarr=2.18.2
-  - pyarrow=17.0.0
-
-  # Dev / testing
-  - pytest=8.4.2
-  - pytest-cov=7.0.0
-  - black=25.1.0
-  - flake8=7.3.0
-  - mypy=1.10.0
-  - isort=6.0.1
-
-  # Utilities
-  - tqdm=4.67.1
-  - click=8.1.7
-  - pyyaml=6.0.2
-  - jsonschema=4.25.1
-  - rich=13.9.4
+  # Dev / QA
+  - pytest
+  - pytest-cov
+  - black
+  - flake8
+  - isort
+  - mypy
 
   # Jupyter
-  - jupyter=1.1.1
-  - jupyterlab=4.4.7
-  - ipywidgets=8.1.7
+  - jupyter
+  - jupyterlab
+  - ipywidgets
 
-  # pip extras
+# Install without conflicts
+  - hdbscan=0.8.39
+  - umap-learn==0.5.7
+
   - pip
   - pip:
-      - evo2>=0.3.0
+      - transformers==4.56.1
+      - tokenizers==0.22.0
+      - accelerate>=0.30
+      - datasets>=2.19
