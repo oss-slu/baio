@@ -15,12 +15,4 @@ from . import agg
 from . import cluster
 from . import viz
 
-__all__ = [
-    "dataio",
-    "evo2_embed", 
-    "models",
-    "ood",
-    "agg",
-    "cluster",
-    "viz"
-]
+__all__ = ["dataio", "evo2_embed", "models", "ood", "agg", "cluster", "viz"]
