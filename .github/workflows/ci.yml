@@ -69,10 +69,14 @@ jobs:
 
       - name: Run unit tests (pytest)
         env:
-          # Keep output minimal; tweak as you like
           PYTHONWARNINGS: default
         run: |
-          pytest -q --maxfail=1 --disable-warnings
+          # Run tests if they exist, otherwise just report
+          if [ -d "tests" ] && [ -n "$(find tests -name 'test_*.py' -o -name '*_test.py')" ]; then
+            pytest -q --maxfail=1 --disable-warnings
+          else
+            echo "No tests found - skipping test execution"
+          fi
 
       # If a pyproject.toml exists, verify that the project builds
       - name: Verify packaging (pyproject)
