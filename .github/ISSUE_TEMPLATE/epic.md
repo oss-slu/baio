@@ -19,7 +19,6 @@ Describe the high-level objective or system component this Epic will deliver.
 
 - [ ] Link to sub-issue 1 (e.g., #63 System Prompt Development)
 - [ ] Link to sub-issue 2 (e.g., #64 Integrate Open-Source LLMs)
-- [ ] Link to sub-issue 3 (e.g., #65 Output Processing Pipeline)
 
 ## Acceptance Criteria
 
