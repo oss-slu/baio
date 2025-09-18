@@ -69,7 +69,7 @@ metaseq-detector/
 - Python 3.8+
 - CUDA-compatible GPU (recommended for Evo2 model)
 
-### Setup
+### Option 1: Conda Environment
 ```bash
 # Clone the repository
 git clone https://github.com/your-org/baio.git
@@ -78,9 +78,221 @@ cd baio
 # Create and activate conda environment
 conda env create -f environment.yml
 conda activate baio
+```
 
-# Or using Poetry
+### Option 2: Python Virtual Environment
+If you prefer using Python's built-in virtual environment instead of conda:
+
+#### 1. Create Virtual Environment
+
+**Windows:**
+```bash
+# Navigate to project directory
+cd baio
+
+# Create virtual environment
+python -m venv baio-env
+
+# Alternative if python3 is your command
+python3 -m venv baio-env
+```
+
+**macOS/Linux:**
+```bash
+# Navigate to project directory
+cd baio
+
+# Create virtual environment
+python3 -m venv baio-env
+```
+
+#### 2. Activate Virtual Environment
+**Windows (Command Prompt):**
+```bash
+baio-env\Scripts\activate
+```
+
+**Windows (PowerShell):**
+```bash
+baio-env\Scripts\Activate.ps1
+```
+
+**macOS/Linux:**
+```bash
+source baio-env/bin/activate
+```
+
+#### 3. Install Dependencies
+```bash
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install project dependencies
+pip install -r requirements.txt
+
+pip install streamlit torch transformers biopython numpy pandas scikit-learn hdbscan plotly
+```
+
+#### 4. Verify Installation
+```bash
+# Check Python version
+python --version
+
+# Check installed packages
+pip list
+
+# Test Streamlit installation
+streamlit hello
+```
+
+### Option 3: Poetry
+```bash
+# Clone and install with Poetry
+git clone https://github.com/your-org/baio.git
+cd baio
 poetry install
+```
+
+## Development Environment Setup
+
+### IDE Configuration
+
+#### Visual Studio Code
+1. Open Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
+2. Select "Python: Select Interpreter"
+3. Choose the Python executable from your virtual environment:
+   - **Conda**: Usually in `~/miniconda3/envs/baio/bin/python`
+   - **venv**: `baio-env/Scripts/python.exe` (Windows) or `baio-env/bin/python` (macOS/Linux)
+
+#### PyCharm
+1. Go to File → Settings → Project → Python Interpreter
+2. Click gear icon → Add
+3. Select "Existing Environment"
+4. Browse to your environment's Python executable
+
+#### Jupyter Notebook Integration
+```bash
+# For conda environment
+conda activate baio
+conda install ipykernel
+python -m ipykernel install --user --name=baio --display-name="BAIO Project"
+
+# For venv environment
+source baio-env/bin/activate  # or activate script for Windows
+pip install ipykernel
+python -m ipykernel install --user --name=baio-env --display-name="BAIO Project"
+```
+
+### Environment Variables
+
+Create a `.env` file in your project root for API keys and configuration:
+```bash
+# .env file
+OPENAI_API_KEY=your_api_key_here
+HUGGINGFACE_TOKEN=your_hf_token_here
+DEBUG=True
+STREAMLIT_SERVER_PORT=8501
+CUDA_VISIBLE_DEVICES=0
+```
+
+Load environment variables in your Python code:
+```python
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv('OPENAI_API_KEY')
+```
+
+### Common Setup Issues & Solutions
+
+#### Issue: `python` command not found
+**Solution:** Use `python3` instead of `python`, or ensure Python is in your system PATH.
+
+#### Issue: Permission denied on Windows PowerShell
+**Solution:** Run PowerShell as administrator and execute:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Issue: `pip` command not found
+**Solution:** 
+```bash
+# Use python -m pip instead
+python -m pip install package-name
+```
+
+#### Issue: CUDA/GPU Setup Problems
+**Solution:** 
+```bash
+# Check CUDA availability
+python -c "import torch; print(torch.cuda.is_available())"
+
+# Install CPU-only version if needed
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
+
+#### Issue: Evo2 Model Download Fails
+**Solution:**
+- Ensure stable internet connection
+- Check Hugging Face token permissions
+- Use `huggingface-cli login` for authentication
+
+### Daily Development Workflow
+
+1. **Activate Environment:**
+   ```bash
+   # Conda
+   conda activate baio
+   
+   # venv (Linux/Mac)
+   source baio-env/bin/activate
+   
+   # venv (Windows)
+   baio-env\Scripts\activate
+   ```
+
+2. **Update Dependencies:**
+   ```bash
+   # Conda
+   conda env update -f environment.yml
+   
+   # venv
+   pip install -r requirements.txt
+   ```
+
+3. **Run Development Server:**
+   ```bash
+   streamlit run app/streamlit_app.py
+   ```
+
+4. **Deactivate When Done:**
+   ```bash
+   # Both conda and venv
+   deactivate
+   ```
+
+### Dependency Management
+
+#### Adding New Packages
+
+**For Conda:**
+```bash
+conda activate baio
+conda install new-package
+conda env export > environment.yml
+```
+
+**For venv:**
+```bash
+source baio-env/bin/activate  # Windows: baio-env\Scripts\activate
+pip install new-package
+pip freeze > requirements.txt
+```
+
+**For Poetry:**
+```bash
+poetry add new-package
 ```
 
 ## Quick Start
@@ -89,6 +301,10 @@ poetry install
 ```bash
 # Using conda
 conda activate baio
+streamlit run app/streamlit_app.py
+
+# Using venv
+source baio-env/bin/activate  # Windows: baio-env\Scripts\activate
 streamlit run app/streamlit_app.py
 
 # Using Poetry
@@ -127,6 +343,10 @@ poetry run streamlit run app/streamlit_app.py
 
 ### Running Tests
 ```bash
+# Activate your environment first
+conda activate baio  # or source baio-env/bin/activate
+
+# Run tests
 pytest tests/
 ```
 
@@ -148,9 +368,11 @@ We welcome contributions! Please see our contributing guidelines and code of con
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Set up your development environment (see Installation section)
+4. Make your changes and test thoroughly
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## Research Applications
 
@@ -168,7 +390,7 @@ If you use BAIO in your research, please cite:
 @software{baio2024,
   title={BAIO: LLM-Based Taxonomy Profiling & Open-Set Pathogen Detection},
   author={Farhan, Tanzim and Hashami, Mustafa and Gujja, Sahana and Burns, Eric and Gaikwad, Manali},
-  year={2024},
+  year={2025},
   url={https://github.com/your-org/baio}
 }
 ```
