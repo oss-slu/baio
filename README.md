@@ -310,6 +310,20 @@ streamlit run app/streamlit_app.py
 # Using Poetry
 poetry run streamlit run app/streamlit_app.py
 ```
+## 🐳 Running BAIO with Docker & Docker Compose
+
+You can run the full BAIO stack—FastAPI backend and Streamlit UI—without installing Python or dependencies locally.
+
+### 1. Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop) or Docker Engine with Compose v2.
+* Git to clone the repository.
+
+### 2. Environment file
+Copy the template and adjust if needed:
+
+### 3. Build and Start the stack
+docker compose build
+docker compose up
 
 ### Basic Usage
 1. Upload your FASTQ/FASTA files through the Streamlit interface
