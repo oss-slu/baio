@@ -8,7 +8,10 @@ from .techniques import get_all_techniques
 
 
 def run_all(evidence: Dict[str, Any], out_dir: str = "/data/runs/prompts") -> str:
-    """Run all techniques and compare results."""
+    """Run every registered technique and persist comparison results.
+
+    Returns the path to the saved JSON file. Keeps console output brief.
+    """
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     
     techniques = get_all_techniques()

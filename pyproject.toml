@@ -1,26 +1,3 @@
-
-[tool.poetry]
-name = "baio"  # distribution name (can differ from import package)
-version = "0.1.0"
-description = "BAIO: LLM-Based Taxonomy Profiling & Open-Set Pathogen Detection"
-authors = ["BAIO Development Team"]
-readme = "README.md"
-packages = [{ include = "metaseq" }]  # <— tell Poetry your code lives in ./metaseq
-
-[tool.poetry.dependencies]
-python = ">=3.9"
-# add real runtime deps later, start empty to unblock build
-# numpy = "*"
-# pandas = "*"
-# scikit-learn = "*"
-# biopython = "*"
-# hdbscan = "*"
-# requests = "*"
-
-[build-system]
-requires = ["poetry-core>=1.8.0"]
-build-backend = "poetry.core.masonry.api"
-
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -100,10 +77,15 @@ name = "baio"
 version = "0.1.0"
 package-mode = false
 
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["metaseq*", "app*"]
+packages = ["prompting", "metaseq", "tests*"]
 exclude = ["tests*", "docs*", "notebooks*", "runs*", "weights*", "examples*"]
+
+
+
 
 [tool.setuptools.package-data]
 metaseq = ["*.yml", "*.yaml", "*.json"]
@@ -186,6 +168,7 @@ ignore_missing_imports = true
 minversion = "6.0"
 addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
+pythonpath = ["."]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -216,4 +199,3 @@ exclude_lines = [
     'class .*\\bProtocol\\):',
     '@(abc\\.)?abstractmethod',
 ]
-

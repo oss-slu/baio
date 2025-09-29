@@ -2,7 +2,9 @@
 
 import json
 import re
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, List
+from .types import Report
+from . import logging as plog
 
 
 REPORT_JSON_SCHEMA = {
@@ -27,8 +29,11 @@ REPORT_JSON_SCHEMA = {
 }
 
 
-def extract_json_from_text(text: str) -> Tuple[Optional[Dict], list]:
-    """Extract first JSON object from text."""
+def extract_json_from_text(text: str) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+    """Extract the first JSON object found in a text blob.
+
+    Returns a tuple (parsed_dict or None, errors list).
+    """
     errors = []
     
     # Try direct parse
@@ -50,11 +55,15 @@ def extract_json_from_text(text: str) -> Tuple[Optional[Dict], list]:
             continue
     
     errors.append("No valid JSON found")
+    plog.info("json_extraction_failed", text_preview=text[:120])
     return None, errors
 
 
-def validate_report_schema(data: Dict[str, Any]) -> Tuple[bool, list]:
-    """Basic schema validation."""
+def validate_report_schema(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    """Validate a parsed report dict against minimal schema rules.
+
+    Returns (is_valid, errors).
+    """
     errors = []
     
     required_fields = ["summary", "known_pathogens", "ood_rate", "caveats"]
@@ -77,11 +86,17 @@ def validate_report_schema(data: Dict[str, Any]) -> Tuple[bool, list]:
     if "caveats" in data and not isinstance(data["caveats"], list):
         errors.append("caveats must be array")
     
-    return len(errors) == 0, errors
+    ok = len(errors) == 0
+    if not ok:
+        plog.info("schema_validation_failed", errors=errors)
+    return ok, errors
 
 
-def create_inconclusive_report(reason: str = "Analysis failed") -> Dict[str, Any]:
-    """Create fallback inconclusive report."""
+def create_inconclusive_report(reason: str = "Analysis failed") -> Report:
+    """Return a simple inconclusive report dict with a reason.
+
+    This is used as a safe fallback when parsing fails.
+    """
     return {
         "summary": "Inconclusive - insufficient evidence",
         "known_pathogens": [],
@@ -91,7 +106,10 @@ def create_inconclusive_report(reason: str = "Analysis failed") -> Dict[str, Any
 
 
 def validate_and_parse(raw_response: str, evidence: Dict[str, Any]) -> Dict[str, Any]:
-    """Complete parsing and validation pipeline."""
+    """Extract JSON from raw_response and validate it against schema.
+
+    Returns {'json': ..., 'valid': bool, 'errors': [...]}.
+    """
     result = {'json': {}, 'valid': False, 'errors': []}
     
     # Extract JSON
@@ -100,6 +118,7 @@ def validate_and_parse(raw_response: str, evidence: Dict[str, Any]) -> Dict[str,
     
     if extracted is None:
         # Fallback to inconclusive
+        plog.error("parsing_failed", reason="no_json", preview=raw_response[:120])
         result['json'] = create_inconclusive_report("JSON parsing failed")
         result['valid'] = True
         return result
@@ -110,5 +129,7 @@ def validate_and_parse(raw_response: str, evidence: Dict[str, Any]) -> Dict[str,
     
     result['json'] = extracted
     result['valid'] = is_valid
+    if not is_valid:
+        plog.error("validation_errors", errors=validation_errors)
     
     return result
