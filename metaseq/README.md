@@ -15,11 +15,6 @@ All directly from Python — no local installation required.
 
 ## Prerequisites
 - **NVIDIA Hosted API Key**: Required to authenticate API requests.  
-- **Python 3.7+**  
-- **requests** library:  
-  ```bash
-  pip install requests
-  ```
 
 ---
 
@@ -36,11 +31,11 @@ All directly from Python — no local installation required.
 ---
 
 ## Evo2 Client Usage
-The Evo2 model is accessed via a dedicated client (`Evo2Client`) in the **llm_clients** module.
+The Evo2 model is accessed via a dedicated client (`Evo2Client`) in the **metaseq** module.
 
 ### Initialization
 ```python
-from llm_clients.evo2_client import Evo2Client
+from metaseq.evo2_client import Evo2Client
 
 client = Evo2Client()
 ```
@@ -78,7 +73,7 @@ print(response.latency_s)   # Request latency (seconds)
 ## References
 - [ArcInstitute/Evo2 GitHub](https://github.com/ArcInstitute/Evo2)  
 - [NVIDIA NIM Evo2 Docs](https://developer.nvidia.com/nim)  
-- `llm_clients/evo2_client.py` and `llm_clients/types.py` in this repository  
+- `metaseq/evo2_client.py` and `metaseq/types.py` in this repository  
 
 ---
 
