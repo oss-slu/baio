@@ -12,9 +12,9 @@ st.title("BAIO — Dockerized skeleton ✅")
 uploaded = st.file_uploader("Upload (demo)")
 if uploaded and st.button("Run Analysis"):
     try:
-        r = requests.post(f"{API_URL_INTERNAL}/run",
-                          json={"input_path": uploaded.name},
-                          timeout=30)
+        r = requests.post(
+            f"{API_URL_INTERNAL}/run", json={"input_path": uploaded.name}, timeout=30
+        )
         r.raise_for_status()
         st.write("API says:", r.json())
     except requests.RequestException as e:

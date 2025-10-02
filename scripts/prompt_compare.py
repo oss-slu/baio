@@ -9,14 +9,14 @@ from prompting.compare import run_all
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-def main():
+def main() -> None:
     # Simple test evidence
     evidence = {
         "known_taxa": [["SARS-CoV-2", 0.65], ["Human", 0.25]],
         "ood_rate": 0.05,
-        "sample_meta": "Test wastewater sample"
+        "sample_meta": "Test wastewater sample",
     }
-    
+
     print("Running prompt technique comparison...")
     result_path = run_all(evidence)
     print(f"Complete! Results: {result_path}")
