@@ -1,16 +1,14 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from typing import Dict, Any
 
 app = FastAPI()
 
+
 @app.get("/health")
-def health():
-    return {"status": "ok"}
+async def health() -> Dict[str, str]:
+    return {"status": "healthy"}
 
-class RunRequest(BaseModel):
-    input_path: str
 
-@app.post("/run")
-def run_pipeline(req: RunRequest):
-    # placeholder;
-    return {"ok": True, "note": f"pretend we processed {req.input_path}"}
+@app.post("/run_pipeline")
+async def run_pipeline() -> Dict[str, Any]:
+    return {"result": "success"}

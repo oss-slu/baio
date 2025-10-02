@@ -1,8 +1,7 @@
 """Base classes for prompt techniques."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
-import time
+from typing import Dict, List, Any, Optional
 
 
 class PromptResult(dict):
@@ -27,15 +26,17 @@ class PromptResult(dict):
             evidence: The input evidence dict provided to the technique.
         """
         super().__init__()
-        self.update({
-            'technique': technique,
-            'evidence': evidence,
-            'raw': '',
-            'json': {},
-            'valid': False,
-            'errors': [],
-            'latency_s': 0.0
-        })
+        self.update(
+            {
+                "technique": technique,
+                "evidence": evidence,
+                "raw": "",
+                "json": {},
+                "valid": False,
+                "errors": [],
+                "latency_s": 0.0,
+            }
+        )
 
 
 class PromptTechnique(ABC):
@@ -44,7 +45,10 @@ class PromptTechnique(ABC):
     Subclasses implement specific prompting and postprocessing strategies.
     """
 
-    def __init__(self, name: str, client=None):
+    name: str
+    client: Optional[Any]  # Use Any instead of object for more flexibility
+
+    def __init__(self, name: str, client: Optional[Any] = None):
         """Initialize a technique with a name and optional LLM client.
 
         Args:
@@ -72,7 +76,9 @@ class PromptTechnique(ABC):
         pass
 
     @abstractmethod
-    def postprocess(self, raw_response: str, evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def postprocess(
+        self, raw_response: str, evidence: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Parse and validate the raw LLM response.
 
         Implementations should parse raw_response into structured data and
@@ -115,22 +121,23 @@ class PromptTechnique(ABC):
         try:
             if self.client is None:
                 from .client import LLMClient
+
                 self.client = LLMClient()
 
             # Get LLM response
             messages = self.build_messages(evidence)
             llm_result = self.client.chat(messages, temperature=temperature)
 
-            result['raw'] = llm_result['content']
-            result['latency_s'] = llm_result['latency_s']
+            result["raw"] = llm_result["content"]
+            result["latency_s"] = llm_result["latency_s"]
 
             # Parse response
-            processed = self.postprocess(llm_result['content'], evidence)
-            result['json'] = processed.get('json', {})
-            result['valid'] = processed.get('valid', False)
-            result['errors'] = processed.get('errors', [])
+            processed = self.postprocess(llm_result["content"], evidence)
+            result["json"] = processed.get("json", {})
+            result["valid"] = processed.get("valid", False)
+            result["errors"] = processed.get("errors", [])
 
         except Exception as e:
-            result['errors'].append(str(e))
+            result["errors"].append(str(e))
 
         return result

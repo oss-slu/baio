@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict, Any, Protocol
+from typing import TypedDict, List, Dict, Protocol
 
 
 class Pathogen(TypedDict):
@@ -20,4 +20,9 @@ class LLMResponse(TypedDict):
 
 
 class LLMClientProto(Protocol):
-    def chat(self, messages: List[Dict[str, str]], temperature: float = 0.3, max_tokens: int = 1000) -> LLMResponse: ...
+    def chat(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.3,
+        max_tokens: int = 1000,
+    ) -> LLMResponse: ...

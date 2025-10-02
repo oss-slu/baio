@@ -3,6 +3,7 @@
 Uses the standard logging module but formats messages as key/value JSON-ish dicts
 for easier downstream parsing.
 """
+
 import logging
 import json
 from typing import Any, Dict
@@ -11,7 +12,7 @@ from typing import Any, Dict
 logger = logging.getLogger("prompting")
 if not logger.handlers:
     handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(message)s')
+    formatter = logging.Formatter("%(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 logger.setLevel(logging.INFO)
