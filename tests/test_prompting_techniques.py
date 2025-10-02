@@ -1,7 +1,7 @@
 from prompting import techniques, client
 
 
-def test_get_all_techniques_and_run(monkeypatch):
+def test_get_all_techniques_and_run(monkeypatch) -> None:
     # Ensure mock mode for client
     monkeypatch.delenv('LLM_API_KEY', raising=False)
     monkeypatch.delenv('GROK_API_KEY', raising=False)
@@ -20,7 +20,7 @@ def test_get_all_techniques_and_run(monkeypatch):
     assert 'summary' in res['json']
 
 
-def test_critique_and_revise_helpers(monkeypatch):
+def test_critique_and_revise_helpers(monkeypatch) -> None:
     monkeypatch.delenv('LLM_API_KEY', raising=False)
     monkeypatch.delenv('GROK_API_KEY', raising=False)
 
@@ -34,7 +34,7 @@ def test_critique_and_revise_helpers(monkeypatch):
     assert isinstance(critique, list) and 'Reviewer critique' in critique[0]['content']
 
 
-def test_self_consistency_with_invalid_base(monkeypatch):
+def test_self_consistency_with_invalid_base() -> None:
     # Create a base technique that always returns invalid PromptResult
     class FakeBase:
         def __init__(self):

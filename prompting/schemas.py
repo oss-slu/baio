@@ -34,11 +34,11 @@ def extract_json_from_text(text: str) -> Tuple[Optional[Dict[str, Any]], List[st
 
     Returns a tuple (parsed_dict or None, errors list).
     """
-    errors = []
+    errors: List[str] = []
     
     # Try direct parse
     try:
-        return json.loads(text.strip()), []
+        return json.loads(text.strip()), errors
     except json.JSONDecodeError:
         pass
     
@@ -50,7 +50,7 @@ def extract_json_from_text(text: str) -> Tuple[Optional[Dict[str, Any]], List[st
         try:
             parsed = json.loads(match)
             if isinstance(parsed, dict):
-                return parsed, []
+                return parsed, errors
         except json.JSONDecodeError:
             continue
     
@@ -64,7 +64,7 @@ def validate_report_schema(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
 
     Returns (is_valid, errors).
     """
-    errors = []
+    errors: List[str] = []
     
     required_fields = ["summary", "known_pathogens", "ood_rate", "caveats"]
     for field in required_fields:
@@ -110,7 +110,8 @@ def validate_and_parse(raw_response: str, evidence: Dict[str, Any]) -> Dict[str,
 
     Returns {'json': ..., 'valid': bool, 'errors': [...]}.
     """
-    result = {'json': {}, 'valid': False, 'errors': []}
+    result_errors: List[str] = []
+    result: Dict[str, Any] = {'json': {}, 'valid': False, 'errors': result_errors}
     
     # Extract JSON
     extracted, extraction_errors = extract_json_from_text(raw_response)

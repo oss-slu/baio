@@ -1,5 +1,6 @@
-
-import os, requests, streamlit as st
+import os
+import requests
+import streamlit as st
 
 
 API_URL_INTERNAL = os.getenv("API_URL_INTERNAL", "http://api:8080")

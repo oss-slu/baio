@@ -2,21 +2,21 @@ import json
 from prompting import schemas
 
 
-def test_extract_json_from_text_direct():
+def test_extract_json_from_text_direct() -> None:
     text = '{"a": 1, "b": "x"}'
     parsed, errs = schemas.extract_json_from_text(text)
     assert errs == []
     assert parsed == {"a": 1, "b": "x"}
 
 
-def test_extract_json_from_text_embedded():
+def test_extract_json_from_text_embedded() -> None:
     text = 'Some text {"summary": "ok", "ood_rate": 0.1} trailing'
     parsed, errs = schemas.extract_json_from_text(text)
     assert errs == []
     assert parsed is not None and 'summary' in parsed
 
 
-def test_validate_report_schema_and_inconclusive():
+def test_validate_report_schema_and_inconclusive() -> None:
     good = {
         "summary": "Sth",
         "known_pathogens": [{"taxon": "T", "confidence": 0.5}],
@@ -33,7 +33,7 @@ def test_validate_report_schema_and_inconclusive():
     assert any('Missing required field' in e for e in errs2)
 
 
-def test_create_inconclusive_and_validate_and_parse():
+def test_create_inconclusive_and_validate_and_parse() -> None:
     incon = schemas.create_inconclusive_report('reason')
     assert incon['known_pathogens'] == []
 
@@ -43,7 +43,7 @@ def test_create_inconclusive_and_validate_and_parse():
     assert isinstance(result['json'], dict)
 
 
-def test_validate_and_parse_no_json():
+def test_validate_and_parse_no_json() -> None:
     raw = 'no json here, just text'
     result = schemas.validate_and_parse(raw, evidence={})
     # Fallback returns an inconclusive report and marks valid True (fallback)

@@ -3,7 +3,7 @@
 import json
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Iterable, Tuple
 from .techniques import get_all_techniques
 
 
@@ -14,28 +14,43 @@ def run_all(evidence: Dict[str, Any], out_dir: str = "/data/runs/prompts") -> st
     """
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     
-    techniques = get_all_techniques()
-    results = {
-        'evidence': evidence,
-        'timestamp': time.time(),
-        'technique_results': {}
+        # Prepare results container with concrete types so mypy knows how we use it.
+    results: Dict[str, Any] = {
+        "evidence": evidence,
+        "runs": [],        # List[Dict[str, Any]]
+        "summary": {},     # Dict[str, Any]
     }
-    
-    print(f"Running {len(techniques)} techniques...")
-    
-    for name, technique in techniques.items():
-        print(f"  {name}...", end='')
+
+    # Resolve techniques; support both dict[name->tech] and iterable[tech].
+    techniques = get_all_techniques()
+    if isinstance(techniques, dict):
+        technique_items: Iterable[Tuple[str, Any]] = techniques.items()
+    else:
+        technique_items = (
+            (getattr(t, "name", t.__class__.__name__), t) for t in techniques  # type: ignore[call-arg]
+        )
+
+    total_count: int = 0
+    valid_count: int = 0
+
+    # Keep a typed reference to the runs list for safe appends.
+    runs_list = results["runs"]
+    assert isinstance(runs_list, list)
+
+    for name, tech in technique_items:
+        total_count += 1
         try:
-            result = technique.run(evidence)
-            results['technique_results'][name] = dict(result)
-            print(f" ✓ ({result['latency_s']:.1f}s)")
-        except Exception as e:
-            print(f" ✗ {e}")
-            results['technique_results'][name] = {
-                'technique': name,
-                'valid': False,
-                'errors': [str(e)]
-            }
+            out = tech.run(evidence)  # expected to be dict-like
+            if not isinstance(out, dict):
+                out = {"output": out}
+            ok = bool(out.get("valid", True))
+            if ok:
+                valid_count += 1
+            run_record: Dict[str, Any] = {"name": str(name), "result": out}
+            runs_list.append(run_record)
+        except Exception as exc:
+            runs_list.append({"name": str(name), "error": str(exc)})
+
     
     # Simple metrics
     valid_count = sum(1 for r in results['technique_results'].values() if r.get('valid', False))

@@ -2,7 +2,7 @@ import json
 from prompting import compare
 
 
-def test_run_all_writes_file(tmp_path, monkeypatch):
+def test_run_all_writes_file(tmp_path) -> None:
     evidence = {"known_taxa": [["SARS-CoV-2", 0.8]], "ood_rate": 0.03}
     out_dir = tmp_path / "out"
     # Ensure directory is used
@@ -17,7 +17,7 @@ def test_run_all_writes_file(tmp_path, monkeypatch):
     assert data['summary']['total_techniques'] >= 1
 
 
-def test_run_all_with_empty_evidence(tmp_path):
+def test_run_all_with_empty_evidence(tmp_path) -> None:
     evidence = {}
     out_dir = tmp_path / "out2"
     out_file = compare.run_all(evidence, out_dir=str(out_dir))

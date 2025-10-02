@@ -2,7 +2,7 @@ import json
 from prompting import client
 
 
-def test_llmclient_mock_response_structure(monkeypatch):
+def test_llmclient_mock_response_structure(monkeypatch) -> None:
     # Ensure no API keys so client runs in mock mode
     monkeypatch.delenv('LLM_API_KEY', raising=False)
     monkeypatch.delenv('GROK_API_KEY', raising=False)

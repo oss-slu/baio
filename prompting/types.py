@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict, Any, Protocol
+from typing import TypedDict, List, Dict, Protocol
 
 
 class Pathogen(TypedDict):

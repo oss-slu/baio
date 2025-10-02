@@ -31,19 +31,19 @@ class LLMClient:
         contains keys: 'content' (str), 'latency_s' (float) and 'mock' (bool).
         """
         start_time = time.time()
+
+        resp: LLMResponse = {}
         
         if self.mock_mode:
             response = self._mock_response(messages)
         else:
             response = self._real_response(messages, temperature, max_tokens)
         
-        resp = {
-            'content': response,
-            'latency_s': time.time() - start_time,
-            'mock': self.mock_mode
-        }
+        resp['content'] = response
+        resp['latency_s'] = time.time() - start_time
+        resp['mock'] = self.mock_mode
         plog.info("llm_response", latency=resp['latency_s'], mock=resp['mock'])
-        return LLMResponse(**resp)  # type: ignore[arg-type]
+        return resp  # type: ignore[arg-type]
     
     def _real_response(self, messages: List[Dict[str, str]], temperature: float, max_tokens: int) -> str:
         """TODO: Implement actual API call when keys available."""

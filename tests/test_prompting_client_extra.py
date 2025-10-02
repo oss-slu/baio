@@ -2,7 +2,7 @@ from prompting import client
 import json
 
 
-def test_mock_inconclusive_response(monkeypatch):
+def test_mock_inconclusive_response(monkeypatch) -> None:
     monkeypatch.delenv('LLM_API_KEY', raising=False)
     monkeypatch.delenv('GROK_API_KEY', raising=False)
 
@@ -15,7 +15,7 @@ def test_mock_inconclusive_response(monkeypatch):
     assert isinstance(parsed.get('ood_rate', 0), float)
 
 
-def test_mock_generic_response(monkeypatch):
+def test_mock_generic_response(monkeypatch) -> None:
     monkeypatch.delenv('LLM_API_KEY', raising=False)
     monkeypatch.delenv('GROK_API_KEY', raising=False)
 

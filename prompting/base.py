@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any
-import time
 
 
 class PromptResult(dict):

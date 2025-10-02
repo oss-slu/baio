@@ -2,13 +2,11 @@
 """Simple script to run prompt comparisons."""
 
 import sys
-import json
 from pathlib import Path
+from prompting.compare import run_all
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from prompting.compare import run_all
 
 
 def main():
