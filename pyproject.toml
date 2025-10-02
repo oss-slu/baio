@@ -85,13 +85,8 @@ version = "0.1.0"
 package-mode = false
 
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["metaseq*", "app*"]
-packages = ["prompting", "metaseq", "tests*"]
-exclude = ["tests*", "docs*", "notebooks*", "runs*", "weights*", "examples*"]
-
-
+[tool.setuptools]
+packages = ["metaseq", "app", "prompting"]
 
 
 [tool.setuptools.package-data]
