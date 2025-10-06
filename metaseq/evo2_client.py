@@ -26,7 +26,6 @@ class Evo2Client:
         resp: LLMResponse = {
             "content": response,
             "latency_s": time.time() - start_time,
-            "mock": False,
         }
 
         return resp
