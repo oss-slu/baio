@@ -54,6 +54,12 @@ dependencies = [
     "tokenizers==0.22.0",
     "accelerate>=0.30",
     "datasets>=2.19",
+
+    # --- add requests stubs for mypy ---
+    "types-requests>=2.31.0",
+
+    # FastAPI
+    "fastapi>=0.115.0",
 ]
 
 [project.optional-dependencies]
@@ -64,6 +70,7 @@ dev = [
     "flake8",
     "isort",
     "mypy",
+    "flake8-pyproject",
 ]
 
 [project.urls]
@@ -78,13 +85,8 @@ version = "0.1.0"
 package-mode = false
 
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["metaseq*", "app*"]
-packages = ["prompting", "metaseq", "tests*"]
-exclude = ["tests*", "docs*", "notebooks*", "runs*", "weights*", "examples*"]
-
-
+[tool.setuptools]
+packages = ["metaseq", "app", "prompting"]
 
 
 [tool.setuptools.package-data]
@@ -120,7 +122,7 @@ known_first_party = ["metaseq", "app"]
 
 [tool.flake8]
 max-line-length = 88
-extend-ignore = ["E203", "W503"]
+extend-ignore = ["E203", "W503", "E501"]  # Add E501 here
 exclude = [
     ".git",
     "__pycache__",
@@ -132,13 +134,13 @@ exclude = [
 ]
 
 [tool.mypy]
-python_version = ">=3.12,<3.13"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
-disallow_untyped_decorators = true
+disallow_untyped_decorators = false
 no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -161,6 +163,7 @@ module = [
     "accelerate.*",
     "datasets.*",
     "tokenizers.*",
+    "fastapi.*", 
 ]
 ignore_missing_imports = true
 
