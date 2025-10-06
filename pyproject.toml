@@ -1,0 +1,204 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "baio"
+version = "0.1.0"
+description = "BAIO (Bioinformatics AI for Open-set detection) - A cutting-edge metagenomic analysis platform that leverages foundation models for DNA sequence analysis"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12,<3.13"
+
+dependencies = [
+    # ---- Core / Python scientific stack (match environment.yml) ----
+    "numpy==2.2.*",
+    "scipy==1.14.*",
+    "numba==0.61.*",
+    "llvmlite==0.44.*",
+
+    # ML / DS
+    "scikit-learn==1.5.*",
+    "pandas==2.2.*",
+    "matplotlib==3.9.*",
+    "seaborn==0.13.*",
+    "plotly",
+
+    # Torch (CPU/MPS)
+    "torch==2.5.1",
+
+    # I/O & storage
+    "pyarrow==17.*",
+    "h5py",
+    "zarr",
+
+    # App / tooling
+    "streamlit==1.39.*",
+    "tqdm",
+    "click",
+    "pyyaml",
+    "jsonschema",
+    "rich",
+
+    # Clustering / DR
+    "hdbscan==0.8.39",
+    "umap-learn==0.5.7",
+    
+    # Jupyter
+    "jupyter",
+    "jupyterlab",
+    "ipywidgets",
+
+    # Pip-only libs from env.yml
+    "transformers==4.56.1",
+    "tokenizers==0.22.0",
+    "accelerate>=0.30",
+    "datasets>=2.19",
+
+    # --- add requests stubs for mypy ---
+    "types-requests>=2.31.0",
+
+    # FastAPI
+    "fastapi>=0.115.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
+    "flake8-pyproject",
+]
+
+[project.urls]
+Homepage = "https://github.com/oss-slu/baio"
+Repository = "https://github.com/oss-slu/baio"
+Issues = "https://github.com/oss-slu/baio/issues"
+Documentation = "https://github.com/oss-slu/baio/blob/main/docs/"
+
+[tool.poetry]
+name = "baio"
+version = "0.1.0"
+package-mode = false
+
+
+[tool.setuptools]
+packages = ["metaseq", "app", "prompting"]
+
+
+[tool.setuptools.package-data]
+metaseq = ["*.yml", "*.yaml", "*.json"]
+app = ["*.yml", "*.yaml", "*.json"]
+
+# ---- Dev tool configs ----
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["metaseq", "app"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501"]  # Add E501 here
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".eggs",
+    "*.egg-info",
+]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "biopython.*",
+    "pysam.*", 
+    "hdbscan.*",
+    "umap.*",
+    "streamlit.*",
+    "plotly.*",
+    "seaborn.*",
+    "evo2.*",
+    "torch.*",
+    "transformers.*",
+    "accelerate.*",
+    "datasets.*",
+    "tokenizers.*",
+    "fastapi.*", 
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["metaseq", "app"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'def __repr__',
+    'if self.debug:',
+    'if settings.DEBUG',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if 0:',
+    'if __name__ == .__main__.:',
+    'class .*\\bProtocol\\):',
+    '@(abc\\.)?abstractmethod',
+]

@@ -1,0 +1,63 @@
+name: baio
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  # Core
+  - python>=3.12,<3.13
+
+  # Numeric stack compatible with Py3.12
+  - numpy=2.2
+  - scipy=1.14
+  - numba=0.61
+  - llvmlite=0.44
+
+  # ML / DS
+  - scikit-learn=1.5
+  - pandas=2.2
+  - matplotlib=3.9
+  - seaborn=0.13
+  - plotly
+
+  # Torch (CPU/MPS on Apple Silicon)
+  - pytorch=2.5.1
+
+  # I/O & storage
+  - pyarrow=17
+  - h5py
+  - zarr
+
+  # App / tooling
+  - streamlit=1.39
+  - tqdm
+  - click
+  - pyyaml
+  - jsonschema
+  - rich
+
+  # Dev / QA
+  - pytest
+  - pytest-cov
+  - black
+  - flake8
+  - isort
+  - mypy
+
+  # Jupyter
+  - jupyter
+  - jupyterlab
+  - ipywidgets
+
+# Install without conflicts
+  - hdbscan=0.8.39
+  - umap-learn==0.5.7
+
+  - pip
+  - pip:
+      - transformers==4.56.1
+      - tokenizers==0.22.0
+      - accelerate>=0.30
+      - datasets>=2.19
+      - types-requests>=2.31.0
+      - fastapi>=0.115.0
