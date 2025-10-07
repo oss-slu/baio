@@ -9,10 +9,20 @@ __author__ = "BAIO Development Team"
 
 from . import dataio
 from . import evo2_embed
+from . import evo2_client
 from . import models
 from . import ood
 from . import agg
 from . import cluster
 from . import viz
 
-__all__ = ["dataio", "evo2_embed", "models", "ood", "agg", "cluster", "viz"]
+__all__ = [
+    "dataio",
+    "evo2_embed",
+    "evo2_client",
+    "models",
+    "ood",
+    "agg",
+    "cluster",
+    "viz",
+]
