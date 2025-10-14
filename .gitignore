@@ -76,10 +76,11 @@ datasets/
 *.hdf5
 *.db
 *.sqlite
-*.pkl
 *.joblib
 *.npz
 *.npy
+*.kmer_distrib
+*.map
 
 # Model artifacts
 *.ckpt
@@ -88,7 +89,6 @@ datasets/
 *.onnx
 *.pb
 *.tflite
-models/
 checkpoints/
 weights/
 
