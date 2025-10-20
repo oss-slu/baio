@@ -1,7 +1,7 @@
 """Sidebar components for chat assistant."""
 
 import streamlit as st
-from app.utils.llm_client import SYSTEM_PROMPTS
+from utils.llm_client import SYSTEM_PROMPTS
 from datetime import datetime
 from typing import Optional
 

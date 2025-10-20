@@ -174,13 +174,6 @@ ignore_missing_imports = true
 module = "tests.*"
 ignore_errors = true
 
-[[tool.mypy.overrides]]
-module = [
-    "app.utils.llm_client",
-    "app.pipeline.classification",
-]
-ignore_errors = true
-
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --strict-markers --strict-config"

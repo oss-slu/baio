@@ -4,19 +4,19 @@ import streamlit as st
 from dotenv import load_dotenv  # type: ignore
 
 # Import modular components
-from app.utils.session_utils import initialize_session_state
-from app.components.input_forms import (
+from utils.session_utils import initialize_session_state
+from components.input_forms import (
     input_method_selector,
     sequence_text_input,
     sequence_file_upload,
     batch_sequence_upload,
 )
-from app.components.model_selection import model_selection_interface
-from app.components.status_display import processing_status_display
-from app.components.sidebar import chat_sidebar
-from app.pipeline.classification import run_classification_pipeline
-from app.visualization.dashboard import results_dashboard
-from app.data.validators import validate_input
+from components.model_selection import model_selection_interface
+from components.status_display import processing_status_display
+from components.sidebar import chat_sidebar
+from pipeline.classification import run_classification_pipeline
+from visualization.dashboard import results_dashboard
+from data.validators import validate_input
 
 # Load environment variables
 load_dotenv()

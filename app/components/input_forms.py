@@ -2,8 +2,8 @@
 
 import streamlit as st
 from typing import List, Tuple, Optional, cast
-from app.data.parsers import parse_fasta_text, parse_uploaded_file
-from app.data.validators import validate_fasta_format
+from data.parsers import parse_fasta_text, parse_uploaded_file
+from data.validators import validate_fasta_format
 
 
 def sequence_text_input() -> Optional[List[Tuple[str, str]]]:

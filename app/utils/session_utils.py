@@ -2,7 +2,7 @@
 
 import streamlit as st
 from datetime import datetime
-from app.utils.llm_client import LLMClient, SYSTEM_PROMPTS
+from utils.llm_client import LLMClient, SYSTEM_PROMPTS
 
 
 def initialize_session_state() -> None:
