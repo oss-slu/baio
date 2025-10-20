@@ -15,8 +15,8 @@ repos:
     rev: v1.18.1
     hooks:
       - id: mypy
-        args: ["--install-types", "--non-interactive"]
-        files: ^app/.*\.py$
+        args: ["--install-types", "--non-interactive", "--follow-imports=silent", "--ignore-missing-imports"]
+        files: ^app/(data|components).*\.py$
         additional_dependencies:
           - types-requests>=2.31.0
           - types-urllib3

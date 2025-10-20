@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 from typing import List, Tuple, Dict, Any
 import streamlit as st
-from components.status_display import update_processing_status
+from app.components.status_display import update_processing_status
 
 
 def run_classification_pipeline(

@@ -3,8 +3,11 @@
 import streamlit as st
 from datetime import datetime
 from typing import Dict, Any
-from visualization.charts import create_results_visualizations, create_sequence_table
-from pipeline.classification import get_classification_summary
+from app.visualization.charts import (
+    create_results_visualizations,
+    create_sequence_table,
+)
+from app.pipeline.classification import get_classification_summary
 
 
 def results_dashboard() -> None:
