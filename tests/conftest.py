@@ -1,8 +1,9 @@
 """Configuration for pytest tests."""
 
 import sys
-import os
 from pathlib import Path
+
+import pytest
 
 # Add the project root to Python path so we can import our modules
 project_root = Path(__file__).parent.parent
@@ -12,20 +13,22 @@ sys.path.insert(0, str(project_root))
 app_path = project_root / "app"
 sys.path.insert(0, str(app_path))
 
-import pytest
-
 
 @pytest.fixture(autouse=True)
 def mock_streamlit():
     """Mock streamlit components for testing."""
     import unittest.mock
-    
+
     # Mock streamlit module
-    with unittest.mock.patch.dict('sys.modules', {
-        'streamlit': unittest.mock.MagicMock(),
-    }):
+    with unittest.mock.patch.dict(
+        "sys.modules",
+        {
+            "streamlit": unittest.mock.MagicMock(),
+        },
+    ):
         # Create mock streamlit with common attributes
         import streamlit as st
+
         st.session_state = {}
         st.subheader = unittest.mock.MagicMock()
         st.info = unittest.mock.MagicMock()
@@ -59,7 +62,7 @@ def mock_streamlit():
         st.tabs = unittest.mock.MagicMock()
         st.title = unittest.mock.MagicMock()
         st.rerun = unittest.mock.MagicMock()
-        
+
         yield st
 
 
@@ -69,7 +72,7 @@ def sample_fasta_sequences():
     return [
         ("sequence_1", "ATCGATCGATCGATCG"),
         ("sequence_2", "GCTAGCTAGCTAGCTA"),
-        ("sequence_3", "TTTTAAAACCCCGGGG")
+        ("sequence_3", "TTTTAAAACCCCGGGG"),
     ]
 
 
@@ -88,28 +91,28 @@ def sample_classification_results():
                 "prediction": "Virus",
                 "confidence": "0.85",
                 "gc_content": "0.50",
-                "sequence_preview": "ATCGATCGATCGATCG"
+                "sequence_preview": "ATCGATCGATCGATCG",
             },
             {
-                "sequence_id": "seq2", 
+                "sequence_id": "seq2",
                 "length": 16,
                 "prediction": "Host",
                 "confidence": "0.92",
                 "gc_content": "0.50",
-                "sequence_preview": "GCTAGCTAGCTAGCTA"
+                "sequence_preview": "GCTAGCTAGCTAGCTA",
             },
             {
                 "sequence_id": "seq3",
                 "length": 16,
-                "prediction": "Host", 
+                "prediction": "Host",
                 "confidence": "0.78",
                 "gc_content": "0.50",
-                "sequence_preview": "TTTTAAAACCCCGGGG"
-            }
+                "sequence_preview": "TTTTAAAACCCCGGGG",
+            },
         ],
         "source": "test_file.fasta",
         "processing_time": 1.5,
-        "timestamp": "2025-10-20T10:30:00"
+        "timestamp": "2025-10-20T10:30:00",
     }
 
 
@@ -117,10 +120,12 @@ def sample_classification_results():
 def mock_uploaded_file():
     """Mock uploaded file object."""
     import unittest.mock
-    
+
     mock_file = unittest.mock.MagicMock()
     mock_file.name = "test.fasta"
     mock_file.size = 1024
-    mock_file.read.return_value.decode.return_value = ">seq1\nATCGATCGATCG\n>seq2\nGCTAGCTAGCTA"
-    
+    mock_file.read.return_value.decode.return_value = (
+        ">seq1\nATCGATCGATCG\n>seq2\nGCTAGCTAGCTA"
+    )
+
     return mock_file

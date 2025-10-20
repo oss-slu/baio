@@ -40,7 +40,7 @@ def initialize_session_state() -> None:
             "confidence_threshold": 0.5,
             "batch_size": 16,
             "enable_ood": True,
-            "ood_threshold": 0.3
+            "ood_threshold": 0.3,
         }
 
     # Results storage
@@ -51,11 +51,11 @@ def initialize_session_state() -> None:
 def reset_session_state() -> None:
     """Reset all session state variables to defaults."""
     keys_to_keep = ["model_config"]  # Keep some settings
-    
+
     for key in list(st.session_state.keys()):
         if key not in keys_to_keep:
             del st.session_state[key]
-    
+
     initialize_session_state()
 
 
@@ -67,5 +67,5 @@ def get_session_info() -> dict:
         "processing_status": st.session_state.get("processing_status", "Ready"),
         "has_results": st.session_state.get("analysis_results") is not None,
         "model_config": st.session_state.get("model_config", {}),
-        "error_count": st.session_state.get("error_count", 0)
+        "error_count": st.session_state.get("error_count", 0),
     }
