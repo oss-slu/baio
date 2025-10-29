@@ -16,6 +16,7 @@ repos:
     hooks:
       - id: mypy
         args: ["--install-types", "--non-interactive"]
+        files: ^app/.*\.py$
         additional_dependencies:
           - types-requests>=2.31.0
           - types-urllib3

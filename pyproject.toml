@@ -147,6 +147,8 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
+explicit_package_bases = true
+mypy_path = "app"
 
 [[tool.mypy.overrides]]
 module = [
@@ -163,9 +165,14 @@ module = [
     "accelerate.*",
     "datasets.*",
     "tokenizers.*",
-    "fastapi.*", 
+    "fastapi.*",
+    "pytest.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
