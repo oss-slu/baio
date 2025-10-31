@@ -1,7 +1,6 @@
-from typing import List
+from typing import List, Literal
 import joblib  # type: ignore[import-untyped]
 from transformers.kmers_transformer import KmerTransformer
-from typing import Literal
 
 
 class PredictClass:
