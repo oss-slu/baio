@@ -1,10 +1,13 @@
 from typing import List
 import joblib  # type: ignore[import-untyped]
 from transformers.kmers_transformer import KmerTransformer
+from typing import Literal
 
 
 class PredictClass:
-    def __init__(self, model_name: str = "RandomForest") -> None:
+    def __init__(
+        self, model_name: Literal["RandomForest", "SVM"] = "RandomForest"
+    ) -> None:
         """Initialize the predictor class."""
 
         self.model_name = model_name
@@ -14,6 +17,13 @@ class PredictClass:
             )
             self.vectorizer = joblib.load(
                 "binary_classifiers/transformers/random_forest_vectorizer.pkl"
+            )
+        elif self.model_name == "SVM":
+            self.model = joblib.load(
+                "binary_classifiers/models/support_vector_machine_best_model.pkl"
+            )
+            self.vectorizer = joblib.load(
+                "binary_classifiers/transformers/support_vector_machine_vectorizer.pkl"
             )
 
         self.kmer_tranformer = KmerTransformer()
