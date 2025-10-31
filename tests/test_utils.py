@@ -2,6 +2,9 @@
 
 import pytest
 from unittest.mock import patch
+from app.utils.llm_client import LLMClient, SYSTEM_PROMPTS
+from app.utils.session_utils import get_session_info
+from app.components.model_selection import get_model_config
 
 
 class TestLLMClient:
@@ -9,7 +12,6 @@ class TestLLMClient:
 
     def test_llm_client_initialization(self):
         """Test LLM client initialization."""
-        from app.utils.llm_client import LLMClient
 
         client = LLMClient()
         assert client.provider == "openai"
@@ -17,8 +19,6 @@ class TestLLMClient:
 
     def test_llm_client_custom_initialization(self):
         """Test LLM client with custom parameters."""
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient(provider="anthropic", model="claude-3")
         assert client.provider == "anthropic"
         assert client.model == "claude-3"
@@ -31,16 +31,12 @@ class TestLLMClient:
             "ANTHROPIC_API_KEY": "test-anthropic-key",
         }.get(key)
 
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient()
 
         assert client.api_key == "test-openai-key"
 
     def test_generate_response_sequence_analysis(self):
         """Test response generation for sequence analysis queries."""
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient()
         messages = [{"role": "user", "content": "analyze this sequence ATCGATCG"}]
         system_prompt = "You are a bioinformatics assistant."
@@ -52,8 +48,6 @@ class TestLLMClient:
 
     def test_generate_response_baio_info(self):
         """Test response generation for BAIO information queries."""
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient()
         messages = [{"role": "user", "content": "what is BAIO?"}]
         system_prompt = "You are a bioinformatics assistant."
@@ -65,8 +59,6 @@ class TestLLMClient:
 
     def test_generate_response_novel_detection(self):
         """Test response generation for novel detection queries."""
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient()
         messages = [
             {"role": "user", "content": "how does novel pathogen detection work?"}
@@ -81,8 +73,6 @@ class TestLLMClient:
 
     def test_generate_response_generic_query(self):
         """Test response generation for generic queries."""
-        from app.utils.llm_client import LLMClient
-
         client = LLMClient()
         messages = [{"role": "user", "content": "hello, how are you?"}]
         system_prompt = "You are a bioinformatics assistant."
@@ -94,8 +84,6 @@ class TestLLMClient:
 
     def test_system_prompts_exist(self):
         """Test that system prompts are properly defined."""
-        from app.utils.llm_client import SYSTEM_PROMPTS
-
         assert "default" in SYSTEM_PROMPTS
         assert "analysis_helper" in SYSTEM_PROMPTS
         assert "technical_expert" in SYSTEM_PROMPTS
@@ -117,8 +105,6 @@ class TestLLMClient:
     )
     def test_get_session_info(self):
         """Test getting session information."""
-        from app.utils.session_utils import get_session_info
-
         info = get_session_info()
 
         assert info["messages_count"] == 3
@@ -134,8 +120,6 @@ class TestComponentIntegration:
 
     def test_model_config_integration(self):
         """Test model configuration integration."""
-        from app.components.model_selection import get_model_config
-
         with patch(
             "streamlit.session_state", {"model_config": {"type": "Multi-class"}}
         ):
@@ -144,8 +128,6 @@ class TestComponentIntegration:
 
     def test_model_config_defaults(self):
         """Test model configuration defaults."""
-        from app.components.model_selection import get_model_config
-
         with patch("streamlit.session_state", {}):
             config = get_model_config()
             assert config["type"] == "Binary (Virus vs Host)"
