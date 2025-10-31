@@ -1,6 +1,6 @@
 from typing import Union, List, Any
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin  # type: ignore[import-not-found]
+from sklearn.base import BaseEstimator, TransformerMixin  # type: ignore[import-untyped]
 
 
 class KmerTransformer(BaseEstimator, TransformerMixin):

@@ -1,5 +1,5 @@
 from typing import List
-import joblib  # type: ignore[import-not-found]
+import joblib  # type: ignore[import-untyped]
 from transformers.kmers_transformer import KmerTransformer
 
 

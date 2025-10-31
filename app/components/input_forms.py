@@ -2,8 +2,8 @@
 
 import streamlit as st
 from typing import List, Tuple, Optional, cast
-from data.parsers import parse_fasta_text, parse_uploaded_file
-from data.validators import validate_fasta_format
+from app.data.parsers import parse_fasta_text, parse_uploaded_file
+from app.data.validators import validate_fasta_format
 
 
 def sequence_text_input() -> Optional[List[Tuple[str, str]]]:
@@ -28,7 +28,7 @@ def sequence_text_input() -> Optional[List[Tuple[str, str]]]:
             return None
 
         # Parse sequences
-        sequences = parse_fasta_text(sequence_input)
+        sequences = cast(List[Tuple[str, str]], parse_fasta_text(sequence_input))
         if sequences:
             st.success(f"✅ Parsed {len(sequences)} sequence(s)")
             return sequences
@@ -57,7 +57,7 @@ def sequence_file_upload() -> Optional[List[Tuple[str, str]]]:
         st.info(f"📄 **File:** {uploaded_file.name} ({uploaded_file.size} bytes)")
 
         # Parse uploaded file
-        sequences = parse_uploaded_file(uploaded_file)
+        sequences = cast(List[Tuple[str, str]], parse_uploaded_file(uploaded_file))
         if sequences:
             st.success(f"✅ Loaded {len(sequences)} sequence(s)")
 
