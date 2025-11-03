@@ -1,8 +1,8 @@
 """Tests for data parsing utilities."""
 
 import pytest
-from app.data_processing.parsers import parse_fasta_text, parse_fastq_content
-from app.data_processing.validators import (
+from data_processing.parsers import parse_fasta_text, parse_fastq_content
+from data_processing.validators import (
     validate_input,
     validate_sequence,
     validate_fasta_format,
