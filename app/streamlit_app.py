@@ -11,12 +11,12 @@ from app.components.input_forms import (
     sequence_file_upload,
     batch_sequence_upload,
 )
-from app.components.model_selection import model_selection_interface
-from app.components.status_display import processing_status_display
-from app.components.sidebar import chat_sidebar
-from app.pipeline.classification import run_classification_pipeline
-from app.visualization.dashboard import results_dashboard
-from app.data_processing.validators import validate_input
+from components.model_selection import model_selection_interface
+from components.status_display import processing_status_display
+from components.sidebar import chat_sidebar
+from pipeline.classification import run_classification_pipeline
+from visualization.dashboard import results_dashboard
+from data_processing.validators import validate_input
 
 # Load environment variables
 load_dotenv()
