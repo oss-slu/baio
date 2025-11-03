@@ -16,7 +16,7 @@ from app.components.status_display import processing_status_display
 from app.components.sidebar import chat_sidebar
 from app.pipeline.classification import run_classification_pipeline
 from app.visualization.dashboard import results_dashboard
-from app.data.validators import validate_input
+from app.data_processing.validators import validate_input
 
 # Load environment variables
 load_dotenv()
