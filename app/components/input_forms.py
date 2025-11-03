@@ -1,7 +1,7 @@
 """Input form components for sequence upload and text entry."""
 
 import streamlit as st
-from typing import List, Tuple, Optional, cast
+from typing import List, Tuple, Optional
 from data_processing.parsers import parse_fasta_text, parse_uploaded_file
 from data_processing.validators import validate_fasta_format
 
@@ -123,11 +123,9 @@ def input_method_selector() -> str:
     Returns:
         Selected input method
     """
-    return cast(
-        str,
-        st.radio(
-            "Choose input method:",
-            ["Text Input", "File Upload", "Batch Upload"],
-            horizontal=True,
-        ),
+    result: str = st.radio(
+        "Choose input method:",
+        ["Text Input", "File Upload", "Batch Upload"],
+        horizontal=True,
     )
+    return result

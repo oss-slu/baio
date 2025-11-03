@@ -127,7 +127,8 @@ def export_to_csv(results: Dict[str, Any]) -> str:
 
         if "detailed_results" in results and results["detailed_results"]:
             df = pd.DataFrame(results["detailed_results"])
-            return df.to_csv(index=False)
+            csv_string: str = df.to_csv(index=False)
+            return csv_string
         else:
             # Create summary CSV if no detailed results
             summary_data = {
@@ -145,7 +146,8 @@ def export_to_csv(results: Dict[str, Any]) -> str:
                 ],
             }
             df = pd.DataFrame(summary_data)
-            return df.to_csv(index=False)
+            summary_csv: str = df.to_csv(index=False)
+            return summary_csv
 
     except ImportError:
         # Fallback to manual CSV creation
