@@ -1,8 +1,8 @@
 """Tests for data parsing utilities."""
 
 import pytest
-from app.data_processing.parsers import parse_fasta_text, parse_fastq_content
-from app.data_processing.validators import (
+from data_processing.parsers import parse_fasta_text, parse_fastq_content
+from data_processing.validators import (
     validate_input,
     validate_sequence,
     validate_fasta_format,
@@ -116,20 +116,20 @@ class TestValidation:
         """Test empty input validation."""
         is_valid, error = validate_input("")
         assert is_valid is False
-        assert "enter a message" in error.lower()
+        assert error is not None and "enter a message" in error.lower()
 
     def test_validate_input_whitespace_only(self):
         """Test whitespace-only input validation."""
         is_valid, error = validate_input("   ")
         assert is_valid is False
-        assert "enter a message" in error.lower()
+        assert error is not None and "enter a message" in error.lower()
 
     def test_validate_input_too_long(self):
         """Test overly long input validation."""
         long_input = "x" * 2001
         is_valid, error = validate_input(long_input)
         assert is_valid is False
-        assert "too long" in error.lower()
+        assert error is not None and "too long" in error.lower()
 
     def test_validate_sequence_valid_dna(self):
         """Test valid DNA sequence validation."""
@@ -147,19 +147,19 @@ class TestValidation:
         """Test DNA sequence with invalid characters."""
         is_valid, error = validate_sequence("ATCGATXGATCG")
         assert is_valid is False
-        assert "invalid characters" in error.lower()
+        assert error is not None and "invalid characters" in error.lower()
 
     def test_validate_sequence_too_short(self):
         """Test DNA sequence that's too short."""
         is_valid, error = validate_sequence("ATCG")
         assert is_valid is False
-        assert "too short" in error.lower()
+        assert error is not None and "too short" in error.lower()
 
     def test_validate_sequence_empty(self):
         """Test empty DNA sequence."""
         is_valid, error = validate_sequence("")
         assert is_valid is False
-        assert "empty" in error.lower()
+        assert error is not None and "empty" in error.lower()
 
     def test_validate_fasta_format_valid(self):
         """Test valid FASTA format validation."""
@@ -173,20 +173,20 @@ class TestValidation:
         fasta_text = "ATCGATCGATCG"
         is_valid, error = validate_fasta_format(fasta_text)
         assert is_valid is False
-        assert "header" in error.lower()
+        assert error is not None and "header" in error.lower()
 
     def test_validate_fasta_format_no_sequence(self):
         """Test FASTA format with header but no sequence."""
         fasta_text = ">seq1"
         is_valid, error = validate_fasta_format(fasta_text)
         assert is_valid is False
-        assert "no sequence" in error.lower()
+        assert error is not None and "no sequence" in error.lower()
 
     def test_validate_fasta_format_empty(self):
         """Test empty FASTA format."""
         is_valid, error = validate_fasta_format("")
         assert is_valid is False
-        assert "no input" in error.lower()
+        assert error is not None and "no input" in error.lower()
 
 
 if __name__ == "__main__":

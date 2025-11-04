@@ -2,8 +2,8 @@
 
 import streamlit as st
 from typing import List, Tuple, Optional
-from app.data_processing.parsers import parse_fasta_text, parse_uploaded_file
-from app.data_processing.validators import validate_fasta_format
+from data_processing.parsers import parse_fasta_text, parse_uploaded_file
+from data_processing.validators import validate_fasta_format
 
 
 def sequence_text_input() -> Optional[List[Tuple[str, str]]]:
@@ -123,10 +123,9 @@ def input_method_selector() -> str:
     Returns:
         Selected input method
     """
-    return str(
-        st.radio(
-            "Choose input method:",
-            ["Text Input", "File Upload", "Batch Upload"],
-            horizontal=True,
-        )
+    result: str = st.radio(
+        "Choose input method:",
+        ["Text Input", "File Upload", "Batch Upload"],
+        horizontal=True,
     )
+    return result
