@@ -11,21 +11,23 @@ class ClassifierInference:
 
     def predict(self, sequences: List[str]) -> List[int]:
         preds = self.model.predict(sequences)
-        return [int(p) for p in preds]  # type: ignore[misc]
+        return [int(p) for p in preds]
 
     def predict_proba(self, sequences: List[str]) -> Optional[List[List[float]]]:
         if hasattr(self.model, "predict_proba"):
             proba = self.model.predict_proba(sequences)
             if proba is None:
                 return None
-            return proba.tolist()  # type: ignore[no-any-return]
+            # Convert to list if it's a numpy array or similar
+            if hasattr(proba, "tolist"):
+                return proba.tolist()
+            return list(proba)  # type: ignore[arg-type]
         return None
 
     def predict_file(self, path: str) -> List[int]:
-        from typing import cast, Tuple
-
         seqs = load_sequences(path)
-        X: List[str] = [s for _, s in cast(List[Tuple[str, str]], seqs)]
+        # Remove redundant cast - let type inference handle it
+        X: List[str] = [s for _, s in seqs]
         result: List[int] = self.predict(X)
         return result
 
@@ -54,9 +56,11 @@ if __name__ == "__main__":
     else:
         from .dataio import load_sequences as _ls
 
-        X = [s for _, s in _ls(args.file)]
+        seq_data = _ls(args.file)
+        X = [s for _, s in seq_data]
 
     out = {"pred": clf.predict(X)}
     if args.proba:
-        out["proba"] = clf.predict_proba(X)
+        proba_result = clf.predict_proba(X)
+        out["proba"] = proba_result
     print(json.dumps(out))
