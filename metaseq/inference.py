@@ -23,7 +23,8 @@ class ClassifierInference:
 
     def predict_file(self, path: str) -> List[int]:
         seqs = load_sequences(path)
-        X = [s for _, s in seqs]
+        # Explicit type annotation to help mypy
+        X: List[str] = [s for _, s in seqs]
         return self.predict(X)
 
 
@@ -41,9 +42,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--proba", action="store_true", help="Return probabilities as well"
     )
+
     args = parser.parse_args()
 
     clf = ClassifierInference(args.model)
+
     if args.seq:
         X = args.seq
     else:
