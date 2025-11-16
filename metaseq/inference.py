@@ -11,7 +11,7 @@ class ClassifierInference:
 
     def predict(self, sequences: List[str]) -> List[int]:
         preds = self.model.predict(sequences)
-        return [int(p) for p in preds]
+        return [int(p) for p in preds]  # type: ignore[misc]
 
     def predict_proba(self, sequences: List[str]) -> Optional[List[List[float]]]:
         if hasattr(self.model, "predict_proba"):
@@ -22,10 +22,12 @@ class ClassifierInference:
         return None
 
     def predict_file(self, path: str) -> List[int]:
+        from typing import cast, Tuple
+
         seqs = load_sequences(path)
-        # Explicit type annotation to help mypy
-        X: List[str] = [s for _, s in seqs]
-        return self.predict(X)
+        X: List[str] = [s for _, s in cast(List[Tuple[str, str]], seqs)]
+        result: List[int] = self.predict(X)
+        return result
 
 
 if __name__ == "__main__":
