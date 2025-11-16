@@ -16,6 +16,8 @@ class ClassifierInference:
     def predict_proba(self, sequences: List[str]) -> Optional[List[List[float]]]:
         if hasattr(self.model, "predict_proba"):
             proba = self.model.predict_proba(sequences)
+            if proba is None:
+                return None
             return proba.tolist()  # type: ignore[no-any-return]
         return None
 
