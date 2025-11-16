@@ -16,7 +16,7 @@ class ClassifierInference:
     def predict_proba(self, sequences: List[str]) -> Optional[List[List[float]]]:
         if hasattr(self.model, "predict_proba"):
             proba = self.model.predict_proba(sequences)
-            return proba.tolist()
+            return proba.tolist()  # type: ignore[no-any-return]
         return None
 
     def predict_file(self, path: str) -> List[int]:
