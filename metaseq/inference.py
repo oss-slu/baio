@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 from .dataio import load_sequences
 from .models import load_model
 
@@ -18,15 +18,25 @@ class ClassifierInference:
             proba = self.model.predict_proba(sequences)
             if proba is None:
                 return None
-            # Convert to list if it's a numpy array or similar
+
+            # Handle different return types from predict_proba
             if hasattr(proba, "tolist"):
-                return proba.tolist()
-            return list(proba)  # type: ignore[arg-type]
+                result = proba.tolist()
+            else:
+                result = list(proba)  # type: ignore[arg-type]
+
+            # Ensure we have the correct type
+            if isinstance(result, list) and all(
+                isinstance(item, list) for item in result
+            ):
+                return result  # type: ignore[return-value]
+            else:
+                # Fallback: wrap single predictions in a list
+                return [[float(p)] for p in result]  # type: ignore[union-attr]
         return None
 
     def predict_file(self, path: str) -> List[int]:
         seqs = load_sequences(path)
-        # Remove redundant cast - let type inference handle it
         X: List[str] = [s for _, s in seqs]
         result: List[int] = self.predict(X)
         return result
@@ -59,8 +69,9 @@ if __name__ == "__main__":
         seq_data = _ls(args.file)
         X = [s for _, s in seq_data]
 
-    out = {"pred": clf.predict(X)}
+    # Fix the main issue: use proper typing for the output dictionary
+    out: Dict[str, Any] = {"pred": clf.predict(X)}
     if args.proba:
         proba_result = clf.predict_proba(X)
-        out["proba"] = proba_result
+        out["proba"] = proba_result  # This can now accept Optional[List[List[float]]]
     print(json.dumps(out))
