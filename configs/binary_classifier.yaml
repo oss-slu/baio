@@ -1,0 +1,21 @@
+data:
+  # Use one of the following: csv OR (seq_file + label_map_json)
+  csv: null  # e.g., data/train.csv with columns: sequence,label
+  seq_file: null  # e.g., data/train.fasta or data/train.fastq
+  label_map_json: null  # e.g., data/train_labels.json mapping id->0/1
+
+model:
+  name: svm  # options: svm, rf, mlp
+  params:
+    k: 6
+    C: 1.0
+    kernel: rbf
+    gamma: scale
+
+train:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+output:
+  model_path: weights/binary_classifier.joblib
