@@ -92,27 +92,29 @@ class TestLLMClient:
         assert len(SYSTEM_PROMPTS["default"]) > 0
         assert "bioinformatics" in SYSTEM_PROMPTS["default"].lower()
 
-    @patch(
-        "streamlit.session_state",
-        {
+    def test_get_session_info(self):
+        """Test getting session information."""
+        from unittest.mock import MagicMock
+
+        mock_state = MagicMock()
+        mock_state.get.side_effect = lambda key, default=None: {
             "messages": [1, 2, 3],
             "conversation_id": "test123",
             "processing_status": "Complete",
             "analysis_results": {"test": "data"},
             "model_config": {"type": "binary"},
             "error_count": 2,
-        },
-    )
-    def test_get_session_info(self):
-        """Test getting session information."""
-        info = get_session_info()
+        }.get(key, default)
 
-        assert info["messages_count"] == 3
-        assert info["conversation_id"] == "test123"
-        assert info["processing_status"] == "Complete"
-        assert info["has_results"] is True
-        assert info["model_config"]["type"] == "binary"
-        assert info["error_count"] == 2
+        with patch("app.utils.session_utils.st.session_state", mock_state):
+            info = get_session_info()
+
+            assert info["messages_count"] == 3
+            assert info["conversation_id"] == "test123"
+            assert info["processing_status"] == "Complete"
+            assert info["has_results"] is True
+            assert info["model_config"]["type"] == "binary"
+            assert info["error_count"] == 2
 
 
 class TestComponentIntegration:
@@ -120,15 +122,28 @@ class TestComponentIntegration:
 
     def test_model_config_integration(self):
         """Test model configuration integration."""
-        with patch(
-            "streamlit.session_state", {"model_config": {"type": "Multi-class"}}
-        ):
+        from unittest.mock import MagicMock
+
+        mock_state = MagicMock()
+        mock_state.get.side_effect = lambda key, default=None: {
+            "model_config": {"type": "Multi-class"}
+        }.get(key, default)
+
+        with patch("app.components.model_selection.st.session_state", mock_state):
             config = get_model_config()
             assert config["type"] == "Multi-class"
 
     def test_model_config_defaults(self):
         """Test model configuration defaults."""
-        with patch("streamlit.session_state", {}):
+        from unittest.mock import MagicMock
+
+        mock_state = MagicMock()
+        # When model_config is not in session state, .get() should return the default
+        mock_state.get.side_effect = lambda key, default=None: (
+            default if key == "model_config" else None
+        )
+
+        with patch("app.components.model_selection.st.session_state", mock_state):
             config = get_model_config()
             assert config["type"] == "Binary (Virus vs Host)"
             assert config["confidence_threshold"] == 0.5

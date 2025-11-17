@@ -1,0 +1,32 @@
+# Include runtime deps
+-r requirements.txt
+
+# === Testing ===
+pytest>=8.0
+pytest-cov>=4.1
+pytest-mock>=3.12
+pytest-asyncio>=0.23
+
+# === Linting / Code Quality ===
+black>=24.0
+flake8>=7.0
+isort>=5.13
+mypy>=1.10
+pandas-stubs>=2.3
+types-requests>=2.31
+types-PyYAML>=6.0
+types-jsonschema
+
+# === Dev Tools ===
+rich>=13.0
+watchdog>=3.0
+python-dotenv>=1.0
+
+# === Jupyter ===
+jupyter>=1.0
+jupyterlab>=4.0
+ipykernel>=6.0
+
+# === Profiling / Utilities ===
+line-profiler>=4.1
+memory-profiler>=0.61

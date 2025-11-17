@@ -107,3 +107,4 @@ Thumbs.db
 .idea/
 .vscode/
 *.iml
+*.exe

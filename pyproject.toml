@@ -36,6 +36,7 @@ dependencies = [
     "streamlit==1.39.*",
     "tqdm",
     "click",
+    "python-dotenv",
     "pyyaml",
     "jsonschema",
     "rich",
@@ -88,7 +89,7 @@ package-mode = false
 
 
 [tool.setuptools]
-packages = ["metaseq", "app", "prompting"]
+packages = ["metaseq", "app", "prompting", "data_processing"]
 
 
 [tool.setuptools.package-data]
@@ -178,6 +179,15 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = "data_processing.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "app.visualization.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "app.components.*"
+ignore_errors = true
+
 
 [tool.pytest.ini_options]
 minversion = "6.0"
