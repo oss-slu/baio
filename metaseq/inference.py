@@ -23,16 +23,16 @@ class ClassifierInference:
             if hasattr(proba, "tolist"):
                 result = proba.tolist()
             else:
-                result = list(proba)  # type: ignore[arg-type]
+                result = list(proba)
 
             # Ensure we have the correct type
             if isinstance(result, list) and all(
                 isinstance(item, list) for item in result
             ):
-                return result  # type: ignore[return-value]
+                return result
             else:
                 # Fallback: wrap single predictions in a list
-                return [[float(p)] for p in result]  # type: ignore[union-attr]
+                return [[float(p)] for p in result]
         return None
 
     def predict_file(self, path: str) -> List[int]:
@@ -73,5 +73,5 @@ if __name__ == "__main__":
     out: Dict[str, Any] = {"pred": clf.predict(X)}
     if args.proba:
         proba_result = clf.predict_proba(X)
-        out["proba"] = proba_result  # This can now accept Optional[List[List[float]]]
+        out["proba"] = proba_result
     print(json.dumps(out))
