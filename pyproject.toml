@@ -176,7 +176,7 @@ module = "tests.*"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "app.*"
+module = "data_processing.*"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

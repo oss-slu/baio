@@ -1,6 +1,15 @@
+import os
+import sys
 from typing import List, Literal
-import joblib  # type: ignore[import-untyped]
-from transformers.kmers_transformer import KmerTransformer
+
+
+import joblib  # type: ignore[import-not-found] # noqa: E402
+
+from binary_classifiers.transformers.kmers_transformer import (
+    KmerTransformer,
+)  # noqa: E402
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 class PredictClass:
@@ -29,12 +38,15 @@ class PredictClass:
 
     def predict(self, sequence: str) -> str:
         features = self._preprocess(sequence)
-        return str(self.model.predict(features)[0])
+        prediction = self.model.predict(features)[0]
+        # Map numeric prediction to label: 0 = Virus, 1 = Host
+        return "Virus" if prediction == 0 else "Host"
 
     def batch_predict(self, sequences: List[str]) -> List[str]:
         features = self._preprocess_batch(sequences)
         predictions = self.model.predict(features)
-        return [str(pred) for pred in predictions]
+        # Map numeric predictions to labels: 0 = Virus, 1 = Host
+        return ["Virus" if pred == 0 else "Host" for pred in predictions]
 
     def _preprocess(self, sequence: str) -> object:
         kmers = self.kmer_tranformer.transform([sequence])

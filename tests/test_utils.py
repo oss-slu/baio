@@ -92,19 +92,19 @@ class TestLLMClient:
         assert len(SYSTEM_PROMPTS["default"]) > 0
         assert "bioinformatics" in SYSTEM_PROMPTS["default"].lower()
 
-    @patch("app.utils.session_utils.st.session_state")
-    def test_get_session_info(self, mock_session_state):
-        """Test getting session information."""
-        # Setup mock session state
-        mock_session_state.get.side_effect = lambda key, default=None: {
+    @patch(
+        "streamlit.session_state",
+        {
             "messages": [1, 2, 3],
             "conversation_id": "test123",
             "processing_status": "Complete",
             "analysis_results": {"test": "data"},
             "model_config": {"type": "binary"},
             "error_count": 2,
-        }.get(key, default)
-
+        },
+    )
+    def test_get_session_info(self):
+        """Test getting session information."""
         info = get_session_info()
 
         assert info["messages_count"] == 3
@@ -118,29 +118,21 @@ class TestLLMClient:
 class TestComponentIntegration:
     """Test integration between components."""
 
-    @patch("app.components.model_selection.st.session_state")
-    def test_model_config_integration(self, mock_session_state):
+    def test_model_config_integration(self):
         """Test model configuration integration."""
-        mock_session_state.get.return_value = {"type": "Multi-class"}
-        config = get_model_config()
-        assert config["type"] == "Multi-class"
+        with patch(
+            "streamlit.session_state", {"model_config": {"type": "Multi-class"}}
+        ):
+            config = get_model_config()
+            assert config["type"] == "Multi-class"
 
-    @patch("app.components.model_selection.st.session_state")
-    def test_model_config_defaults(self, mock_session_state):
+    def test_model_config_defaults(self):
         """Test model configuration defaults."""
-        # Mock get to simulate default behavior when key doesn't exist
-        default_config = {
-            "type": "Binary (Virus vs Host)",
-            "confidence_threshold": 0.5,
-            "batch_size": 16,
-            "enable_ood": True,
-            "ood_threshold": 0.3,
-        }
-        mock_session_state.get.return_value = default_config
-        config = get_model_config()
-        assert config["type"] == "Binary (Virus vs Host)"
-        assert config["confidence_threshold"] == 0.5
-        assert config["enable_ood"] is True
+        with patch("streamlit.session_state", {}):
+            config = get_model_config()
+            assert config["type"] == "Binary (Virus vs Host)"
+            assert config["confidence_threshold"] == 0.5
+            assert config["enable_ood"] is True
 
 
 if __name__ == "__main__":
