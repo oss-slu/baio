@@ -33,6 +33,7 @@ dependencies:
   - streamlit=1.39
   - tqdm
   - click
+  - python-dotenv
   - pyyaml
   - jsonschema
   - rich
