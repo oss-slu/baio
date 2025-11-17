@@ -1,7 +1,7 @@
 """Main Streamlit application for BAIO DNA classification pipeline."""
 
 import streamlit as st
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 
 # Import modular components
 from app.utils.session_utils import initialize_session_state
