@@ -64,8 +64,8 @@ jobs:
 
       - name: Type check (mypy)
         run: |
-          # Adjust the paths to match your code layout
-          mypy metaseq app
+          # Adjusted to actual Python packages present in the repo
+          mypy metaseq data_processing prompting binary_classifiers
 
       - name: Run unit tests (pytest)
         env:
