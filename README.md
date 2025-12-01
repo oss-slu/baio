@@ -15,7 +15,7 @@ BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic an
 ## Technology Stack
 
 ### Frontend
-- **Streamlit**: Simple, fast GUI with support for file upload, plots, and dashboards
+- **React + Vite**: Lightweight single-page UI for uploads, configuration, results, and chat (replaces the legacy Streamlit view)
 
 ### Model Runtime
 - **PyTorch + Hugging Face Transformers**: Core ML framework
@@ -39,31 +39,33 @@ BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic an
 
 ```
 metaseq-detector/
-├─ app/                     # Streamlit GUI
-│   └─ streamlit_app.py
-├─ metaseq/                 # Core library
-│   ├─ dataio.py            # FASTA/FASTQ loaders, filters
-│   ├─ evo2_embed.py        # Evo2 embedding wrapper
-│   ├─ models.py            # Classifier heads
-│   ├─ ood.py               # MSP/Energy/Mahalanobis
-│   ├─ agg.py               # Sample-level aggregation
-│   ├─ cluster.py           # HDBSCAN for OOD reads
-│   └─ viz.py               # Plots: ROC, UMAP, attention
-├─ configs/                 # YAMLs for experiments
-├─ notebooks/               # Exploratory notebooks
-├─ tests/                   # Pytest unit tests
-├─ runs/                    # Saved reports/metrics
-├─ weights/                 # Trained classifier heads
-├─ examples/                # Demo FASTQ/FASTA
-├─ environment.yml
-├─ pyproject.toml
-└─ docs/
-    ├─ weekly_report.md
-    ├─ design.md            # System architecture
-    └─ dataset_card.md      # Data sources and splits
+- api/                  (FastAPI backend)
+- frontend/             (React + Vite UI)
+- metaseq/              (Core library)
+  - dataio.py           FASTA/FASTQ loaders, filters
+  - evo2_embed.py       Evo2 embedding wrapper
+  - models.py           Classifier heads
+  - ood.py              MSP/Energy/Mahalanobis
+  - agg.py              Sample-level aggregation
+  - cluster.py          HDBSCAN for OOD reads
+  - viz.py              Plots: ROC, UMAP, attention
+- configs/              YAMLs for experiments
+- notebooks/            Exploratory notebooks
+- tests/                Pytest unit tests
+- runs/                 Saved reports/metrics
+- weights/              Trained classifier heads
+- examples/             Demo FASTQ/FASTA
+- environment.yml
+- pyproject.toml
+- docs/
+  - weekly_report.md
+  - design.md           System architecture
+  - dataset_card.md     Data sources and splits
 ```
 
 ## Installation
+
+
 
 ### Prerequisites
 - Python 3.8+
@@ -130,7 +132,6 @@ pip install --upgrade pip
 # Install project dependencies
 pip install -r requirements.txt
 
-pip install streamlit torch transformers biopython numpy pandas scikit-learn hdbscan plotly
 ```
 
 #### 4. Verify Installation
@@ -142,7 +143,6 @@ python --version
 pip list
 
 # Test Streamlit installation
-streamlit hello
 ```
 
 ### Option 3: Poetry
@@ -261,9 +261,15 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
    pip install -r requirements.txt
    ```
 
-3. **Run Development Server:**
+3. **Run Development Servers (API + React UI):**
    ```bash
-   streamlit run app/streamlit_app.py
+   # FastAPI backend
+   uvicorn api.main:app --reload --port 8080
+
+   # React frontend (uses Vite)
+   cd frontend
+   npm install
+   npm run dev -- --host --port 5173
    ```
 
 4. **Deactivate When Done:**
@@ -297,43 +303,48 @@ poetry add new-package
 
 ## Quick Start
 
-### Running the GUI
+### Run FastAPI backend
 ```bash
-# Using conda
-conda activate baio
-streamlit run app/streamlit_app.py
-
-# Using venv
-source baio-env/bin/activate  # Windows: baio-env\Scripts\activate
-streamlit run app/streamlit_app.py
-
-# Using Poetry
-poetry run streamlit run app/streamlit_app.py
+uvicorn api.main:app --reload --port 8080
 ```
-## 🐳 Running BAIO with Docker & Docker Compose
 
-You can run the full BAIO stack—FastAPI backend and Streamlit UI—without installing Python or dependencies locally.
+### Run React + Vite frontend
+```bash
+cd frontend
+npm install   # first run only
+# Set VITE_API_BASE if your API is not on http://localhost:8080
+npm run dev -- --host --port 5173
+```
+
+Then open http://localhost:5173 to upload sequences, tune thresholds, and chat. (Legacy Streamlit UI commands remain in git history if you still need them.)
+## Running BAIO with Docker & Docker Compose
+
+You can run the full BAIO stack - FastAPI backend and React UI - without installing Python locally.
 
 ### 1. Prerequisites
 * [Docker Desktop](https://www.docker.com/products/docker-desktop) or Docker Engine with Compose v2.
 * Git to clone the repository.
 
-### 2. Environment file
-Copy the template and adjust if needed:
+### 2. Build and start
+```bash
+docker compose up --build
+```
 
-### 3. Build and Start the stack
-docker compose build
-docker compose up
+This starts:
+- API at http://localhost:8080 (health at `/health`, classification at `/classify`, chat at `/chat`)
+- Frontend at http://localhost:4173 (set `FRONTEND_PORT` if you want a different host port)
+
+### 3. Environment overrides (optional)
+- `API_PORT`: host port for FastAPI (default 8080)
+- `FRONTEND_PORT`: host port for React UI (default 4173)
+- `VITE_API_BASE`: API base URL baked into the frontend at build time (defaults to http://localhost:8080 so the browser can reach the API)
+- CUDA vs CPU: Docker defaults to CPU-only PyTorch wheels (`PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu`). Build a separate GPU image/service if you need CUDA.
 
 ### Basic Usage
-1. Upload your FASTQ/FASTA files through the Streamlit interface
-2. Configure analysis parameters (sequence length filters, confidence thresholds)
-3. Run the analysis pipeline
-4. View results including:
-   - Taxonomy classifications
-   - Novel sequence detection
-   - Embedding visualizations
-   - Sample-level reports
+1. Open the React UI at the frontend port and paste/upload FASTA.
+2. Configure thresholds (confidence, batch size, novelty sensitivity).
+3. Run the classification pipeline.
+4. Review classifications, novelty counts, and chat with the built-in assistant.
 
 ## Evaluation Metrics
 
