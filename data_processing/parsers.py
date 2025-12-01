@@ -1,7 +1,9 @@
 """FASTA and FASTQ file parsing utilities."""
 
 from typing import List, Tuple, Any
-import streamlit as st
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def parse_fasta_text(text: str) -> List[Tuple[str, str]]:
@@ -77,5 +79,5 @@ def parse_uploaded_file(uploaded_file: Any) -> List[Tuple[str, str]]:
         else:
             return parse_fasta_text(content)
     except Exception as e:
-        st.error(f"Error parsing file: {str(e)}")
+        logger.error("Error parsing file %s: %s", getattr(uploaded_file, "name", ""), e)
         return []

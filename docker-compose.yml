@@ -27,26 +27,22 @@ services:
       retries: 3
       start_period: 20s
 
-  app:
+  frontend:
     build:
-      context: .
-      dockerfile: app/Dockerfile
-    container_name: baio-app
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Use host-reachable API URL by default so the browser can reach it
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8080}
+    container_name: baio-frontend
     restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
-      RUNS_DIR: ${RUNS_DIR:-/data/runs}
-    volumes:
-      - runs_data:${RUNS_DIR:-/data/runs}
     depends_on:
       api:
         condition: service_healthy
     ports:
-      - "${APP_PORT:-8501}:8501"
+      - "${FRONTEND_PORT:-4173}:80"
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8501/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3

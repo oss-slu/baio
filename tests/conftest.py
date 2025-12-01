@@ -9,62 +9,6 @@ import pytest
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# Add the app directory to the path for imports
-app_path = project_root / "app"
-sys.path.insert(0, str(app_path))
-
-
-@pytest.fixture(autouse=True)
-def mock_streamlit():
-    """Mock streamlit components for testing."""
-    import unittest.mock
-
-    # Mock streamlit module
-    with unittest.mock.patch.dict(
-        "sys.modules",
-        {
-            "streamlit": unittest.mock.MagicMock(),
-        },
-    ):
-        # Create mock streamlit with common attributes
-        import streamlit as st
-
-        st.session_state = {}
-        st.subheader = unittest.mock.MagicMock()
-        st.info = unittest.mock.MagicMock()
-        st.error = unittest.mock.MagicMock()
-        st.success = unittest.mock.MagicMock()
-        st.warning = unittest.mock.MagicMock()
-        st.text_area = unittest.mock.MagicMock()
-        st.file_uploader = unittest.mock.MagicMock()
-        st.selectbox = unittest.mock.MagicMock()
-        st.radio = unittest.mock.MagicMock()
-        st.slider = unittest.mock.MagicMock()
-        st.checkbox = unittest.mock.MagicMock()
-        st.button = unittest.mock.MagicMock()
-        st.columns = unittest.mock.MagicMock()
-        st.metric = unittest.mock.MagicMock()
-        st.progress = unittest.mock.MagicMock()
-        st.empty = unittest.mock.MagicMock()
-        st.container = unittest.mock.MagicMock()
-        st.expander = unittest.mock.MagicMock()
-        st.multiselect = unittest.mock.MagicMock()
-        st.dataframe = unittest.mock.MagicMock()
-        st.bar_chart = unittest.mock.MagicMock()
-        st.json = unittest.mock.MagicMock()
-        st.markdown = unittest.mock.MagicMock()
-        st.chat_message = unittest.mock.MagicMock()
-        st.chat_input = unittest.mock.MagicMock()
-        st.spinner = unittest.mock.MagicMock()
-        st.download_button = unittest.mock.MagicMock()
-        st.caption = unittest.mock.MagicMock()
-        st.divider = unittest.mock.MagicMock()
-        st.tabs = unittest.mock.MagicMock()
-        st.title = unittest.mock.MagicMock()
-        st.rerun = unittest.mock.MagicMock()
-
-        yield st
-
 
 @pytest.fixture
 def sample_fasta_sequences():

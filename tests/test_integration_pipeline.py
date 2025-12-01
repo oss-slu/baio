@@ -1,7 +1,7 @@
 """Integration tests for the real classification pipeline with binary classifiers."""
 
 import pytest
-from typing import List, Tuple
+from typing import List
 from binary_classifiers.predict_class import PredictClass
 
 
@@ -152,53 +152,6 @@ class TestBinaryClassifierIntegration:
         assert rf_prediction in ["Virus", "Host"]
         assert svm_prediction in ["Virus", "Host"]
         # Note: predictions may differ between models, which is expected
-
-
-class TestPipelineIntegration:
-    """Integration tests for the full classification pipeline with real models."""
-
-    def test_classify_sequence_with_real_model(self) -> None:
-        """Test that classify_sequence can work with real model predictions."""
-        from app.pipeline.classification import classify_sequence
-
-        # Test sequence
-        seq = "ATGGGTGCGAGAGCGTCAGTATTAAGCGGGGGAGAA"
-        result = classify_sequence("test_seq", seq)
-
-        # Verify result structure
-        assert "sequence_id" in result
-        assert "length" in result
-        assert "gc_content" in result
-        assert "prediction" in result
-        assert "confidence" in result
-        assert "sequence_preview" in result
-
-        # Verify values
-        assert result["sequence_id"] == "test_seq"
-        assert result["length"] == len(seq)
-        assert result["prediction"] in ["Virus", "Host", "Novel"]
-
-    def test_pipeline_with_multiple_sequences(self) -> None:
-        """Test pipeline with multiple sequences of different types."""
-        from app.pipeline.classification import classify_sequence
-
-        sequences: List[Tuple[str, str]] = [
-            ("viral_1", "ATGGGTGCGAGAGCGTCAGTATTAAGCGGGGGAGAA"),
-            (
-                "host_1",
-                "ATGAAGGTGAAGGCCACCCTGCTGCTGTGCGCCCTGCTGCTGCCCCTGGCCCCCCAGGCCCTGGTGAAG",
-            ),
-            ("mixed_1", "ATCGATCGATCGATCGATCGATCGATCGATCG"),
-        ]
-
-        for seq_id, seq in sequences:
-            result = classify_sequence(seq_id, seq)
-
-            assert result["sequence_id"] == seq_id
-            assert result["length"] == len(seq)
-            assert result["prediction"] in ["Virus", "Host", "Novel"]
-            assert "gc_content" in result
-            assert "confidence" in result
 
 
 @pytest.mark.integration

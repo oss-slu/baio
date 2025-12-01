@@ -30,7 +30,6 @@ dependencies:
   - zarr
 
   # App / tooling
-  - streamlit=1.39
   - tqdm
   - click
   - python-dotenv
