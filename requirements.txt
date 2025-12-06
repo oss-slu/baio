@@ -1,5 +1,4 @@
 # === Core Runtime Dependencies ===
-streamlit>=1.39
 python-dotenv>=1.0
 numpy>=2.2
 pandas>=2.2
@@ -17,7 +16,7 @@ hdbscan>=0.8.39
 umap-learn==0.5.7
 
 # === HuggingFace / ML ===
-torch>=2.2    # CPU-only OK; GPU users install manually
+torch==2.5.1+cpu
 transformers==4.56.1
 tokenizers==0.22.0
 accelerate>=0.30
