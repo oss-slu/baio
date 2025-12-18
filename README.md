@@ -424,7 +424,11 @@ If you use BAIO in your research, please cite:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributors
+## Current Contributors 
+- **Mainuddin** - Tech Lead
+
+  
+## Previous Contributors
 
 - **Tanzim Farhan** - Tech Lead
 - **Mustafa Hashami** - Developer
