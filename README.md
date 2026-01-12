@@ -426,11 +426,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contributors
 
-- **Tanzim Farhan** - Tech Lead
-- **Mustafa Hashami** - Developer
-- **Sahana Gujja** - Developer
-- **Eric Burns** - Developer
-- **Manali Gaikwad** - Developer
+- **Mainuddin** - Tech Lead
+- **----** - Developer
+- **----** - Developer
+- **----** - Developer
+- **----** - Developer
 
 ## Acknowledgments
 
