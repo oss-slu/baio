@@ -427,10 +427,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Mainuddin** - Tech Lead
 
-- **Mustafa Hashami** - Developer
-- **Sahana Gujja** - Developer
-- **Eric Burns** - Developer
-- **Manali Gaikwad** - Developer
+- **-----** - Developer
+- **-----** - Developer
+- **-----** - Developer
+- **-----** - Developer
 
 ## Acknowledgments
 
