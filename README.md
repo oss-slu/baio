@@ -153,6 +153,23 @@ cd baio
 poetry install
 ```
 
+### macOS (Apple Silicon / arm64) Setup Notes
+
+If you are using an Apple Silicon Mac (M1 / M2 / M3), we recommend using
+**Miniforge (arm64)** instead of Anaconda. Anaconda (x86) can cause
+architecture conflicts when resolving scientific and ML dependencies.
+
+### Recommended Conda Setup (macOS arm64)
+
+1. Install **Miniforge (arm64)**  
+   https://github.com/conda-forge/miniforge
+
+2. Create and activate the environment:
+   ```bash
+   mamba env create -f environment.yml
+   conda activate baio
+  ```
+
 ## Development Environment Setup
 
 ### IDE Configuration
