@@ -168,7 +168,7 @@ architecture conflicts when resolving scientific and ML dependencies.
    ```bash
    mamba env create -f environment.yml
    conda activate baio
-  ```
+
 
 ## Development Environment Setup
 
