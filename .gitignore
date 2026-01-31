@@ -64,7 +64,6 @@ dmypy.json
 *.env           
 *.ini
 *.cfg
-*.json
 
 # Data & Models
 data/
