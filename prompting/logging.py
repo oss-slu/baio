@@ -8,7 +8,6 @@ import logging
 import json
 from typing import Any, Dict
 
-
 logger = logging.getLogger("prompting")
 if not logger.handlers:
     handler = logging.StreamHandler()

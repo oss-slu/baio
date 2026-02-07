@@ -6,7 +6,6 @@ from typing import Dict, Any, Tuple, Optional, List
 from .types import Report
 from . import logging as plog
 
-
 REPORT_JSON_SCHEMA = {
     "type": "object",
     "required": ["summary", "known_pathogens", "ood_rate", "caveats"],

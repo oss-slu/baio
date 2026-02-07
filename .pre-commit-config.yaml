@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 26.1.0
     hooks:
       - id: black
 
@@ -12,7 +12,7 @@ repos:
           - flake8-pyproject
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         args: ["--install-types", "--non-interactive"]
