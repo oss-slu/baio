@@ -278,9 +278,21 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
    pip install -r requirements.txt
    ```
 
-3. **Run Development Servers (API + React UI):**
-   ```bash
-   # FastAPI backend
+3. ### Backend (FastAPI)
+
+The BAIO backend is built with FastAPI and runs using **uvicorn**.
+
+#### Install backend dependencies
+If you are using Conda:
+
+```bash
+conda activate baio
+conda install -c conda-forge uvicorn
+
+#If you are using pip:
+pip install uvicorn
+
+#Run the backend server
    uvicorn api.main:app --reload --port 8080
 
    # React frontend (uses Vite)
