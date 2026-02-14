@@ -4,7 +4,8 @@ from typing import List, Literal
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
 
-from binary_classifiers.transformers.kmers_transformer import (
+# from binary_classifiers.transformers.kmers_transformer import (
+from baio_transformers.kmers_transformer import (
     KmerTransformer,
 )  # noqa: E402
 
