@@ -4,7 +4,7 @@ from typing import List, Literal
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
 
-from transformers.kmers_transformer import (
+from .transformers.kmers_transformer import (
     KmerTransformer,
 )  # noqa: E402
 

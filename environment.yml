@@ -6,6 +6,7 @@ channels:
 dependencies:
   # Core
   - python>=3.12,<3.13
+  - uvicorn
 
   # Numeric stack compatible with Py3.12
   - numpy=2.2
