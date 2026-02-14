@@ -281,7 +281,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 3. **Run Development Servers (API + React UI):**
    ```bash
    # FastAPI backend
-   uvicorn api.main:app --reload --port 8080
+   python -m uvicorn api.main:app --reload --port 808
 
    # React frontend (uses Vite)
    cd frontend
