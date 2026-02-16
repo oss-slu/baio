@@ -94,12 +94,12 @@ def classify_sequence(
     #     predictions = ["Virus"] * 40 + ["Host"] * 50 + ["Novel"] * 10
 
     # prediction = random.choice(predictions)
+    predict_api = predict_class.PredictClass(model_name="SVM")
+    prediction = predict_api.predict(sequence)
+
     confidence = random.uniform(
         max(config.confidence_threshold, 0.5), 0.95
     )  # keep mock scores reasonable
-
-    prediction = predict_class.PredictClass(model_name="SVM")
-    prediction.predict(sequence)
 
     result: Dict[str, Any] = {
         "sequence_id": seq_id,
