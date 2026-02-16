@@ -2,10 +2,9 @@ import os
 import sys
 from typing import List, Literal
 
+import joblib  # type: ignore[import-untyped] # noqa: E402
 
-import joblib  # type: ignore[import-not-found] # noqa: E402
-
-from binary_classifiers.transformers.kmers_transformer import (
+from .transformers.kmers_transformer import (
     KmerTransformer,
 )  # noqa: E402
 
