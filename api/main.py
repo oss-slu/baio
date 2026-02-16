@@ -81,25 +81,17 @@ class ChatResponse(BaseModel):
 def classify_sequence(
     seq_id: str, sequence: str, config: ModelConfig
 ) -> SequenceResult:
-    # """Mock classification logic for API usage."""
+    # Mock classification logic for API usage.
     gc_content = (sequence.upper().count("G") + sequence.upper().count("C")) / max(
         len(sequence), 1
     )
 
-    # if gc_content > 0.6:
-    #     predictions = ["Virus"] * 60 + ["Host"] * 30 + ["Novel"] * 10
-    # elif gc_content < 0.3:
-    #     predictions = ["Host"] * 70 + ["Virus"] * 20 + ["Novel"] * 10
-    # else:
-    #     predictions = ["Virus"] * 40 + ["Host"] * 50 + ["Novel"] * 10
-
-    # prediction = random.choice(predictions)
+    # Prediction api implementation
     predict_api = predict_class.PredictClass(model_name="SVM")
     prediction = predict_api.predict(sequence)
 
-    confidence = random.uniform(
-        max(config.confidence_threshold, 0.5), 0.95
-    )  # keep mock scores reasonable
+    # Mock confidence
+    confidence = random.uniform(max(config.confidence_threshold, 0.5), 0.95)
 
     result: Dict[str, Any] = {
         "sequence_id": seq_id,
