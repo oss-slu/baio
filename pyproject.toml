@@ -25,7 +25,7 @@ dependencies = [
     "plotly",
 
     # Torch (CPU/MPS)
-    "torch==2.5.1+cpu",
+    "torch==2.8.0",
 
     # I/O & storage
     "pyarrow==17.*",
