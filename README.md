@@ -330,7 +330,7 @@ poetry add new-package
 
 ### Run FastAPI backend
 ```bash
-uvicorn api.main:app --reload --port 8080
+python -m uvicorn api.main:app --reload --port 8080
 ```
 
 ### Run React + Vite frontend
