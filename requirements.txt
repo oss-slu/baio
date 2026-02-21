@@ -16,7 +16,7 @@ hdbscan>=0.8.39
 umap-learn==0.5.7
 
 # === HuggingFace / ML ===
-torch==2.5.1+cpu
+torch==2.8.0
 transformers==4.56.1
 tokenizers==0.22.0
 accelerate>=0.30
