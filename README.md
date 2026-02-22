@@ -65,8 +65,6 @@ metaseq-detector/
 
 ## Installation
 
-
-
 ### Prerequisites
 - Python 3.8+
 - CUDA-compatible GPU (recommended for Evo2 model)
@@ -255,6 +253,16 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 - Check Hugging Face token permissions
 - Use `huggingface-cli login` for authentication
 
+#### Issue: CI Pipeline Formatting Error
+**Solution**
+- black .
+- git add .
+- git commit -m “Apply black formatting”
+- git push
+
+Recommended to install precommit to autoapply formatting before a commit
+- pip install pre-commit
+
 ### Daily Development Workflow
 
 1. **Activate Environment:**
@@ -281,7 +289,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 3. **Run Development Servers (API + React UI):**
    ```bash
    # FastAPI backend
-   uvicorn api.main:app --reload --port 8080
+   python -m uvicorn api.main:app --reload --port 8080
 
    # React frontend (uses Vite)
    cd frontend
@@ -322,7 +330,7 @@ poetry add new-package
 
 ### Run FastAPI backend
 ```bash
-uvicorn api.main:app --reload --port 8080
+python -m uvicorn api.main:app --reload --port 8080
 ```
 
 ### Run React + Vite frontend

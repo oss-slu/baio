@@ -3,15 +3,9 @@ from typing import Any, List, Literal, Sequence, Tuple
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
 
-try:
-    from baio_transformers.kmers_transformer import (  # type: ignore[import-not-found]
-        KmerTransformer,
-    )  # noqa: E402
-except ModuleNotFoundError:
-    from binary_classifiers.transformers.kmers_transformer import (  # noqa: E402
-        KmerTransformer,
-    )
-
+from .transformers.kmers_transformer import (
+    KmerTransformer,
+)  # noqa: E402
 
 LABEL_MAP = {0: "Host", 1: "Virus"}
 MODEL_FILE_MAP = {

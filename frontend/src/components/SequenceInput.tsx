@@ -47,7 +47,7 @@ function SequenceInput({
             Input
           </p>
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-slate-50">Upload or paste FASTA</h2>
+            <h2 className="text-lg font-semibold text-slate-400">Upload or paste FASTA</h2>
             <span className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
               {parsedCount} parsed
             </span>
