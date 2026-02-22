@@ -1,6 +1,6 @@
-import random
 import time
 from datetime import datetime
+from functools import lru_cache
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import FastAPI, HTTPException
@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, constr
 
 from api.llm_client import LLMClient, SYSTEM_PROMPTS
-from binary_classifiers import predict_class
+from binary_classifiers.predict_class import PredictClass
 
 app = FastAPI()
 
@@ -29,10 +29,10 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.5, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(0.01, ge=0.0, le=1.0)
     batch_size: int = Field(16, ge=1, le=1024)
-    enable_ood: bool = True
-    ood_threshold: float = Field(0.3, ge=0.0, le=1.0)
+    enable_ood: bool = False
+    ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
 
 
 class ClassificationRequest(BaseModel):
@@ -78,36 +78,55 @@ class ChatResponse(BaseModel):
     reply: str
 
 
+def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM"]:
+    model_hint = config.type.lower()
+    if "random forest" in model_hint or "random_forest" in model_hint:
+        return "RandomForest"
+    if "svm" in model_hint:
+        return "SVM"
+    return "SVM"
+
+
+@lru_cache(maxsize=2)
+def get_predictor(model_name: Literal["RandomForest", "SVM"]) -> PredictClass:
+    return PredictClass(model_name=model_name)
+
+
 def classify_sequence(
     seq_id: str, sequence: str, config: ModelConfig
 ) -> SequenceResult:
-    # Mock classification logic for API usage.
+    model_name = _resolve_model_name(config)
+    predictor = get_predictor(model_name)
+
     gc_content = (sequence.upper().count("G") + sequence.upper().count("C")) / max(
         len(sequence), 1
     )
+    predicted_label, raw_confidence = predictor.predict_with_confidence(sequence)
+    confidence = round(float(raw_confidence), 3)
+    ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
-    # Prediction api implementation
-    predict_api = predict_class.PredictClass(model_name="SVM")
-    prediction = predict_api.predict(sequence)
-
-    # Mock confidence
-    confidence = random.uniform(max(config.confidence_threshold, 0.5), 0.95)
+    prediction: Literal["Virus", "Host", "Novel"] = predicted_label
+    if config.enable_ood and (
+        confidence < config.confidence_threshold or ood_score >= config.ood_threshold
+    ):
+        prediction = "Novel"
 
     result: Dict[str, Any] = {
         "sequence_id": seq_id,
         "length": len(sequence),
         "gc_content": round(gc_content, 3),
         "prediction": prediction,
-        "confidence": round(confidence, 3),
+        "confidence": confidence,
         "sequence_preview": f"{sequence[:50]}..." if len(sequence) > 50 else sequence,
     }
 
     if config.enable_ood:
         result.update(
             {
-                "mahalanobis_distance": round(random.uniform(1.0, 5.0), 3),
-                "energy_score": round(random.uniform(-5.0, -1.0), 3),
-                "ood_score": round(random.uniform(0.0, 1.0), 3),
+                # Placeholder values derived from model confidence until real OOD heads are wired.
+                "mahalanobis_distance": round(1.0 + (ood_score * 4.0), 3),
+                "energy_score": round(-1.0 - (ood_score * 4.0), 3),
+                "ood_score": ood_score,
             }
         )
 

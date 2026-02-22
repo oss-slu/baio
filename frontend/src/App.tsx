@@ -14,10 +14,10 @@ import type {
 
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
-  confidence_threshold: 0.5,
+  confidence_threshold: 0.01,
   batch_size: 16,
-  enable_ood: true,
-  ood_threshold: 0.3,
+  enable_ood: false,
+  ood_threshold: 0.99,
 }
 
 const sampleFasta = `>virus_mock
