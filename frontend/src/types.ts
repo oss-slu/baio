@@ -18,6 +18,8 @@ export type SequenceResult = {
   prediction: 'Virus' | 'Host' | 'Novel'
   confidence: number
   sequence_preview: string
+  organism_name?: string
+  explanation?: string
   mahalanobis_distance?: number
   energy_score?: number
   ood_score?: number

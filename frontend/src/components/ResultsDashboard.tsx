@@ -1,6 +1,7 @@
-import { BarChart3, Clock, Shield, Sparkles } from 'lucide-react'
+import { BarChart3, Clock, Shield, Sparkles, Info } from 'lucide-react'
 import type { ClassificationResponse } from '../types'
 import { cn } from '../lib/utils'
+import { useState } from 'react'
 
 type ResultsDashboardProps = {
   results: ClassificationResponse | null
@@ -69,6 +70,8 @@ function SkeletonRow() {
 }
 
 function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardProps) {
+  const [expandedRow, setExpandedRow] = useState<string | null>(null)
+
   return (
     <section className="flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-emerald-50">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -162,11 +165,11 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                 <thead className="sticky top-0 bg-slate-50 backdrop-blur">
                   <tr className="text-left text-xs uppercase tracking-[0.12em] text-slate-500">
                     <th className="px-4 py-3">ID</th>
+                    <th className="px-4 py-3">Organism</th>
                     <th className="px-4 py-3">Prediction</th>
                     <th className="px-4 py-3">Confidence</th>
                     <th className="px-4 py-3">GC</th>
                     <th className="px-4 py-3">Length</th>
-                    <th className="px-4 py-3">Preview</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 bg-white">
@@ -175,35 +178,59 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
 
                   {!isLoading &&
                     results?.detailed_results.map((row) => (
-                      <tr key={row.sequence_id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 font-semibold text-slate-900">
-                          {row.sequence_id}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span
-                            className={cn(
-                              'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold',
-                              statusClasses[row.prediction] ?? statusClasses.Host,
-                            )}
-                          >
+                      <>
+                        <tr 
+                          key={row.sequence_id} 
+                          className="hover:bg-slate-50 cursor-pointer"
+                          onClick={() => setExpandedRow(expandedRow === row.sequence_id ? null : row.sequence_id)}
+                        >
+                          <td className="px-4 py-3 font-semibold text-slate-900">
+                            {row.sequence_id}
+                          </td>
+                          <td className="px-4 py-3 text-slate-700">
+                            {row.organism_name || 'Unknown'}
+                          </td>
+                          <td className="px-4 py-3">
                             <span
                               className={cn(
-                                'h-2.5 w-2.5 rounded-full',
-                                row.prediction === 'Virus' && 'bg-rose-500',
-                                row.prediction === 'Host' && 'bg-emerald-400',
-                                row.prediction === 'Novel' && 'bg-amber-400',
+                                'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold',
+                                statusClasses[row.prediction] ?? statusClasses.Host,
                               )}
-                            />
-                            {row.prediction}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-slate-800">{row.confidence.toFixed(3)}</td>
-                        <td className="px-4 py-3 text-slate-800">{row.gc_content.toFixed(3)}</td>
-                        <td className="px-4 py-3 text-slate-800">{row.length}</td>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-700">
-                          {row.sequence_preview}
-                        </td>
-                      </tr>
+                            >
+                              <span
+                                className={cn(
+                                  'h-2.5 w-2.5 rounded-full',
+                                  row.prediction === 'Virus' && 'bg-rose-500',
+                                  row.prediction === 'Host' && 'bg-emerald-400',
+                                  row.prediction === 'Novel' && 'bg-amber-400',
+                                )}
+                              />
+                              {row.prediction}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-slate-800">{(row.confidence * 100).toFixed(1)}%</td>
+                          <td className="px-4 py-3 text-slate-800">{(row.gc_content * 100).toFixed(1)}%</td>
+                          <td className="px-4 py-3 text-slate-800">{row.length}bp</td>
+                        </tr>
+                        {expandedRow === row.sequence_id && row.explanation && (
+                          <tr key={`${row.sequence_id}-details`} className="bg-slate-50">
+                            <td colSpan={6} className="px-4 py-4">
+                              <div className="flex items-start gap-2">
+                                <Info className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                                    Classification Explanation
+                                  </p>
+                                  <p className="text-sm text-slate-700">{row.explanation}</p>
+                                  <p className="text-xs text-slate-400 mt-2 font-mono">
+                                    Preview: {row.sequence_preview}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     ))}
                 </tbody>
               </table>
