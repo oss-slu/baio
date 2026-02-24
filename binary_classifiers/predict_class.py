@@ -11,6 +11,9 @@ except ModuleNotFoundError:
     from binary_classifiers.transformers.kmers_transformer import (  # noqa: E402
         KmerTransformer,
     )
+import binary_classifiers.transformers.kmers_transformer as kmt
+
+print(f"DEBUG: KmerTransformer module: {kmt.__file__}", flush=True)
 
 
 LABEL_MAP = {0: "Host", 1: "Virus"}
