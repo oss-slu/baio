@@ -29,7 +29,10 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-400 px-4 py-3 text-sm font-semibold text-white shadow-xl shadow-emerald-200 transition hover:-translate-y-0.5 hover:shadow-emerald-300"
+        className={cn(
+          'fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-xl transition hover:-translate-y-0.5',
+          'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25 hover:shadow-emerald-500/40'
+        )}
       >
         <MessageCircle className="h-4 w-4" />
         Assistant
@@ -37,32 +40,39 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
 
       <div
         className={cn(
-          'fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm transition',
+          'fixed inset-0 z-50 flex justify-end transition',
           open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
+          'bg-black/20 backdrop-blur-sm dark:bg-black/40'
         )}
         aria-hidden={!open}
         onClick={() => setOpen(false)}
       >
         <div
           className={cn(
-            'relative flex h-full w-full max-w-md flex-col border-l border-slate-200 bg-white p-4 shadow-2xl transition duration-300 ease-out',
+            'relative flex h-full w-full max-w-md flex-col p-4 shadow-2xl transition duration-300 ease-out',
+            'border-l border-slate-200 bg-white',
+            'dark:border-slate-700 dark:bg-slate-900',
             open ? 'translate-x-0' : 'translate-x-full',
           )}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Assistant
               </p>
-            <h4 className="text-lg font-semibold text-slate-900">
-              Interpret predictions &amp; troubleshoot
-            </h4>
-          </div>
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Interpret predictions & troubleshoot
+              </h4>
+            </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-300"
+              className={cn(
+                'flex h-10 w-10 items-center justify-center rounded-lg border transition',
+                'border-slate-200 bg-white text-slate-600 hover:border-rose-300 hover:text-rose-600',
+                'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-rose-600'
+              )}
             >
               <X className="h-5 w-5" />
             </button>
@@ -70,7 +80,11 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
 
           <div
             ref={listRef}
-            className="mt-4 flex-1 space-y-3 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3"
+            className={cn(
+              'mt-4 flex-1 space-y-3 overflow-y-auto rounded-xl border p-3',
+              'border-slate-200 bg-slate-50',
+              'dark:border-slate-700 dark:bg-slate-800'
+            )}
           >
             {messages.map((msg, idx) => (
               <div
@@ -78,21 +92,21 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
                 className={cn(
                   'flex flex-col gap-1 rounded-lg px-3 py-2 text-sm shadow-sm',
                   msg.role === 'assistant'
-                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-900'
-                    : 'border border-slate-200 bg-white text-slate-900',
+                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200'
+                    : 'border border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100'
                 )}
               >
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {msg.role}
                 </span>
-                <p className="whitespace-pre-line leading-relaxed text-slate-800">
+                <p className="whitespace-pre-line leading-relaxed text-slate-700 dark:text-slate-200">
                   {msg.content}
                 </p>
               </div>
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-sm text-emerald-700">
+              <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Thinking...
               </div>
@@ -109,16 +123,24 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
                   handleSubmit()
                 }
               }}
-              placeholder="Ask about BAIO, novelty detection, or how to interpret results..."
-              className="h-24 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              placeholder="Ask about BAIO, novelty detection, or results..."
+              className={cn(
+                'h-24 w-full rounded-xl border px-3 py-2 text-sm outline-none transition',
+                'border-slate-200 bg-white text-slate-800 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100',
+                'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-emerald-500 dark:focus:ring-emerald-900',
+                'placeholder:text-slate-400 dark:placeholder:text-slate-500'
+              )}
             />
-            <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span>Shift + Enter for new line</span>
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isLoading || !input.trim()}
-                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-400 px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-200 transition hover:shadow-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+                className={cn(
+                  'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-60',
+                  'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                )}
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Send

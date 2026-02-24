@@ -1,22 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
+  @apply min-h-screen transition-colors duration-300;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body:not(.dark) {
   background: radial-gradient(circle at 18% 20%, rgba(16, 185, 129, 0.18), transparent 35%),
     radial-gradient(circle at 78% 10%, rgba(251, 146, 60, 0.16), transparent 32%),
     radial-gradient(circle at 60% 70%, rgba(59, 130, 246, 0.12), transparent 35%),
     #d5e9f7;
-  @apply min-h-screen text-slate-900;
+  @apply text-slate-900;
+}
+
+body.dark, .dark {
+  background: #0f172a;
+  @apply text-slate-100;
 }
 
 * {
@@ -24,18 +34,78 @@ body {
 }
 
 ::selection {
-  @apply bg-indigo-500/30 text-indigo-100;
+  @apply bg-emerald-500/30;
 }
 
+.light ::selection {
+  @apply text-slate-900;
+}
+
+.dark ::selection {
+  @apply text-white;
+}
+
+/* DNA Sequence Typography */
+.font-dna,
+.font-mono.dna {
+  font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', monospace;
+  font-feature-settings: 'tnum' on, 'lnum' on, 'zero' on, 'calt' off;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+/* Highlight individual bases for better readability */
+.dna-bases {
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+/* Metric Card Numbers - Extra Bold */
+.metric-value {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Tabular numbers for data consistency */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700 rounded-full;
+  @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-500;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  @apply bg-slate-100 dark:bg-slate-800 rounded-full;
+}
+
+/* Custom scrollbar for code/sequence areas */
+.font-dna::-webkit-scrollbar {
+  height: 6px;
+}
+
+.font-dna::-webkit-scrollbar-thumb {
+  @apply bg-slate-400 dark:bg-slate-500 rounded;
+}
+
+/* Animation for sequence highlight */
+@keyframes base-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.base-highlight {
+  animation: base-pulse 2s ease-in-out infinite;
 }

@@ -1,0 +1,169 @@
+{
+  "sprint_name": "sprint_2",
+  "sprint_window": {
+    "start": "2026-02-10",
+    "end": "2026-02-23"
+  },
+  "collected_at_utc": "2026-02-24T04:41:04.185447+00:00",
+  "sources": {
+    "git": "local repository history",
+    "github": "https://github.com/oss-slu/baio",
+    "tests": "local pytest run"
+  },
+  "git": {
+    "commit_count": 9,
+    "contributors": 2,
+    "commits_by_author": {
+      "Kevin Yang": 1,
+      "mainuddinMAins": 8
+    },
+    "commits_by_day": {
+      "2026-02-14": 2,
+      "2026-02-20": 1,
+      "2026-02-21": 1,
+      "2026-02-23": 5
+    },
+    "lines_added": 2019,
+    "lines_deleted": 434,
+    "net_lines": 1585,
+    "file_change_records": 27,
+    "unique_files_changed": 17,
+    "commits": [
+      {
+        "hash": "bec3799",
+        "date": "2026-02-23",
+        "author": "mainuddinMAins",
+        "subject": "Enhance explainability panel in results dashboard"
+      },
+      {
+        "hash": "3efee1a",
+        "date": "2026-02-23",
+        "author": "mainuddinMAins",
+        "subject": "Update backend and frontend UI changes"
+      },
+      {
+        "hash": "a71dd62",
+        "date": "2026-02-23",
+        "author": "mainuddinMAins",
+        "subject": "Add debug output for KmerTransformer import path"
+      },
+      {
+        "hash": "4e5dfd4",
+        "date": "2026-02-23",
+        "author": "mainuddinMAins",
+        "subject": "Enhance classification details in API and results dashboard"
+      },
+      {
+        "hash": "60a36ac",
+        "date": "2026-02-23",
+        "author": "mainuddinMAins",
+        "subject": "Update vectorizer artifacts"
+      },
+      {
+        "hash": "514bba4",
+        "date": "2026-02-21",
+        "author": "mainuddinMAins",
+        "subject": "Update classification pipeline and API output"
+      },
+      {
+        "hash": "e6fde42",
+        "date": "2026-02-20",
+        "author": "mainuddinMAins",
+        "subject": "Fix coverage exclude_lines regex"
+      },
+      {
+        "hash": "dbb991c",
+        "date": "2026-02-14",
+        "author": "mainuddinMAins",
+        "subject": "Local changes before pulling latest updates"
+      },
+      {
+        "hash": "75e416a",
+        "date": "2026-02-14",
+        "author": "Kevin Yang",
+        "subject": "Import predict_class to main api file"
+      }
+    ]
+  },
+  "github": {
+    "issues_created": 6,
+    "issues_closed": 3,
+    "issue_goal_completion_pct": 50.0,
+    "bug_issues_created": 0,
+    "prs_created": 12,
+    "prs_merged": 9,
+    "pr_merge_rate_pct": 75.0,
+    "open_prs_now": 1,
+    "open_issues_now": 4,
+    "open_bug_issues_now": 0,
+    "open_question_issues_now": 0,
+    "issue_created_by_day": {
+      "2026-02-10": 2,
+      "2026-02-21": 1,
+      "2026-02-23": 3
+    },
+    "issue_closed_by_day": {
+      "2026-02-15": 1,
+      "2026-02-22": 1,
+      "2026-02-23": 1
+    },
+    "pr_cycle_time": {
+      "count": 9,
+      "median_hours": 4.2,
+      "mean_hours": 60.76,
+      "min_hours": 0.13,
+      "max_hours": 269.74
+    },
+    "issue_numbers_created": [
+      133,
+      132,
+      131,
+      126,
+      119,
+      118
+    ],
+    "issue_numbers_closed": [
+      133,
+      119,
+      118
+    ],
+    "pr_numbers_created": [
+      134,
+      130,
+      129,
+      128,
+      127,
+      125,
+      124,
+      123,
+      122,
+      121,
+      120,
+      117
+    ],
+    "pr_numbers_merged": [
+      130,
+      129,
+      128,
+      124,
+      123,
+      122,
+      121,
+      116,
+      115
+    ],
+    "status": "ok"
+  },
+  "tests": {
+    "collection_command": "pytest --collect-only -q",
+    "test_command": "pytest -o addopts=''",
+    "collection_exit_code": 0,
+    "exit_code": 0,
+    "collected": 62,
+    "passed": 62,
+    "failed": 0,
+    "warnings": 2,
+    "duration_seconds": 7.02,
+    "pass_rate_pct": 100.0
+  }
+}
