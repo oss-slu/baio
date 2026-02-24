@@ -1,7 +1,8 @@
-import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight } from 'lucide-react'
+import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, Download, FileJson, FileSpreadsheet, FileText, FileDown, GitCompare, ChevronDown } from 'lucide-react'
 import type { ClassificationResponse, SequenceResult } from '../types'
 import { cn } from '../lib/utils'
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
+import { jsPDF } from 'jspdf'
 
 type ResultsDashboardProps = {
   results: ClassificationResponse | null
@@ -485,15 +486,15 @@ function ExplanationPanel({ row, risk }: { row: SequenceResult; risk: { level: R
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
           <Brain className="h-5 w-5" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <h4 className="text-base font-bold text-slate-900 dark:text-white">
-            Explainable AI Analysis
+            Analysis for: <span className="text-indigo-600 dark:text-indigo-400">{row.sequence_id}</span>
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Understanding how the model reached this prediction
+          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+            {row.organism_name || 'Unknown organism'} • {row.prediction} • {(row.confidence * 100).toFixed(1)}% confidence
           </p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex-shrink-0">
           <RiskBadge level={risk.level} />
         </div>
       </div>
@@ -740,6 +741,343 @@ function ExplanationPanel({ row, risk }: { row: SequenceResult; risk: { level: R
   )
 }
 
+function DownloadReportButton({ results }: { results: ClassificationResponse }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const downloadJSON = () => {
+    const report = {
+      metadata: {
+        generated_at: new Date().toISOString(),
+        model_version: 'baio-v1.2',
+        model_type: 'RandomForest',
+        training_data: 'Virus-Host 2024 Dataset',
+      },
+      summary: {
+        total_sequences: results.total_sequences,
+        virus_count: results.virus_count,
+        host_count: results.host_count,
+        novel_count: results.novel_count,
+        processing_time_seconds: results.processing_time,
+        source: results.source,
+      },
+      detailed_results: results.detailed_results.map(r => ({
+        sequence_id: r.sequence_id,
+        prediction: r.prediction,
+        confidence: r.confidence,
+        organism_name: r.organism_name,
+        gc_content: r.gc_content,
+        length: r.length,
+        ood_score: r.ood_score,
+        explanation: r.explanation,
+      })),
+    }
+
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `baio-report-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    setIsOpen(false)
+  }
+
+  const downloadCSV = () => {
+    const headers = [
+      'Sequence ID',
+      'Organism',
+      'Prediction',
+      'Confidence',
+      'GC Content',
+      'Length',
+      'OOD Score',
+      'Risk Level',
+    ]
+
+    const rows = results.detailed_results.map(r => {
+      const risk = calculateRiskLevel(r.prediction, r.confidence, r.ood_score)
+      return [
+        r.sequence_id,
+        r.organism_name || 'Unknown',
+        r.prediction,
+        (r.confidence * 100).toFixed(1) + '%',
+        (r.gc_content * 100).toFixed(1) + '%',
+        r.length,
+        r.ood_score?.toFixed(3) || 'N/A',
+        risk.level.toUpperCase(),
+      ].map(v => `"${v}"`).join(',')
+    })
+
+    const summaryRows = [
+      '',
+      '# Summary',
+      `# Total Sequences,${results.total_sequences}`,
+      `# Virus Count,${results.virus_count}`,
+      `# Host Count,${results.host_count}`,
+      `# Novel Count,${results.novel_count}`,
+      `# Processing Time,${results.processing_time.toFixed(2)}s`,
+      `# Generated At,${new Date().toISOString()}`,
+      `# Model Version,baio-v1.2`,
+      '',
+    ]
+
+    const csv = [...summaryRows, headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `baio-report-${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+    setIsOpen(false)
+  }
+
+  const downloadPDF = () => {
+    const doc = new jsPDF()
+    const pageWidth = doc.internal.pageSize.getWidth()
+    let y = 20
+
+    // Title
+    doc.setFontSize(20)
+    doc.setTextColor(34, 197, 94) // emerald-500
+    doc.text('BAIO Classification Report', pageWidth / 2, y, { align: 'center' })
+    y += 15
+
+    // Metadata
+    doc.setFontSize(10)
+    doc.setTextColor(100, 116, 139) // slate-500
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 20, y)
+    doc.text(`Model: baio-v1.2 (RandomForest)`, 20, y + 6)
+    doc.text(`Training Data: Virus-Host 2024 Dataset`, 20, y + 12)
+    doc.text(`Source: ${results.source}`, 20, y + 18)
+    y += 30
+
+    // Summary Section
+    doc.setFontSize(14)
+    doc.setTextColor(15, 23, 42) // slate-900
+    doc.text('Summary', 20, y)
+    y += 10
+
+    // Summary box
+    doc.setDrawColor(226, 232, 240) // slate-200
+    doc.setFillColor(248, 250, 252) // slate-50
+    doc.roundedRect(20, y, pageWidth - 40, 35, 3, 3, 'FD')
+    
+    doc.setFontSize(11)
+    doc.setTextColor(51, 65, 85) // slate-700
+    const summaryY = y + 10
+    doc.text(`Total Sequences: ${results.total_sequences}`, 30, summaryY)
+    doc.text(`Virus Detected: ${results.virus_count}`, 30, summaryY + 8)
+    doc.text(`Host Sequences: ${results.host_count}`, pageWidth / 2 + 10, summaryY)
+    doc.text(`Novel/Unknown: ${results.novel_count}`, pageWidth / 2 + 10, summaryY + 8)
+    doc.text(`Processing Time: ${results.processing_time.toFixed(2)}s`, pageWidth - 70, summaryY + 8)
+    y += 45
+
+    // Detailed Results Header
+    doc.setFontSize(14)
+    doc.setTextColor(15, 23, 42)
+    doc.text('Detailed Results', 20, y)
+    y += 10
+
+    // Table Header
+    doc.setFillColor(241, 245, 249) // slate-100
+    doc.rect(20, y, pageWidth - 40, 8, 'F')
+    doc.setFontSize(9)
+    doc.setTextColor(71, 85, 105) // slate-600
+    doc.text('Sequence ID', 25, y + 5)
+    doc.text('Prediction', 75, y + 5)
+    doc.text('Confidence', 110, y + 5)
+    doc.text('GC%', 145, y + 5)
+    doc.text('Length', 165, y + 5)
+    y += 12
+
+    // Table Rows
+    doc.setFontSize(8)
+    results.detailed_results.forEach((r, index) => {
+      // Check if we need a new page
+      if (y > 270) {
+        doc.addPage()
+        y = 20
+        // Repeat header on new page
+        doc.setFillColor(241, 245, 249)
+        doc.rect(20, y, pageWidth - 40, 8, 'F')
+        doc.setFontSize(9)
+        doc.setTextColor(71, 85, 105)
+        doc.text('Sequence ID', 25, y + 5)
+        doc.text('Prediction', 75, y + 5)
+        doc.text('Confidence', 110, y + 5)
+        doc.text('GC%', 145, y + 5)
+        doc.text('Length', 165, y + 5)
+        y += 12
+      }
+
+      const risk = calculateRiskLevel(r.prediction, r.confidence, r.ood_score)
+      
+      // Row background (alternating)
+      if (index % 2 === 0) {
+        doc.setFillColor(248, 250, 252) // slate-50
+        doc.rect(20, y - 3, pageWidth - 40, 8, 'F')
+      }
+
+      // Risk indicator color
+      if (risk.level === 'high') {
+        doc.setTextColor(225, 29, 72) // rose-600
+      } else if (risk.level === 'moderate') {
+        doc.setTextColor(217, 119, 6) // amber-600
+      } else {
+        doc.setTextColor(22, 163, 74) // emerald-600
+      }
+
+      doc.setTextColor(51, 65, 85) // slate-700
+      const seqId = r.sequence_id.length > 25 ? r.sequence_id.slice(0, 25) + '...' : r.sequence_id
+      doc.text(seqId, 25, y)
+      
+      // Prediction with color
+      if (r.prediction === 'Virus') {
+        doc.setTextColor(225, 29, 72) // rose-600
+      } else if (r.prediction === 'Host') {
+        doc.setTextColor(22, 163, 74) // emerald-600
+      } else {
+        doc.setTextColor(245, 158, 11) // amber-500
+      }
+      doc.text(r.prediction, 75, y)
+      
+      doc.setTextColor(51, 65, 85)
+      doc.text(`${(r.confidence * 100).toFixed(1)}%`, 110, y)
+      doc.text(`${(r.gc_content * 100).toFixed(1)}%`, 145, y)
+      doc.text(`${r.length} bp`, 165, y)
+      
+      y += 8
+    })
+
+    // Footer
+    const totalPages = doc.getNumberOfPages()
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i)
+      doc.setFontSize(8)
+      doc.setTextColor(148, 163, 184) // slate-400
+      doc.text(
+        `Page ${i} of ${totalPages} | BAIO Classification Report | Generated: ${new Date().toLocaleDateString()}`,
+        pageWidth / 2,
+        285,
+        { align: 'center' }
+      )
+    }
+
+    doc.save(`baio-report-${Date.now()}.pdf`)
+    setIsOpen(false)
+  }
+
+  const downloadText = () => {
+    const report = `
+BAIO Classification Report
+==========================
+Generated: ${new Date().toLocaleString()}
+Model: baio-v1.2 (RandomForest)
+Training Data: Virus-Host 2024 Dataset
+
+SUMMARY
+-------
+Total Sequences: ${results.total_sequences}
+Virus Detected: ${results.virus_count}
+Host Sequences: ${results.host_count}
+Novel/Unknown: ${results.novel_count}
+Processing Time: ${results.processing_time.toFixed(2)}s
+
+DETAILED RESULTS
+----------------
+${results.detailed_results.map(r => {
+  const risk = calculateRiskLevel(r.prediction, r.confidence, r.ood_score)
+  return `
+ID: ${r.sequence_id}
+   Organism: ${r.organism_name || 'Unknown'}
+   Prediction: ${r.prediction} (Risk: ${risk.label})
+   Confidence: ${(r.confidence * 100).toFixed(1)}%
+   GC Content: ${(r.gc_content * 100).toFixed(1)}%
+   Length: ${r.length} bp
+`.trim()
+}).join('\n\n')}
+    `.trim()
+
+    const blob = new Blob([report], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `baio-report-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    setIsOpen(false)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition',
+          'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+          'dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50'
+        )}
+      >
+        <Download className="h-4 w-4" />
+        Download Report
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className={cn(
+            'absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border shadow-xl overflow-hidden',
+            'border-slate-200 bg-white',
+            'dark:border-slate-700 dark:bg-slate-800'
+          )}>
+            <button
+              onClick={downloadJSON}
+              className={cn(
+                'flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition',
+                'hover:bg-slate-50 text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+              )}
+            >
+              <FileJson className="h-4 w-4 text-blue-500" />
+              JSON Format
+            </button>
+            <button
+              onClick={downloadCSV}
+              className={cn(
+                'flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition',
+                'hover:bg-slate-50 text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+              )}
+            >
+              <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+              CSV Format
+            </button>
+            <button
+              onClick={downloadPDF}
+              className={cn(
+                'flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition',
+                'hover:bg-slate-50 text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+              )}
+            >
+              <FileDown className="h-4 w-4 text-rose-500" />
+              PDF Format
+            </button>
+            <button
+              onClick={downloadText}
+              className={cn(
+                'flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition',
+                'hover:bg-slate-50 text-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+              )}
+            >
+              <FileText className="h-4 w-4 text-slate-500" />
+              Text Format
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardProps) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
 
@@ -861,9 +1199,11 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                 <Clock className="h-4 w-4 text-blue-500" />
                 {results.processing_time.toFixed(2)}s runtime
               </div>
-              <div className="ml-auto text-xs text-slate-400 dark:text-slate-500">
+              <div className="flex-1" />
+              <span className="text-xs text-slate-400 dark:text-slate-500">
                 Source: {results.source}
-              </div>
+              </span>
+              <DownloadReportButton results={results} />
             </div>
           </div>
         )}
@@ -916,26 +1256,31 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                   results?.detailed_results.map((row) => {
                     const styles = statusStyles[row.prediction] || statusStyles.Host
                     const risk = calculateRiskLevel(row.prediction, row.confidence, row.ood_score)
+                    const isExpanded = expandedRow === row.sequence_id
                     return (
-                      <>
+                      <Fragment key={row.sequence_id}>
                         <tr
-                          key={row.sequence_id}
                           className={cn(
                             'cursor-pointer transition-all',
                             'hover:bg-slate-50 dark:hover:bg-slate-800/50',
-                            expandedRow === row.sequence_id && 'bg-slate-50 dark:bg-slate-800/50'
+                            isExpanded && 'bg-indigo-50 dark:bg-indigo-950/30'
                           )}
                           onClick={() =>
                             setExpandedRow(
-                              expandedRow === row.sequence_id ? null : row.sequence_id
+                              isExpanded ? null : row.sequence_id
                             )
                           }
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
+                              <ChevronRight className={cn(
+                                'h-4 w-4 text-slate-400 transition-transform duration-200',
+                                isExpanded && 'rotate-90 text-indigo-500'
+                              )} />
                               <span className={cn(
                                 'font-medium',
-                                'text-slate-900 dark:text-white'
+                                'text-slate-900 dark:text-white',
+                                isExpanded && 'text-indigo-700 dark:text-indigo-300'
                               )}>
                                 {row.sequence_id.length > 25 
                                   ? `${row.sequence_id.slice(0, 25)}...` 
@@ -973,14 +1318,14 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                             <LengthCell length={row.length} />
                           </td>
                         </tr>
-                        {expandedRow === row.sequence_id && (
-                          <tr key={`${row.sequence_id}-details`}>
+                        {isExpanded && (
+                          <tr>
                             <td colSpan={7} className="p-0">
                               <ExplanationPanel row={row} risk={risk} />
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     )
                   })}
               </tbody>
