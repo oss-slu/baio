@@ -154,18 +154,12 @@ def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM"]:
         return "RandomForest"
     if "svm" in model_hint:
         return "SVM"
-    return "SVM"
+    return "RandomForest"
 
 
 @lru_cache(maxsize=2)
 def get_predictor(model_name: Literal["RandomForest", "SVM"]) -> PredictClass:
-    from pathlib import Path
-
-    model_dir = Path(__file__).resolve().parent.parent / "binary_classifiers" / "models"
-    print(f"DEBUG: Loading model from: {model_dir}", flush=True)
-    predictor = PredictClass(model_name=model_name)
-    print(f"DEBUG: Model classes: {predictor.model.classes_}", flush=True)
-    return predictor
+    return PredictClass(model_name=model_name)
 
 
 @app.post("/reload_models")
@@ -185,9 +179,7 @@ def classify_sequence(
         len(sequence), 1
     )
     predicted_label, raw_confidence = predictor.predict_with_confidence(sequence)
-    print(f"DEBUG: raw_confidence from predictor: {raw_confidence}", flush=True)
     confidence = round(float(raw_confidence), 3)
-    print(f"DEBUG: rounded confidence: {confidence}", flush=True)
     ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
     prediction: Literal["Virus", "Host", "Novel"] = predicted_label

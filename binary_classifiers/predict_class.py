@@ -11,9 +11,6 @@ except ModuleNotFoundError:
     from binary_classifiers.transformers.kmers_transformer import (  # noqa: E402
         KmerTransformer,
     )
-import binary_classifiers.transformers.kmers_transformer as kmt
-
-print(f"DEBUG: KmerTransformer module: {kmt.__file__}", flush=True)
 
 
 LABEL_MAP = {0: "Host", 1: "Virus"}
@@ -60,12 +57,7 @@ class PredictClass:
     ) -> Tuple[Literal["Virus", "Host"], float]:
         features = self._preprocess(sequence)
         prediction = self.model.predict(features)[0]
-        proba = self.model.predict_proba(features)[0]
-        print(
-            f"DEBUG predict_class: prediction={prediction}, proba={proba}", flush=True
-        )
         confidence = self._confidence_for_prediction(features, prediction)
-        print(f"DEBUG predict_class: final confidence={confidence}", flush=True)
         return self._prediction_to_label(prediction), confidence
 
     def batch_predict_with_confidence(
