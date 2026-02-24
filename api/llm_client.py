@@ -2,9 +2,12 @@
 
 import os
 import time
-from typing import Dict, List
+from typing import Any, Dict, List
 
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+except ModuleNotFoundError:
+    genai = None
 
 
 class LLMClient:
@@ -14,16 +17,19 @@ class LLMClient:
         self.provider = provider
         self.model = model
         self.api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        self.client: Any = None
 
-        if self.api_key:
+        if self.api_key and genai is not None:
             try:
                 genai.configure(api_key=self.api_key)
                 self.client = genai.GenerativeModel(model)
             except Exception as e:
                 print(f"Failed to initialize Gemini: {e}", flush=True)
-                self.client = None
-        else:
-            self.client = None
+        elif self.api_key and genai is None:
+            print(
+                "google-generativeai is not installed; falling back to mock responses.",
+                flush=True,
+            )
 
     def generate_response(
         self, messages: List[Dict[str, str]], system_prompt: str
