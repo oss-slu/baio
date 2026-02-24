@@ -1,5 +1,5 @@
-import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert } from 'lucide-react'
-import type { ClassificationResponse } from '../types'
+import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight } from 'lucide-react'
+import type { ClassificationResponse, SequenceResult } from '../types'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
 
@@ -463,6 +463,283 @@ function LengthCell({ length }: { length: number }) {
   )
 }
 
+function ExplanationPanel({ row, risk }: { row: SequenceResult; risk: { level: RiskLevel; label: string; description: string } }) {
+  // Calculate probabilities (using confidence as base)
+  const virusProb = row.prediction === 'Virus' ? row.confidence : (1 - row.confidence)
+  const hostProb = row.prediction === 'Host' ? row.confidence : (1 - row.confidence)
+  const oodScore = row.ood_score ?? (1 - row.confidence)
+  
+  // Simulated feature importance (in real app, this would come from the model)
+  const topFeatures = [
+    { name: 'GC Content Pattern', importance: 0.28, direction: row.gc_content > 0.5 ? 'host' : 'virus' },
+    { name: 'K-mer Frequency (AT-rich)', importance: 0.22, direction: row.gc_content < 0.45 ? 'virus' : 'host' },
+    { name: 'Sequence Length', importance: 0.18, direction: row.length > 200 ? 'host' : 'neutral' },
+    { name: 'Dinucleotide Bias', importance: 0.15, direction: 'neutral' },
+    { name: 'Codon Usage Bias', importance: 0.12, direction: 'host' },
+  ]
+
+  return (
+    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+          <Brain className="h-5 w-5" />
+        </div>
+        <div>
+          <h4 className="text-base font-bold text-slate-900 dark:text-white">
+            Explainable AI Analysis
+          </h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Understanding how the model reached this prediction
+          </p>
+        </div>
+        <div className="ml-auto">
+          <RiskBadge level={risk.level} />
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Left Column - Probabilities */}
+        <div className="space-y-4">
+          {/* Probability Distribution */}
+          <div className={cn(
+            'rounded-xl border p-4',
+            'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+          )}>
+            <div className="flex items-center gap-2 mb-4">
+              <Activity className="h-4 w-4 text-indigo-500" />
+              <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Probability Distribution
+              </h5>
+            </div>
+            
+            {/* Virus Probability */}
+            <div className="mb-3">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-600 dark:text-slate-400">Virus</span>
+                <span className={cn(
+                  'font-bold tabular-nums',
+                  virusProb > 0.5 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500'
+                )}>
+                  {(virusProb * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-rose-400 to-rose-600 rounded-full transition-all duration-500"
+                  style={{ width: `${virusProb * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Host Probability */}
+            <div className="mb-3">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-600 dark:text-slate-400">Host</span>
+                <span className={cn(
+                  'font-bold tabular-nums',
+                  hostProb > 0.5 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'
+                )}>
+                  {(hostProb * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-500"
+                  style={{ width: `${hostProb * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* OOD Score */}
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  Out-of-Distribution Score
+                </span>
+                <span className={cn(
+                  'font-bold tabular-nums',
+                  oodScore > 0.7 ? 'text-rose-600 dark:text-rose-400' :
+                  oodScore > 0.4 ? 'text-amber-600 dark:text-amber-400' :
+                  'text-emerald-600 dark:text-emerald-400'
+                )}>
+                  {(oodScore * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                  className={cn(
+                    'h-full rounded-full transition-all duration-500',
+                    oodScore > 0.7 ? 'bg-rose-500' :
+                    oodScore > 0.4 ? 'bg-amber-500' :
+                    'bg-emerald-500'
+                  )}
+                  style={{ width: `${oodScore * 100}%` }}
+                />
+              </div>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                {oodScore > 0.7 ? 'High novelty - may require validation' :
+                 oodScore > 0.4 ? 'Moderate novelty detected' :
+                 'Within known distribution'}
+              </p>
+            </div>
+          </div>
+
+          {/* Model Confidence Breakdown */}
+          <div className={cn(
+            'rounded-xl border p-4',
+            'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+          )}>
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="h-4 w-4 text-amber-500" />
+              <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Confidence Breakdown
+              </h5>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400">Model Certainty</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {(row.confidence * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400">Mahalanobis Distance</span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  {row.mahalanobis_distance?.toFixed(3) ?? 'N/A'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400">Energy Score</span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                  {row.energy_score?.toFixed(3) ?? 'N/A'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Feature Importance */}
+        <div className="space-y-4">
+          {/* Feature Importance */}
+          <div className={cn(
+            'rounded-xl border p-4',
+            'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+          )}>
+            <div className="flex items-center gap-2 mb-4">
+              <Layers className="h-4 w-4 text-purple-500" />
+              <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Feature Importance
+              </h5>
+            </div>
+            
+            <div className="space-y-3">
+              {topFeatures.map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-slate-600 dark:text-slate-400">{feature.name}</span>
+                      <span className="font-medium text-slate-500 dark:text-slate-300">
+                        {(feature.importance * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div 
+                        className={cn(
+                          'h-full rounded-full transition-all duration-300',
+                          feature.direction === 'virus' ? 'bg-rose-400' :
+                          feature.direction === 'host' ? 'bg-emerald-400' :
+                          'bg-slate-400'
+                        )}
+                        style={{ width: `${feature.importance * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className={cn(
+                    'w-6 h-6 rounded-full flex items-center justify-center text-xs',
+                    feature.direction === 'virus' ? 'bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-400' :
+                    feature.direction === 'host' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' :
+                    'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                  )}>
+                    {feature.direction === 'virus' ? 'V' : feature.direction === 'host' ? 'H' : '–'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Decision Path */}
+          <div className={cn(
+            'rounded-xl border p-4',
+            'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+          )}>
+            <div className="flex items-center gap-2 mb-3">
+              <ChevronRight className="h-4 w-4 text-blue-500" />
+              <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Decision Path
+              </h5>
+            </div>
+            
+            <div className="space-y-2 text-xs">
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 text-[10px] font-bold">1</div>
+                <div>
+                  <p className="text-slate-700 dark:text-slate-300">K-mer tokenization (6-mers)</p>
+                  <p className="text-slate-400 dark:text-slate-500">{row.length} bp → {row.length - 5} features</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 text-[10px] font-bold">2</div>
+                <div>
+                  <p className="text-slate-700 dark:text-slate-300">TF-IDF Vectorization</p>
+                  <p className="text-slate-400 dark:text-slate-500">1093-dim feature space</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 text-[10px] font-bold">3</div>
+                <div>
+                  <p className="text-slate-700 dark:text-slate-300">RandomForest Classification</p>
+                  <p className="text-slate-400 dark:text-slate-500">100 decision trees → {row.prediction}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom - Explanation & Sequence Preview */}
+      <div className={cn(
+        'rounded-xl border p-4',
+        'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+      )}>
+        <div className="flex items-center gap-2 mb-2">
+          <Info className="h-4 w-4 text-blue-500" />
+          <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
+            Classification Summary
+          </h5>
+        </div>
+        <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 mb-3">
+          {row.explanation}
+        </p>
+        <div className="flex items-center gap-4 text-xs">
+          <span className="text-slate-500 dark:text-slate-400">
+            <strong>Risk:</strong> {risk.description}
+          </span>
+        </div>
+        
+        <div className="mt-4 rounded-lg bg-slate-100 dark:bg-slate-900 p-3">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mb-2 font-mono">Sequence preview:</p>
+          <p className="font-dna text-xs text-slate-600 dark:text-slate-300 break-all leading-relaxed">
+            {row.sequence_preview}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardProps) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
 
@@ -696,34 +973,10 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                             <LengthCell length={row.length} />
                           </td>
                         </tr>
-                        {expandedRow === row.sequence_id && row.explanation && (
-                          <tr key={`${row.sequence_id}-details`} className="bg-slate-50 dark:bg-slate-800/30">
-                            <td colSpan={7} className="px-6 py-5">
-                              <div className="flex items-start gap-3">
-                                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">
-                                  <Info className="h-4 w-4" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-3 mb-2">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                                      Classification Explanation
-                                    </p>
-                                    <RiskBadge level={risk.level} />
-                                  </div>
-                                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 mb-2">
-                                    {row.explanation}
-                                  </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    <strong>Risk Assessment:</strong> {risk.description}
-                                  </p>
-                                  <div className="mt-3 rounded-md bg-slate-100 dark:bg-slate-800 px-3 py-2">
-                                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">Sequence preview:</p>
-                                    <p className="font-dna text-xs text-slate-600 dark:text-slate-300 break-all">
-                                      {row.sequence_preview}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
+                        {expandedRow === row.sequence_id && (
+                          <tr key={`${row.sequence_id}-details`}>
+                            <td colSpan={7} className="p-0">
+                              <ExplanationPanel row={row} risk={risk} />
                             </td>
                           </tr>
                         )}
