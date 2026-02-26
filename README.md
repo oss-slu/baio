@@ -1,73 +1,113 @@
-# BAIO: LLM-Based Taxonomy Profiling & Open-Set Pathogen Detection
+# BAIO: DNA Sequence Classification & Open-Set Pathogen Detection
 
 ## Overview
 
-BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic analysis platform that leverages foundation models for DNA sequence analysis. Unlike traditional reference-based pipelines (e.g., Kraken2, MetaPhlAn), BAIO can detect novel and divergent pathogens through open-set recognition methods, making it crucial for pandemic preparedness and surveillance.
+BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analysis platform that classifies DNA sequences using k-mer frequency analysis. It can distinguish between viral (e.g., COVID-19) and host genomic sequences, with optional open-set detection for identifying novel or unknown pathogens.
 
 ## Key Features
 
-- **Taxonomy Profiling**: Classifies sequencing reads or contigs into known classes (viral families, bacterial groups, host)
-- **Open-Set Detection**: Flags sequences that don't fit known classes as "novel/unknown"
-- **Sample-Level Reporting**: Aggregates read-level predictions into intuitive reports for surveillance
-- **Interpretability**: Visualizes embeddings, attention patterns, and clusters of novel reads
-- **End-to-End Pipeline**: FASTQ → Evo2 embeddings → classifier + OOD detection → GUI report (JSON + PDF)
+- **Sequence Classification**: Classifies DNA sequences into Virus or Host categories
+- **K-mer Analysis**: Uses 6-mer frequency features for sequence representation
+- **Confidence Visualization**: Color-coded confidence bars for each prediction
+- **GC Content Analysis**: Heatmap visualization showing GC content distribution
+- **Risk Assessment**: Color-coded risk level indicators (Low/Moderate/High)
+- **Explainable AI**: Per-sequence explanations with probability distributions, feature importance, and decision paths
+- **Dark Mode**: Toggle between light and dark themes
+- **Downloadable Reports**: Export results as JSON, CSV, or PDF
+- **AI Assistant**: Gemini-powered chat for sequence analysis questions
+- **Open-Set Detection** (optional): Flags sequences that don't fit known classes
 
 ## Technology Stack
 
 ### Frontend
-- **React + Vite**: Lightweight single-page UI for uploads, configuration, results, and chat (replaces the legacy Streamlit view)
+- **React + Vite**: Single-page UI with Tailwind CSS
+- **TypeScript**: Type-safe frontend development
 
-### Model Runtime
-- **PyTorch + Hugging Face Transformers**: Core ML framework
-- **Evo2**: Nucleotide model for embeddings
-- **Custom Heads**: MLP for taxonomy classification; OOD scores (Max Softmax, Energy, Mahalanobis)
+### Backend
+- **FastAPI**: Python web framework for API endpoints
+- **PyTorch + Scikit-learn**: ML model training and inference
+- **Google Gemini**: AI assistant integration
 
-### Bioinformatics Utilities
+### Bioinformatics
 - **Biopython**: FASTA/FASTQ parsing
-- **HDBSCAN**: Clustering novel reads
-
-### Data Processing
-- **NumPy/Pandas**: Embedding manipulation
-- **Scikit-learn**: Model calibration and evaluation
+- **NumPy/Pandas**: Data manipulation
 
 ### DevOps
 - **GitHub Actions**: CI/CD pipeline
 - **pytest**: Testing framework
-- **Conda/Poetry**: Environment management
+- **Docker Compose**: Containerized deployment
 
 ## Project Structure
 
 ```
-metaseq-detector/
-- api/                  (FastAPI backend)
-- frontend/             (React + Vite UI)
-- metaseq/              (Core library)
-  - dataio.py           FASTA/FASTQ loaders, filters
-  - evo2_embed.py       Evo2 embedding wrapper
-  - models.py           Classifier heads
-  - ood.py              MSP/Energy/Mahalanobis
-  - agg.py              Sample-level aggregation
-  - cluster.py          HDBSCAN for OOD reads
-  - viz.py              Plots: ROC, UMAP, attention
-- configs/              YAMLs for experiments
-- notebooks/            Exploratory notebooks
-- tests/                Pytest unit tests
-- runs/                 Saved reports/metrics
-- weights/              Trained classifier heads
-- examples/             Demo FASTQ/FASTA
-- environment.yml
-- pyproject.toml
-- docs/
-  - weekly_report.md
-  - design.md           System architecture
-  - dataset_card.md     Data sources and splits
+baio/
+├── api/                      # FastAPI backend
+│   ├── main.py              # API endpoints (classify, chat, health)
+│   ├── llm_client.py         # Gemini AI client
+│   └── Dockerfile
+├── frontend/                 # React + Vite UI
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Header.tsx          # Header with model info
+│   │   │   ├── SequenceInput.tsx   # FASTA input form
+│   │   │   ├── ConfigPanel.tsx     # Classification settings
+│   │   │   ├── ResultsDashboard.tsx # Results table & visualizations
+│   │   │   └── ChatWidget.tsx      # AI assistant chat
+│   │   ├── App.tsx           # Main application
+│   │   ├── types.ts          # TypeScript types
+│   │   └── api.ts            # API client
+│   ├── tailwind.config.js
+│   ├── vite.config.ts
+│   └── package.json
+├── binary_classifiers/       # ML classification core
+│   ├── predict_class.py      # Classification logic
+│   ├── retrain_model.py      # Model retraining script
+│   ├── train_model.py        # Training utilities
+│   ├── models/               # Saved model weights
+│   ├── training_scripts/
+│   ├── data_extraction_scripts/
+│   └── evaluation_visualizations/
+├── metaseq/                  # Legacy metagenomics library
+│   ├── dataio.py            # FASTA/FASTQ loaders
+│   ├── evo2_client.py       # Evo2 embedding client (unused)
+│   ├── models.py            # Model definitions
+│   ├── inference.py         # Inference logic
+│   └── train.py             # Training script
+├── prompting/               # LLM prompting utilities
+│   ├── client.py            # Prompt client
+│   ├── techniques.py        # Prompting techniques
+│   └── schemas.py           # Response schemas
+├── configs/
+│   └── binary_classifier.yaml
+├── scripts/
+│   └── collect_metrics.py
+├── tests/                    # Pytest unit tests
+│   ├── test_api_classification.py
+│   ├── test_data_processing.py
+│   ├── test_inference.py
+│   └── test_prompting_*.py
+├── docs/                     # Documentation
+│   ├── Technical documentation BAIO.md
+│   ├── FASTQ format specification document.md
+│   └── metrics/             # Evaluation metrics
+├── data/                    # Sample data
+│   ├── covid_reads5.fasta
+│   └── human_reads5.fasta
+├── weights/                 # Trained model weights
+├── examples/                # Demo files
+├── .env                     # API keys (not committed)
+├── environment.yml          # Conda environment
+├── requirements.txt        # Python dependencies
+├── pyproject.toml          # Project metadata
+├── docker-compose.yml      # Docker configuration
+└── README.md
 ```
 
 ## Installation
 
 ### Prerequisites
 - Python 3.8+
-- CUDA-compatible GPU (recommended for Evo2 model)
+- Node.js 18+ (for frontend)
 
 ### Option 1: Conda Environment
 ```bash
@@ -81,249 +121,39 @@ conda activate baio
 ```
 
 ### Option 2: Python Virtual Environment
-If you prefer using Python's built-in virtual environment instead of conda:
-
-#### 1. Create Virtual Environment
-
-**Windows:**
-```bash
-# Navigate to project directory
-cd baio
-
-# Create virtual environment
-python -m venv baio-env
-
-# Alternative if python3 is your command
-python3 -m venv baio-env
-```
-
-**macOS/Linux:**
 ```bash
 # Navigate to project directory
 cd baio
 
 # Create virtual environment
 python3 -m venv baio-env
-```
 
-#### 2. Activate Virtual Environment
-**Windows (Command Prompt):**
-```bash
-baio-env\Scripts\activate
-```
-
-**Windows (PowerShell):**
-```bash
-baio-env\Scripts\Activate.ps1
-```
-
-**macOS/Linux:**
-```bash
+# Activate (macOS/Linux)
 source baio-env/bin/activate
-```
 
-#### 3. Install Dependencies
-```bash
-# Upgrade pip first
-pip install --upgrade pip
+# Windows (Command Prompt)
+baio-env\Scripts\activate
 
-# Install project dependencies
+# Install dependencies
 pip install -r requirements.txt
-
-```
-
-#### 4. Verify Installation
-```bash
-# Check Python version
-python --version
-
-# Check installed packages
-pip list
-
-# Test Streamlit installation
-```
-
-### Option 3: Poetry
-```bash
-# Clone and install with Poetry
-git clone https://github.com/your-org/baio.git
-cd baio
-poetry install
 ```
 
 ### macOS (Apple Silicon / arm64) Setup Notes
-
-If you are using an Apple Silicon Mac (M1 / M2 / M3), we recommend using
-**Miniforge (arm64)** instead of Anaconda. Anaconda (x86) can cause
-architecture conflicts when resolving scientific and ML dependencies.
-
-### Recommended Conda Setup (macOS arm64)
-
-1. Install **Miniforge (arm64)**  
-   https://github.com/conda-forge/miniforge
-
-2. Create and activate the environment:
-   ```bash
-   mamba env create -f environment.yml
-   conda activate baio
-
-
-## Development Environment Setup
-
-### IDE Configuration
-
-#### Visual Studio Code
-1. Open Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
-2. Select "Python: Select Interpreter"
-3. Choose the Python executable from your virtual environment:
-   - **Conda**: Usually in `~/miniconda3/envs/baio/bin/python`
-   - **venv**: `baio-env/Scripts/python.exe` (Windows) or `baio-env/bin/python` (macOS/Linux)
-
-#### PyCharm
-1. Go to File → Settings → Project → Python Interpreter
-2. Click gear icon → Add
-3. Select "Existing Environment"
-4. Browse to your environment's Python executable
-
-#### Jupyter Notebook Integration
+If you are using an Apple Silicon Mac (M1 / M2 / M3), we recommend using **Miniforge (arm64)** instead of Anaconda:
 ```bash
-# For conda environment
+mamba env create -f environment.yml
 conda activate baio
-conda install ipykernel
-python -m ipykernel install --user --name=baio --display-name="BAIO Project"
-
-# For venv environment
-source baio-env/bin/activate  # or activate script for Windows
-pip install ipykernel
-python -m ipykernel install --user --name=baio-env --display-name="BAIO Project"
 ```
 
-### Environment Variables
+## Environment Variables
 
-Create a `.env` file in your project root for API keys and configuration:
+Create a `.env` file in the project root:
 ```bash
 # .env file
-OPENAI_API_KEY=your_api_key_here
-HUGGINGFACE_TOKEN=your_hf_token_here
+GOOGLE_API_KEY=your_google_api_key_here
 DEBUG=True
-STREAMLIT_SERVER_PORT=8501
-CUDA_VISIBLE_DEVICES=0
-```
-
-Load environment variables in your Python code:
-```python
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')
-```
-
-### Common Setup Issues & Solutions
-
-#### Issue: `python` command not found
-**Solution:** Use `python3` instead of `python`, or ensure Python is in your system PATH.
-
-#### Issue: Permission denied on Windows PowerShell
-**Solution:** Run PowerShell as administrator and execute:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-#### Issue: `pip` command not found
-**Solution:** 
-```bash
-# Use python -m pip instead
-python -m pip install package-name
-```
-
-#### Issue: CUDA/GPU Setup Problems
-**Solution:** 
-```bash
-# Check CUDA availability
-python -c "import torch; print(torch.cuda.is_available())"
-
-# Install CPU-only version if needed
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-```
-
-#### Issue: Evo2 Model Download Fails
-**Solution:**
-- Ensure stable internet connection
-- Check Hugging Face token permissions
-- Use `huggingface-cli login` for authentication
-
-#### Issue: CI Pipeline Formatting Error
-**Solution**
-- black .
-- git add .
-- git commit -m “Apply black formatting”
-- git push
-
-Recommended to install precommit to autoapply formatting before a commit
-- pip install pre-commit
-
-### Daily Development Workflow
-
-1. **Activate Environment:**
-   ```bash
-   # Conda
-   conda activate baio
-   
-   # venv (Linux/Mac)
-   source baio-env/bin/activate
-   
-   # venv (Windows)
-   baio-env\Scripts\activate
-   ```
-
-2. **Update Dependencies:**
-   ```bash
-   # Conda
-   conda env update -f environment.yml
-   
-   # venv
-   pip install -r requirements.txt
-   ```
-
-3. **Run Development Servers (API + React UI):**
-   ```bash
-   # FastAPI backend
-   python -m uvicorn api.main:app --reload --port 8080
-
-   # React frontend (uses Vite)
-   cd frontend
-   npm install
-   npm run dev -- --host --port 5173
-   ```
-
-4. **Deactivate When Done:**
-   ```bash
-   # Both conda and venv
-   deactivate
-   ```
-
-### Dependency Management
-
-#### Adding New Packages
-
-**For Conda:**
-```bash
-conda activate baio
-conda install new-package
-conda env export > environment.yml
-```
-
-**For venv:**
-```bash
-source baio-env/bin/activate  # Windows: baio-env\Scripts\activate
-pip install new-package
-pip freeze > requirements.txt
-```
-
-**For Poetry:**
-```bash
-poetry add new-package
+API_PORT=8080
+FRONTEND_PORT=5173
 ```
 
 ## Quick Start
@@ -337,100 +167,75 @@ python -m uvicorn api.main:app --reload --port 8080
 ```bash
 cd frontend
 npm install   # first run only
-# Set VITE_API_BASE if your API is not on http://localhost:8080
 npm run dev -- --host --port 5173
 ```
 
-Then open http://localhost:5173 to upload sequences, tune thresholds, and chat. (Legacy Streamlit UI commands remain in git history if you still need them.)
-## Running BAIO with Docker & Docker Compose
+Then open http://localhost:5173 to upload sequences, configure settings, view results, and chat with the AI assistant.
 
-You can run the full BAIO stack - FastAPI backend and React UI - without installing Python locally.
+## UI Features
 
-### 1. Prerequisites
-* [Docker Desktop](https://www.docker.com/products/docker-desktop) or Docker Engine with Compose v2.
-* Git to clone the repository.
+### Sequence Input
+- Paste DNA sequences directly or upload FASTA files
+- Batch processing for multiple sequences
 
-### 2. Build and start
+### Classification Results
+- **Confidence Visualization**: Color-coded confidence bars
+- **GC Content Heatmap**: GC distribution visualization
+- **Risk Level Indicators**: Color-coded badges (Low/Moderate/High)
+- **Expandable Explanations**: Click each row to see:
+  - Probability distribution
+  - Feature importance (top k-mers)
+  - Decision path analysis
+
+### Model Information
+- Display of current model version (e.g., baio-v1.2)
+
+### Dark Mode
+- Toggle between light and dark themes
+
+### Export Options
+- **JSON**: Raw classification results
+- **CSV**: Tabular format for analysis
+- **PDF**: Formatted report with visualizations
+
+### AI Assistant
+- Gemini-powered chat for sequence analysis questions
+
+## Running with Docker
+
 ```bash
 docker compose up --build
 ```
 
 This starts:
-- API at http://localhost:8080 (health at `/health`, classification at `/classify`, chat at `/chat`)
-- Frontend at http://localhost:4173 (set `FRONTEND_PORT` if you want a different host port)
-
-### 3. Environment overrides (optional)
-- `API_PORT`: host port for FastAPI (default 8080)
-- `FRONTEND_PORT`: host port for React UI (default 4173)
-- `VITE_API_BASE`: API base URL baked into the frontend at build time (defaults to http://localhost:8080 so the browser can reach the API)
-- CUDA vs CPU: Docker defaults to CPU-only PyTorch wheels (`PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu`). Build a separate GPU image/service if you need CUDA.
-
-### Basic Usage
-1. Open the React UI at the frontend port and paste/upload FASTA.
-2. Configure thresholds (confidence, batch size, novelty sensitivity).
-3. Run the classification pipeline.
-4. Review classifications, novelty counts, and chat with the built-in assistant.
-
-## Evaluation Metrics
-
-### Closed-Set Taxonomy
-- Accuracy, macro-F1
-- Per-class Precision/Recall
-
-### Open-Set Detection
-- AUROC, AUPR-Out
-- FPR@95%TPR
-
-### Sample-Level Analysis
-- OSCR matrix
-- Confusion across {Known-Correct, Known-Wrong, Unknown-Correct, Unknown-Wrong}
-
-### Performance
-- Reads/second processing rate
-- Memory footprint
+- API at http://localhost:8080
+- Frontend at http://localhost:4173
 
 ## Development
 
 ### Running Tests
 ```bash
-# Activate your environment first
-conda activate baio  # or source baio-env/bin/activate
-
-# Run tests
 pytest tests/
 ```
 
 ### Code Quality
 ```bash
 # Format code
-black metaseq/ app/
+black .
 
 # Lint code
-flake8 metaseq/ app/
+ruff check .
 
 # Type checking
-mypy metaseq/ app/
+mypy .
 ```
-
-## Contributing
-
-We welcome contributions! Please see our contributing guidelines and code of conduct.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Set up your development environment (see Installation section)
-4. Make your changes and test thoroughly
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
 
 ## Research Applications
 
 BAIO is designed for:
 - **Pandemic Preparedness**: Early detection of novel pathogens
 - **Metagenomic Surveillance**: Monitoring environmental and clinical samples
-- **Research**: Comparative analysis with traditional methods like Kraken2
-- **Clinical Diagnostics**: Supporting pathogen identification in complex samples
+- **Pathogen Identification**: Distinguishing viral from host DNA
 
 ## Citation
 
@@ -438,7 +243,7 @@ If you use BAIO in your research, please cite:
 
 ```bibtex
 @software{baio2024,
-  title={BAIO: LLM-Based Taxonomy Profiling & Open-Set Pathogen Detection},
+  title={BAIO: DNA Sequence Classification & Open-Set Pathogen Detection},
   author={Farhan, Tanzim and Hashami, Mustafa and Gujja, Sahana and Burns, Eric and Gaikwad, Manali},
   year={2025},
   url={https://github.com/your-org/baio}
@@ -448,16 +253,16 @@ If you use BAIO in your research, please cite:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Contributors
 
 - **Mainuddin** - Tech Lead
-
 - **Luis Palmejar** - Developer
 - **Kevin Yang** - Developer
 
 ## Acknowledgments
 
-- Built on the Evo2 foundation model (Science, 2024)
+- Built on k-mer frequency analysis with RandomForest classifier
 - Inspired by the need for improved metagenomic surveillance capabilities
 - Thanks to the open-source bioinformatics community
 
