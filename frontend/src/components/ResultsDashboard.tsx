@@ -1,4 +1,4 @@
-import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, Download, FileJson, FileSpreadsheet, FileText, FileDown, GitCompare, ChevronDown } from 'lucide-react'
+import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, Download, FileJson, FileSpreadsheet, FileText, FileDown } from 'lucide-react'
 import type { ClassificationResponse, SequenceResult } from '../types'
 import { cn } from '../lib/utils'
 import { useState, Fragment } from 'react'
