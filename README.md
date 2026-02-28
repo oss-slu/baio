@@ -466,17 +466,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ---
 
-## Citation
-
-```bibtex
-@software{baio2024,
-  title={BAIO: DNA Sequence Classification & Open-Set Pathogen Detection},
-  author={Farhan, Tanzim and Hashami, Mustafa and Gujja, Sahana and Burns, Eric and Gaikwad, Manali},
-  year={2025},
-  url={https://github.com/oss-slu/baio}
-}
-```
-
----
-
 **Note**: This is a research prototype. For production use in clinical settings, additional validation and regulatory approval may be required.
