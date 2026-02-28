@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, Menu, Moon, Sun } from 'lucide-react'
+import { ChevronLeft, Menu } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
 import Header from './components/Header'
 import SequenceInput from './components/SequenceInput'
@@ -164,7 +164,11 @@ function App() {
         ? 'bg-slate-950 text-slate-100' 
         : 'bg-slate-100 text-slate-900'
     }`}>
-      <Header healthOk={healthOk} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
+      <Header 
+        healthOk={healthOk} 
+        darkMode={darkMode} 
+        toggleDarkMode={() => setDarkMode(!darkMode)}
+      />
 
       {error && (
         <div className={`mx-auto max-w-7xl px-4 pt-4 ${sidebarOpen ? 'md:ml-80' : ''} transition-all duration-300`}>
