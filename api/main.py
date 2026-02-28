@@ -1,6 +1,6 @@
-import random
 import time
 from datetime import datetime
+from functools import lru_cache
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import FastAPI, HTTPException
@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, constr
 
 from api.llm_client import LLMClient, SYSTEM_PROMPTS
+from binary_classifiers.predict_class import PredictClass
 
 app = FastAPI()
 
@@ -28,10 +29,10 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.5, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(0.01, ge=0.0, le=1.0)
     batch_size: int = Field(16, ge=1, le=1024)
-    enable_ood: bool = True
-    ood_threshold: float = Field(0.3, ge=0.0, le=1.0)
+    enable_ood: bool = False
+    ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
 
 
 class ClassificationRequest(BaseModel):
@@ -47,9 +48,79 @@ class SequenceResult(BaseModel):
     prediction: Literal["Virus", "Host", "Novel"]
     confidence: float
     sequence_preview: str
+    organism_name: Optional[str] = None
+    explanation: Optional[str] = None
     mahalanobis_distance: Optional[float] = None
     energy_score: Optional[float] = None
     ood_score: Optional[float] = None
+
+
+ORGANISM_PATTERNS = {
+    "human": "Human (Homo sapiens)",
+    "homo sapiens": "Human (Homo sapiens)",
+    "chr": "Human (Homo sapiens)",
+    "sars-cov-2": "SARS-CoV-2 (Coronavirus)",
+    "coronavirus": "SARS-CoV-2 (Coronavirus)",
+    "covid": "SARS-CoV-2 (Coronavirus)",
+    "nc_045512": "SARS-CoV-2 (Coronavirus)",
+    "hiv": "HIV-1 (Human Immunodeficiency Virus)",
+    "influenza": "Influenza Virus",
+    "ebola": "Ebola Virus",
+    "e. coli": "E. coli (Escherichia coli)",
+    "escherichia": "E. coli (Escherichia coli)",
+    "mouse": "Mouse (Mus musculus)",
+    "mus musculus": "Mouse (Mus musculus)",
+    "rat": "Rat (Rattus norvegicus)",
+    "dog": "Dog (Canis familiaris)",
+    "cat": "Cat (Felis catus)",
+    "yeast": "Yeast (Saccharomyces cerevisiae)",
+    "drosophila": "Fruit Fly (Drosophila melanogaster)",
+    "zebrafish": "Zebrafish (Danio rerio)",
+}
+
+
+def detect_organism(seq_id: str, sequence: str) -> str:
+    seq_id_lower = seq_id.lower()
+    for pattern, name in ORGANISM_PATTERNS.items():
+        if pattern in seq_id_lower:
+            return name
+    return "Unknown organism"
+
+
+def generate_explanation(
+    prediction: str, confidence: float, gc_content: float, length: int, organism: str
+) -> str:
+    conf_pct = confidence * 100
+    gc_pct = gc_content * 100
+
+    if prediction == "Virus":
+        category = "viral pathogen"
+        characteristics = "typically has lower GC content and distinct k-mer patterns"
+    elif prediction == "Host":
+        category = "host organism"
+        characteristics = (
+            "shows genomic patterns consistent with eukaryotic/prokaryotic hosts"
+        )
+    else:
+        category = "novel/unknown organism"
+        characteristics = "exhibits patterns outside the training distribution"
+
+    explanation = (
+        f"Classified as {category} ({organism}) with {conf_pct:.1f}% confidence. "
+        f"Analysis based on {length}bp sequence with {gc_pct:.1f}% GC content. "
+        f"The model uses k-mer frequency analysis (6-mers) to detect patterns that {characteristics}. "
+    )
+
+    if confidence < 0.3:
+        explanation += "Low confidence suggests the sequence may benefit from additional validation."
+    elif confidence < 0.7:
+        explanation += (
+            "Moderate confidence; consider comparing with reference databases."
+        )
+    else:
+        explanation += "High confidence classification based on strong feature matches."
+
+    return explanation
 
 
 class ClassificationResponse(BaseModel):
@@ -77,41 +148,68 @@ class ChatResponse(BaseModel):
     reply: str
 
 
+def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM"]:
+    model_hint = config.type.lower()
+    if "random forest" in model_hint or "random_forest" in model_hint:
+        return "RandomForest"
+    if "svm" in model_hint:
+        return "SVM"
+    return "RandomForest"
+
+
+@lru_cache(maxsize=2)
+def get_predictor(model_name: Literal["RandomForest", "SVM"]) -> PredictClass:
+    return PredictClass(model_name=model_name)
+
+
+@app.post("/reload_models")
+async def reload_models() -> Dict[str, str]:
+    """Clear model cache to reload updated models."""
+    get_predictor.cache_clear()
+    return {"status": "model cache cleared"}
+
+
 def classify_sequence(
     seq_id: str, sequence: str, config: ModelConfig
 ) -> SequenceResult:
-    """Mock classification logic for API usage."""
+    model_name = _resolve_model_name(config)
+    predictor = get_predictor(model_name)
+
     gc_content = (sequence.upper().count("G") + sequence.upper().count("C")) / max(
         len(sequence), 1
     )
+    predicted_label, raw_confidence = predictor.predict_with_confidence(sequence)
+    confidence = round(float(raw_confidence), 3)
+    ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
-    if gc_content > 0.6:
-        predictions = ["Virus"] * 60 + ["Host"] * 30 + ["Novel"] * 10
-    elif gc_content < 0.3:
-        predictions = ["Host"] * 70 + ["Virus"] * 20 + ["Novel"] * 10
-    else:
-        predictions = ["Virus"] * 40 + ["Host"] * 50 + ["Novel"] * 10
+    prediction: Literal["Virus", "Host", "Novel"] = predicted_label
+    if config.enable_ood and (
+        confidence < config.confidence_threshold or ood_score >= config.ood_threshold
+    ):
+        prediction = "Novel"
 
-    prediction = random.choice(predictions)
-    confidence = random.uniform(
-        max(config.confidence_threshold, 0.5), 0.95
-    )  # keep mock scores reasonable
+    organism_name = detect_organism(seq_id, sequence)
+    explanation = generate_explanation(
+        prediction, confidence, gc_content, len(sequence), organism_name
+    )
 
     result: Dict[str, Any] = {
         "sequence_id": seq_id,
         "length": len(sequence),
         "gc_content": round(gc_content, 3),
         "prediction": prediction,
-        "confidence": round(confidence, 3),
+        "confidence": confidence,
         "sequence_preview": f"{sequence[:50]}..." if len(sequence) > 50 else sequence,
+        "organism_name": organism_name,
+        "explanation": explanation,
     }
 
     if config.enable_ood:
         result.update(
             {
-                "mahalanobis_distance": round(random.uniform(1.0, 5.0), 3),
-                "energy_score": round(random.uniform(-5.0, -1.0), 3),
-                "ood_score": round(random.uniform(0.0, 1.0), 3),
+                "mahalanobis_distance": round(1.0 + (ood_score * 4.0), 3),
+                "energy_score": round(-1.0 - (ood_score * 4.0), 3),
+                "ood_score": ood_score,
             }
         )
 

@@ -6,11 +6,16 @@ BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic an
 
 ## Key Features
 
-- **Taxonomy Profiling**: Classifies sequencing reads or contigs into known classes (viral families, bacterial groups, host)
-- **Open-Set Detection**: Flags sequences that don't fit known classes as "novel/unknown"
-- **Sample-Level Reporting**: Aggregates read-level predictions into intuitive reports for surveillance
-- **Interpretability**: Visualizes embeddings, attention patterns, and clusters of novel reads
-- **End-to-End Pipeline**: FASTQ → Evo2 embeddings → classifier + OOD detection → GUI report (JSON + PDF)
+- **Taxonomy Classification**: Classifies DNA sequences into Virus or Host using k-mer frequency analysis
+- **Confidence Visualization**: Displays prediction confidence with visual bars and color-coded indicators
+- **GC Content Analysis**: Heatmap visualization showing GC content distribution
+- **Risk Assessment**: Color-coded risk level indicators (Low/Moderate/High)
+- **Explainable AI**: Per-sequence explanations with probability distributions, feature importance, and decision paths
+- **Sample-Level Reporting**: Aggregates read-level predictions into intuitive reports
+- **Dark Mode**: Toggle between light and dark themes
+- **Downloadable Reports**: Export results as JSON, CSV, or PDF
+- **AI Assistant**: Built-in Gemini-powered chat for sequence analysis questions
+- **Open-Set Detection** (optional): Flags sequences that don't fit known classes as "novel/unknown"
 
 ## Technology Stack
 
@@ -18,13 +23,14 @@ BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic an
 - **React + Vite**: Lightweight single-page UI for uploads, configuration, results, and chat (replaces the legacy Streamlit view)
 
 ### Model Runtime
-- **PyTorch + Hugging Face Transformers**: Core ML framework
-- **Evo2**: Nucleotide model for embeddings
+- **PyTorch + Scikit-learn**: Core ML framework
+- **K-mer Frequency Analysis**: 6-mer frequency features for sequence classification
+- **RandomForest Classifier**: Trained on COVID-19 and Human genomic data
 - **Custom Heads**: MLP for taxonomy classification; OOD scores (Max Softmax, Energy, Mahalanobis)
 
 ### Bioinformatics Utilities
 - **Biopython**: FASTA/FASTQ parsing
-- **HDBSCAN**: Clustering novel reads
+- **Scikit-learn**: Model training, evaluation, and feature extraction
 
 ### Data Processing
 - **NumPy/Pandas**: Embedding manipulation
@@ -38,38 +44,25 @@ BAIO (Bioinformatics AI for Open-set detection) is a cutting-edge metagenomic an
 ## Project Structure
 
 ```
-metaseq-detector/
-- api/                  (FastAPI backend)
-- frontend/             (React + Vite UI)
-- metaseq/              (Core library)
-  - dataio.py           FASTA/FASTQ loaders, filters
-  - evo2_embed.py       Evo2 embedding wrapper
-  - models.py           Classifier heads
-  - ood.py              MSP/Energy/Mahalanobis
-  - agg.py              Sample-level aggregation
-  - cluster.py          HDBSCAN for OOD reads
-  - viz.py              Plots: ROC, UMAP, attention
-- configs/              YAMLs for experiments
-- notebooks/            Exploratory notebooks
-- tests/                Pytest unit tests
-- runs/                 Saved reports/metrics
-- weights/              Trained classifier heads
-- examples/             Demo FASTQ/FASTA
+baio/
+- api/                    (FastAPI backend)
+- frontend/               (React + Vite UI)
+- binary_classifiers/     (Core ML library)
+  - predict_class.py      Classification logic
+  - retrain_model.py      Model training script
+  - train_model.py        Model utilities
+- weights/               (Trained classifier weights)
+- examples/              (Demo FASTA files)
 - environment.yml
 - pyproject.toml
-- docs/
-  - weekly_report.md
-  - design.md           System architecture
-  - dataset_card.md     Data sources and splits
+- requirements.txt
+- .env                   (API keys configuration)
 ```
 
 ## Installation
 
-
-
 ### Prerequisites
 - Python 3.8+
-- CUDA-compatible GPU (recommended for Evo2 model)
 
 ### Option 1: Conda Environment
 ```bash
@@ -205,11 +198,10 @@ python -m ipykernel install --user --name=baio-env --display-name="BAIO Project"
 Create a `.env` file in your project root for API keys and configuration:
 ```bash
 # .env file
-OPENAI_API_KEY=your_api_key_here
-HUGGINGFACE_TOKEN=your_hf_token_here
+GOOGLE_API_KEY=your_google_api_key_here
 DEBUG=True
-STREAMLIT_SERVER_PORT=8501
-CUDA_VISIBLE_DEVICES=0
+API_PORT=8080
+FRONTEND_PORT=5173
 ```
 
 Load environment variables in your Python code:
@@ -249,11 +241,15 @@ python -c "import torch; print(torch.cuda.is_available())"
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
 
-#### Issue: Evo2 Model Download Fails
-**Solution:**
-- Ensure stable internet connection
-- Check Hugging Face token permissions
-- Use `huggingface-cli login` for authentication
+#### Issue: CI Pipeline Formatting Error
+**Solution**
+- black .
+- git add .
+- git commit -m “Apply black formatting”
+- git push
+
+Recommended to install precommit to autoapply formatting before a commit
+- pip install pre-commit
 
 ### Daily Development Workflow
 
@@ -281,7 +277,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 3. **Run Development Servers (API + React UI):**
    ```bash
    # FastAPI backend
-   uvicorn api.main:app --reload --port 8080
+   python -m uvicorn api.main:app --reload --port 8080
 
    # React frontend (uses Vite)
    cd frontend
@@ -322,7 +318,7 @@ poetry add new-package
 
 ### Run FastAPI backend
 ```bash
-uvicorn api.main:app --reload --port 8080
+python -m uvicorn api.main:app --reload --port 8080
 ```
 
 ### Run React + Vite frontend
@@ -333,7 +329,42 @@ npm install   # first run only
 npm run dev -- --host --port 5173
 ```
 
-Then open http://localhost:5173 to upload sequences, tune thresholds, and chat. (Legacy Streamlit UI commands remain in git history if you still need them.)
+Then open http://localhost:5173 to upload sequences, tune thresholds, and chat.
+
+## UI Features
+
+The BAIO frontend provides an intuitive interface with the following capabilities:
+
+### Sequence Input
+- Paste DNA sequences directly or upload FASTA files
+- Support for batch processing multiple sequences
+
+### Classification Results
+- **Confidence Visualization**: Color-coded confidence bars for each prediction
+- **GC Content Heatmap**: Visual representation of GC distribution across sequences
+- **Risk Level Indicators**: Color-coded badges (Low/Moderate/High) based on classification confidence
+- **Expandable Explanations**: Click each row to see:
+  - Probability distribution
+  - Feature importance (top k-mers)
+  - Decision path analysis
+  - Risk assessment details
+
+### Model Information
+- Display of current model version (e.g., baio-v1.2)
+- Model information tooltip with details
+
+### Dark Mode
+- Toggle between light and dark themes for comfortable viewing
+
+### Export Options
+- **JSON**: Raw classification results
+- **CSV**: Tabular format for spreadsheet analysis
+- **PDF**: Formatted report with visualizations
+
+### AI Assistant
+- Built-in Gemini-powered chat for questions about your sequences
+- Ask follow-up questions about classification results
+- Get explanations of predictions in natural language
 ## Running BAIO with Docker & Docker Compose
 
 You can run the full BAIO stack - FastAPI backend and React UI - without installing Python locally.
@@ -355,7 +386,6 @@ This starts:
 - `API_PORT`: host port for FastAPI (default 8080)
 - `FRONTEND_PORT`: host port for React UI (default 4173)
 - `VITE_API_BASE`: API base URL baked into the frontend at build time (defaults to http://localhost:8080 so the browser can reach the API)
-- CUDA vs CPU: Docker defaults to CPU-only PyTorch wheels (`PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu`). Build a separate GPU image/service if you need CUDA.
 
 ### Basic Usage
 1. Open the React UI at the frontend port and paste/upload FASTA.
@@ -365,11 +395,12 @@ This starts:
 
 ## Evaluation Metrics
 
-### Closed-Set Taxonomy
+### Classification
 - Accuracy, macro-F1
 - Per-class Precision/Recall
+- Confidence threshold analysis
 
-### Open-Set Detection
+### Open-Set Detection (optional)
 - AUROC, AUPR-Out
 - FPR@95%TPR
 
@@ -449,7 +480,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Built on the Evo2 foundation model (Science, 2024)
+- Built on k-mer frequency analysis with RandomForest classifier
 - Inspired by the need for improved metagenomic surveillance capabilities
 - Thanks to the open-source bioinformatics community
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, Menu, Moon, Sun } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
 import Header from './components/Header'
 import SequenceInput from './components/SequenceInput'
@@ -14,18 +15,16 @@ import type {
 
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
-  confidence_threshold: 0.5,
+  confidence_threshold: 0.01,
   batch_size: 16,
-  enable_ood: true,
-  ood_threshold: 0.3,
+  enable_ood: false,
+  ood_threshold: 0.99,
 }
 
-const sampleFasta = `>virus_mock
-ATGCGTACGTTAGCCGAATTCGCGATCGATC
->host_mock
-GCTAGCTAGCTAGCTAGCTAGCTAGCTAGC
->novel_mock
-NNNNNNNNNNACGTACGTACGTACGTACGTACGT
+const sampleFasta = `>NC_045512.2 SARS-CoV-2
+CAAGTGCTTTTGTGGAAACTGTGAAAGGTTTGGATTATAAAGCATTCAAACAAATTGTTGAATCCTGTGGTAATTTTAAAGTTACAAAAGGAAAAGCTAAAAAAGGTGCCTGGAATATTGGTGAACAGAAATCAATACTGAGTCCTCTTT
+>HUMAN|chr1|fragment1
+CCAAACTTCGGGCGGCGGCTGAGGCGGCGGCCGAGGAGCGGCGGACTCGGGGCGCGGGGAGTCGAGGCATTTGCGCCTGTGCTTCGGACCGTAGCGCCAGGGCCTGAGCCTTTGAAGCAGGAGGAGGGGAGGAGAGAGTG
 `
 
 function parseFasta(text: string): SequenceInputType[] {
@@ -64,16 +63,33 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [healthOk, setHealthOk] = useState<boolean | null>(null)
   const [inputOpen, setInputOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('darkMode') === 'true' ||
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    }
+    return false
+  })
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       content:
-        'Hi! Paste FASTA sequences on the left, run classification, and ask questions here.',
+        'Hi! Paste FASTA sequences, run classification, and ask questions here.',
     },
   ])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('darkMode', String(darkMode))
+  }, [darkMode])
 
   useEffect(() => {
     checkHealth().then(setHealthOk).catch(() => setHealthOk(false))
@@ -143,18 +159,47 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-slate-50 to-sky-50 text-slate-900">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:gap-8 lg:px-6 xl:px-10">
-        <Header healthOk={healthOk} />
+    <div className={`min-h-screen transition-colors duration-300 ${
+      darkMode 
+        ? 'bg-slate-950 text-slate-100' 
+        : 'bg-slate-100 text-slate-900'
+    }`}>
+      <Header healthOk={healthOk} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
 
-        {error && (
-          <div className="rounded-xl border border-rose-800/60 bg-rose-950/40 px-4 py-3 text-rose-100 shadow-glow">
+      {error && (
+        <div className={`mx-auto max-w-7xl px-4 pt-4 ${sidebarOpen ? 'md:ml-80' : ''} transition-all duration-300`}>
+          <div className={`rounded-xl border px-4 py-3 ${
+            darkMode 
+              ? 'border-rose-800 bg-rose-950/50 text-rose-200' 
+              : 'border-rose-300 bg-rose-50 text-rose-800'
+          }`}>
             {error}
           </div>
-        )}
+        </div>
+      )}
 
-        <div className="grid gap-6 lg:gap-8 xl:grid-cols-[0.42fr_0.58fr]">
-          <div className="space-y-6">
+      <div className="flex">
+        {/* Left Sidebar - Collapsible */}
+        <div
+          className={`fixed left-0 top-14 h-[calc(100vh-3.5rem)] z-30 transform transition-all duration-300 ease-in-out ${
+            sidebarOpen ? 'w-80' : 'w-0'
+          } overflow-hidden ${
+            darkMode 
+              ? 'border-r border-slate-800 bg-slate-900' 
+              : 'border-r border-slate-200 bg-white'
+          } shadow-xl`}
+        >
+          <div className="flex h-full w-80 flex-col overflow-y-auto p-4">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className={`mb-4 flex items-center gap-2 text-sm ${
+                darkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Close sidebar
+            </button>
+
             <SequenceInput
               rawSequences={rawSequences}
               onChange={setRawSequences}
@@ -165,20 +210,46 @@ function App() {
               onToggle={() => setInputOpen((prev) => !prev)}
             />
 
-            <ConfigPanel
-              config={config}
-              onChange={handleConfigChange}
-              onRun={handleRun}
-              isRunning={isRunning}
+            <div className="mt-4">
+              <ConfigPanel
+                config={config}
+                onChange={handleConfigChange}
+                onRun={handleRun}
+                isRunning={isRunning}
+                parsedCount={parsedSequences.length}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar Toggle Button */}
+        {!sidebarOpen && (
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className={`fixed left-4 top-20 z-30 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
+              darkMode 
+                ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700' 
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Menu className="h-4 w-4" />
+            Open Panel
+          </button>
+        )}
+
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            sidebarOpen ? 'md:ml-80' : 'ml-0'
+          }`}
+        >
+          <div className="mx-auto max-w-6xl px-6 py-6">
+            <ResultsDashboard
+              results={results}
+              isLoading={isRunning}
               parsedCount={parsedSequences.length}
             />
           </div>
-
-          <ResultsDashboard
-            results={results}
-            isLoading={isRunning}
-            parsedCount={parsedSequences.length}
-          />
         </div>
       </div>
 
