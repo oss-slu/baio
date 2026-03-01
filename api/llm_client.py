@@ -1,33 +1,23 @@
-"""LLM client wrapper for API chat functionality using Google Gemini."""
+"""LLM client wrapper for API chat functionality."""
 
 import os
 import time
 from typing import Any, Dict, List
 
-try:
-    import google.generativeai as genai
-except ModuleNotFoundError:
-    genai = None
-
 
 class LLMClient:
-    """Wrapper class for Google Gemini LLM API calls."""
 
-    def __init__(self, provider: str = "google", model: str = "gemini-1.5-flash"):
+    def __init__(
+        self, provider: str = "openrouter", model: str = "z-ai/glm-4.5-air:free"
+    ):
         self.provider = provider
         self.model = model
-        self.api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.client: Any = None
 
-        if self.api_key and genai is not None:
-            try:
-                genai.configure(api_key=self.api_key)
-                self.client = genai.GenerativeModel(model)
-            except Exception as e:
-                print(f"Failed to initialize Gemini: {e}", flush=True)
-        elif self.api_key and genai is None:
+        if self.api_key is None:
             print(
-                "google-generativeai is not installed; falling back to mock responses.",
+                "OpenRouter api key not found; falling back to mock responses.",
                 flush=True,
             )
 
