@@ -104,7 +104,11 @@ function ModelInfoBadge() {
   )
 }
 
-function Header({ healthOk, darkMode, toggleDarkMode }: HeaderProps) {
+function Header({ 
+  healthOk, 
+  darkMode, 
+  toggleDarkMode,
+}: HeaderProps) {
   return (
     <header className={cn(
       'sticky top-0 z-40 border-b backdrop-blur-md transition-colors',
