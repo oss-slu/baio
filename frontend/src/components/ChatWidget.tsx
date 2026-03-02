@@ -24,8 +24,8 @@ type ChatWidgetProps = {
 function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatWidgetProps) {
   const [open, setOpen] = useState(false)
   const [minimized, setMinimized] = useState(false)
-  const [position, setPosition] = useState<Position>({ x: 20, y: 80 })
-  const [size, setSize] = useState<Size>({ width: 400, height: 500 })
+  const [position, setPosition] = useState<Position>({ x: window.innerWidth - 200, y: 80 })
+  const [size, setSize] = useState<Size>({ width: 380, height: 450 })
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 })
@@ -46,13 +46,13 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
             parsed.x < window.innerWidth && parsed.y < window.innerHeight) {
           setPosition(parsed)
         } else {
-          setPosition({ x: 20, y: 80 })
+          setPosition({ x: window.innerWidth - 200, y: 80 })
         }
       } catch {
-        setPosition({ x: 20, y: 80 })
+        setPosition({ x: window.innerWidth - 200, y: 80 })
       }
     } else {
-      setPosition({ x: 20, y: 80 })
+      setPosition({ x: window.innerWidth - 200, y: 80 })
     }
     
     if (savedSize) {
@@ -133,7 +133,7 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
   }
 
   const resetPosition = () => {
-    const defaultPos = { x: 20, y: 80 }
+    const defaultPos = { x: window.innerWidth - 200, y: 80 }
     setPosition(defaultPos)
     setOpen(false)
     setMinimized(true)
@@ -185,7 +185,7 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
             }
           }}
           onDoubleClick={() => {
-            setPosition({ x: 20, y: 80 })
+            setPosition({ x: window.innerWidth - 200, y: 80 })
             setOpen(false)
             setMinimized(true)
           }}

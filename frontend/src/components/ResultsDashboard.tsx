@@ -281,28 +281,28 @@ function MetricCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border-2 p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1',
+        'group relative overflow-hidden rounded-xl border p-3 shadow-sm transition-all duration-200',
         styles.bg,
         styles.border,
         styles.darkBg,
         styles.darkBorder
       )}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             {label}
           </p>
-          <p className={cn('metric-value mt-2 text-5xl tabular-nums', styles.text, styles.darkText)}>{value}</p>
-          {hint && <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{hint}</p>}
+          <p className={cn('metric-value mt-0.5 text-2xl tabular-nums font-bold', styles.text, styles.darkText)}>{value}</p>
+          {hint && <p className="mt-0.5 text-[9px] text-slate-400 dark:text-slate-500">{hint}</p>}
         </div>
         <div
           className={cn(
-            'flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-3',
+            'flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm',
             styles.iconBg
           )}
         >
-          <Icon className="h-6 w-6" />
+          <Icon className="h-4 w-4" />
         </div>
       </div>
     </div>
@@ -1130,13 +1130,13 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
         )}
 
         {(isLoading || results) && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {isLoading ? (
               <>
-                <div className="h-32 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
-                <div className="h-32 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
-                <div className="h-32 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
-                <div className="h-32 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+                <div className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
               </>
             ) : (
               <>
@@ -1174,34 +1174,34 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
         )}
 
         {results && (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Overall Risk Banner */}
             <OverallRiskBanner results={results} />
             
             <div className={cn(
-              'flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3 text-sm',
+              'flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-xs',
               'border-slate-200 bg-slate-50',
               'dark:border-slate-700 dark:bg-slate-800/50'
             )}>
               <div className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-medium',
+                'inline-flex items-center gap-1.5 rounded-full border px-2 py-1 font-medium',
                 'border-slate-200 bg-white text-slate-600',
                 'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
               )}>
-                <Shield className="h-4 w-4 text-emerald-500" />
-                {parsedCount} sequences processed
+                <Shield className="h-3 w-3 text-emerald-500" />
+                {parsedCount} sequences
               </div>
               <div className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-medium',
+                'inline-flex items-center gap-1.5 rounded-full border px-2 py-1 font-medium',
                 'border-slate-200 bg-white text-slate-600',
                 'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
               )}>
-                <Clock className="h-4 w-4 text-blue-500" />
-                {results.processing_time.toFixed(2)}s runtime
+                <Clock className="h-3 w-3 text-blue-500" />
+                {results.processing_time.toFixed(2)}s
               </div>
               <div className="flex-1" />
-              <span className="text-xs text-slate-400 dark:text-slate-500">
-                Source: {results.source}
+              <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                {results.source}
               </span>
               <DownloadReportButton results={results} />
             </div>
