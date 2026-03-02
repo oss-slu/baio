@@ -31,6 +31,46 @@ BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analy
 
 ---
 
+## Code File Guide
+
+This guide explains what each main file does - easy to understand for developers.
+
+### Backend (API)
+
+| File | What it does |
+|------|--------------|
+| `api/main.py` | Main FastAPI server - handles all API requests like `/classify`, `/chat`, `/health` |
+| `api/llm_client.py` | Connects to Google Gemini AI for the chat assistant |
+
+### Frontend (React UI)
+
+| File | What it does |
+|------|--------------|
+| `frontend/src/App.tsx` | Main React component - ties everything together |
+| `frontend/src/components/Header.tsx` | Top navigation bar with AI Assistant, dark mode, health status |
+| `frontend/src/components/SequenceInput.tsx` | Input form for pasting DNA sequences or uploading FASTA files |
+| `frontend/src/components/ConfigPanel.tsx` | Settings panel (threshold, model selection, OOD toggle) |
+| `frontend/src/components/ResultsDashboard.tsx` | Shows classification results, tables, charts, export options |
+| `frontend/src/components/ChatWidget.tsx` | AI Assistant floating chat window (legacy - now in Header) |
+| `frontend/src/api.ts` | Functions to call backend API endpoints |
+
+### Machine Learning
+
+| File | What it does |
+|------|--------------|
+| `binary_classifiers/predict_class.py` | Core classification logic - takes DNA sequence, returns Virus/Host prediction |
+| `binary_classifiers/retrain_model.py` | Script to retrain the model with new data |
+| `binary_classifiers/train_model.py` | Training utilities and functions |
+
+### Root Scripts
+
+| File | What it does |
+|------|--------------|
+| `retrain_model.py` | Standalone script to retrain the ML model |
+| `predict_class.py` | Quick prediction script for testing |
+
+---
+
 ## Project Structure
 
 ```
@@ -39,111 +79,44 @@ baio/
 ├── api/                          # FastAPI backend
 │   ├── main.py                   # API endpoints (classify, chat, health)
 │   ├── llm_client.py             # Google Gemini AI client
-│   └── Dockerfile                # Docker container config
+│   └── Dockerfile                 # Docker container config
 │
 ├── frontend/                     # React + Vite frontend
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.tsx        # App header with model version
-│   │   │   ├── SequenceInput.tsx # FASTA input form
-│   │   │   ├── ConfigPanel.tsx  # Classification settings
-│   │   │   ├── ResultsDashboard.tsx  # Results table & visualizations
-│   │   │   └── ChatWidget.tsx   # AI assistant chat
-│   │   ├── App.tsx              # Main application component
-│   │   ├── App.css               # Global styles
-│   │   ├── api.ts               # API client functions
-│   │   ├── types.ts             # TypeScript interfaces
-│   │   ├── index.css            # Tailwind imports
-│   │   └── main.tsx             # React entry point
-│   ├── public/                  # Static assets
-│   ├── package.json             # Node.js dependencies
-│   ├── tailwind.config.js       # Tailwind configuration
-│   ├── vite.config.ts           # Vite configuration
-│   └── Dockerfile               # Docker container config
+│   │   │   ├── Header.tsx        # App header with AI Assistant & model info
+│   │   │   ├── SequenceInput.tsx  # FASTA input form
+│   │   │   ├── ConfigPanel.tsx    # Classification settings
+│   │   │   ├── ResultsDashboard.tsx # Results table & visualizations
+│   │   │   └── ChatWidget.tsx     # AI chat widget (legacy)
+│   │   ├── App.tsx               # Main application component
+│   │   ├── api.ts                # API client functions
+│   │   └── types.ts              # TypeScript interfaces
+│   ├── package.json              # Node.js dependencies
+│   └── tailwind.config.js        # Tailwind configuration
 │
 ├── binary_classifiers/           # ML classification core
-│   ├── predict_class.py         # Classification logic & LABEL_MAP
-│   ├── retrain_model.py        # Model retraining script
-│   ├── train_model.py           # Training utilities
-│   ├── models/                  # Saved model files (*.pkl)
-│   ├── training_scripts/        # Model training code
-│   ├── data_extraction_scripts/ # Data processing for training
-│   ├── feature_extraction_scripts/ # K-mer extraction
-│   ├── evaluation_visualizations/ # Model evaluation plots
-│   └── evo2_embeddings_scripts/  # Legacy Evo2 embedding code
+│   ├── predict_class.py          # Classification logic & LABEL_MAP
+│   ├── retrain_model.py          # Model retraining script
+│   ├── train_model.py            # Training utilities
+│   └── models/                   # Saved model files (*.pkl)
 │
-├── metaseq/                     # Core metagenomics library
-│   ├── __init__.py
-│   ├── dataio.py               # FASTA/FASTQ loaders
-│   ├── evo2_client.py         # Evo2 embedding client
-│   ├── models.py              # Model definitions
-│   ├── inference.py           # Inference logic
-│   ├── train.py               # Training script
-│   └── types.py               # Type definitions
+├── metaseq/                      # Legacy metagenomics library
+│   ├── dataio.py                 # FASTA/FASTQ file loaders
+│   └── models.py                 # Model definitions
 │
-├── prompting/                  # LLM prompting utilities
-│   ├── __init__.py
-│   ├── base.py                # Base prompt classes
-│   ├── client.py              # Prompt client
-│   ├── compare.py             # Prompt comparison
-│   ├── techniques.py         # Prompting techniques
-│   ├── schemas.py             # Response schemas
-│   ├── types.py               # Type definitions
-│   └── logging.py             # Logging utilities
+├── prompting/                     # LLM prompting utilities
 │
-├── data_processing/           # Data processing utilities
+├── tests/                        # Unit tests
 │
-├── configs/
-│   └── binary_classifier.yaml # Model configuration
+├── data/                         # Sample FASTA data
 │
-├── scripts/
-│   ├── collect_metrics.py    # Metrics collection
-│   └── prompt_compare.py     # Prompt comparison script
+├── .env                          # API keys (GOOGLE_API_KEY)
 │
-├── tests/                     # Unit & integration tests
-│   ├── conftest.py           # Pytest configuration
-│   ├── test_api_classification.py
-│   ├── test_data_processing.py
-│   ├── test_dataio.py
-│   ├── test_inference.py
-│   ├── test_integration_pipeline.py
-│   ├── test_models.py
-│   ├── test_prompting_*.py   # Various prompting tests
-│
-├── docs/                      # Documentation
-│   ├── Technical documentation BAIO.md
-│   ├── FASTQ format specification document.md
-│   ├── metrics/              # Evaluation metrics
-│   └── retro_artifacts/      # Legacy documentation
-│
-├── data/                      # Sample data
-│   ├── covid_reads5.fasta    # Sample COVID sequences
-│   └── human_reads5.fasta   # Sample human sequences
-│
-├── weights/                   # Trained model weights (git-ignored)
-│
-├── examples/                  # Demo files
-│
-├── runs/                      # Output directories
-│
-├── .env                       # Environment variables (API keys)
-├── .env.example              # Environment template
-│
-├── environment.yml           # Conda environment config
-├── requirements.txt         # Python pip dependencies
-├── pyproject.toml           # Project metadata & tool config
-├── docker-compose.yml       # Docker Compose config
-├── package-lock.json        # npm lock file
-│
-├── classify_cli.py          # CLI classification tool
-├── predict_class.py         # Standalone prediction script
-├── retrain_model.py        # Model retraining script
-│
-├── .github/                  # GitHub Actions workflows
-├── .gitignore
-├── .pre-commit-config.yaml  # Pre-commit hooks
-├── SECURITY.md
-└── README.md
+├── requirements.txt              # Python dependencies
+├── environment.yml              # Conda environment
+├── docker-compose.yml            # Docker setup
+└── README.md                     # This file
 ```
 
 ---
