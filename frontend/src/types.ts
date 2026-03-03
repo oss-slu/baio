@@ -15,7 +15,7 @@ export type SequenceResult = {
   sequence_id: string
   length: number
   gc_content: number
-  prediction: 'Virus' | 'Host' | 'Novel'
+  prediction: 'Virus' | 'Host' | 'Novel' | 'Uncertain'
   confidence: number
   sequence_preview: string
   organism_name?: string
@@ -23,6 +23,8 @@ export type SequenceResult = {
   mahalanobis_distance?: number
   energy_score?: number
   ood_score?: number
+  uncertain?: boolean
+  threshold_used?: number
 }
 
 export type ClassificationResponse = {
@@ -30,6 +32,7 @@ export type ClassificationResponse = {
   virus_count: number
   host_count: number
   novel_count: number
+  uncertain_count: number
   detailed_results: SequenceResult[]
   source: string
   timestamp: string

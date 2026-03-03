@@ -14,7 +14,7 @@ import type {
 
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
-  confidence_threshold: 0.01,
+  confidence_threshold: 0.75,
   batch_size: 16,
   enable_ood: false,
   ood_threshold: 0.99,
@@ -256,6 +256,7 @@ function App() {
               results={results}
               isLoading={isRunning}
               parsedCount={parsedSequences.length}
+              confidenceThreshold={config.confidence_threshold}
             />
           </div>
         </div>
