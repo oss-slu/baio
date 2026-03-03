@@ -29,7 +29,7 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.01, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(0.75, ge=0.0, le=1.0)
     batch_size: int = Field(16, ge=1, le=1024)
     enable_ood: bool = False
     ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
@@ -45,7 +45,7 @@ class SequenceResult(BaseModel):
     sequence_id: str
     length: int
     gc_content: float
-    prediction: Literal["Virus", "Host", "Novel"]
+    prediction: Literal["Virus", "Host", "Novel", "Uncertain"]
     confidence: float
     sequence_preview: str
     organism_name: Optional[str] = None
@@ -53,6 +53,8 @@ class SequenceResult(BaseModel):
     mahalanobis_distance: Optional[float] = None
     energy_score: Optional[float] = None
     ood_score: Optional[float] = None
+    uncertain: Optional[bool] = False
+    threshold_used: Optional[float] = None
 
 
 ORGANISM_PATTERNS = {
@@ -128,6 +130,7 @@ class ClassificationResponse(BaseModel):
     virus_count: int
     host_count: int
     novel_count: int
+    uncertain_count: int
     detailed_results: List[SequenceResult]
     source: str
     timestamp: str
@@ -182,15 +185,19 @@ def classify_sequence(
     confidence = round(float(raw_confidence), 3)
     ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
-    prediction: Literal["Virus", "Host", "Novel"] = predicted_label
-    if config.enable_ood and (
-        confidence < config.confidence_threshold or ood_score >= config.ood_threshold
-    ):
+    prediction: Literal["Virus", "Host", "Novel", "Uncertain"] = predicted_label
+    uncertain = False
+
+    # Mark as Uncertain if confidence is below threshold
+    if confidence < config.confidence_threshold:
+        prediction = "Uncertain"
+        uncertain = True
+    elif config.enable_ood and ood_score >= config.ood_threshold:
         prediction = "Novel"
 
     organism_name = detect_organism(seq_id, sequence)
     explanation = generate_explanation(
-        prediction, confidence, gc_content, len(sequence), organism_name
+        predicted_label, confidence, gc_content, len(sequence), organism_name
     )
 
     result: Dict[str, Any] = {
@@ -202,6 +209,8 @@ def classify_sequence(
         "sequence_preview": f"{sequence[:50]}..." if len(sequence) > 50 else sequence,
         "organism_name": organism_name,
         "explanation": explanation,
+        "uncertain": uncertain,
+        "threshold_used": config.confidence_threshold,
     }
 
     if config.enable_ood:
@@ -221,7 +230,7 @@ def run_classification(
 ) -> ClassificationResponse:
     start = time.time()
     detailed_results: List[SequenceResult] = []
-    virus_count = host_count = novel_count = 0
+    virus_count = host_count = novel_count = uncertain_count = 0
 
     for seq in sequences:
         result = classify_sequence(seq.id, seq.sequence, config)
@@ -231,8 +240,10 @@ def run_classification(
             virus_count += 1
         elif result.prediction == "Host":
             host_count += 1
-        else:
+        elif result.prediction == "Novel":
             novel_count += 1
+        elif result.prediction == "Uncertain":
+            uncertain_count += 1
 
     processing_time = time.time() - start
 
@@ -241,6 +252,7 @@ def run_classification(
         virus_count=virus_count,
         host_count=host_count,
         novel_count=novel_count,
+        uncertain_count=uncertain_count,
         detailed_results=detailed_results,
         source=source,
         timestamp=datetime.now().isoformat(),

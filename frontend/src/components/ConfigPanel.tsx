@@ -1,6 +1,7 @@
-import { Loader2, PlayCircle, ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import { Loader2, PlayCircle, ShieldCheck, SlidersHorizontal, HelpCircle } from 'lucide-react'
 import type { ModelConfig } from '../types'
 import { cn } from '../lib/utils'
+import { useState } from 'react'
 
 type ConfigPanelProps = {
   config: ModelConfig
@@ -11,9 +12,27 @@ type ConfigPanelProps = {
 }
 
 function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: ConfigPanelProps) {
-  const sliderLabel = (label: string, value: number) => (
+  const [showThresholdHelp, setShowThresholdHelp] = useState(false)
+  
+  const sliderLabel = (label: string, value: number, tooltip?: string) => (
     <div className="flex items-center justify-between text-xs">
-      <span className="text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+        {label}
+        {tooltip && (
+          <div className="relative">
+            <HelpCircle 
+              className="h-3 w-3 cursor-help text-slate-400" 
+              onMouseEnter={() => setShowThresholdHelp(true)}
+              onMouseLeave={() => setShowThresholdHelp(false)}
+            />
+            {showThresholdHelp && tooltip && (
+              <div className="absolute bottom-full left-0 mb-2 w-48 rounded-lg bg-slate-800 p-2 text-[10px] text-white shadow-lg z-10">
+                {tooltip}
+              </div>
+            )}
+          </div>
+        )}
+      </span>
       <span className="font-semibold text-emerald-600 dark:text-emerald-400">{value.toFixed(2)}</span>
     </div>
   )
@@ -77,7 +96,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
             'border-slate-200 bg-slate-50',
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
-            {sliderLabel('Confidence threshold', config.confidence_threshold)}
+            {sliderLabel('Confidence threshold', config.confidence_threshold, 'Sequences below this threshold will be marked as Uncertain')}
             <input
               type="range"
               min={0}
@@ -173,7 +192,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
       </div>
 
       <div className={cn(
-        'mt-5 flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between',
+        'mt-5 flex flex-col gap-3 rounded-xl border p-4',
         'border-emerald-200 bg-gradient-to-r from-emerald-50 via-slate-50 to-blue-50',
         'dark:border-emerald-900/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-blue-950/30'
       )}>
@@ -190,10 +209,11 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           onClick={onRun}
           disabled={isRunning || parsedCount === 0}
           className={cn(
-            'inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white shadow-lg transition',
+            'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white shadow-lg transition',
             'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25',
             'hover:shadow-xl hover:shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600',
-            'disabled:cursor-not-allowed disabled:opacity-60'
+            'disabled:cursor-not-allowed disabled:opacity-60',
+            parsedCount > 0 && !isRunning && 'animate-pulse'
           )}
         >
           {isRunning ? (
