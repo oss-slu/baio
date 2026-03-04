@@ -51,8 +51,8 @@ class LLMClient:
             response = chat.send_message(full_prompt)
             return response.text
 
-        except Exception as e:
-            print(f"Gemini API error: {str(e)}")
+        except Exception:
+            print("API error")
             return self._mock_response(messages)
 
     def _mock_response(self, messages: List[Dict[str, str]]) -> str:
