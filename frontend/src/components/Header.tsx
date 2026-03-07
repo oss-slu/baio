@@ -248,19 +248,19 @@ function Header({
     )}>
       <div className="mx-auto flex max-w-full items-center justify-between px-6 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
-            <Dna className="h-5 w-5" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25">
+            <Dna className="h-6 w-6" />
           </div>
           <div>
             <p className={cn(
-              'text-xs font-medium uppercase tracking-wider',
-              darkMode ? 'text-slate-500' : 'text-slate-400'
+              'text-sm font-bold uppercase tracking-widest',
+              darkMode ? 'text-primary-400' : 'text-primary-600'
             )}>
               BAIO
             </p>
             <h1 className={cn(
-              'text-base font-semibold',
-              darkMode ? 'text-white' : 'text-slate-900'
+              'text-sm font-medium',
+              darkMode ? 'text-slate-400' : 'text-slate-500'
             )}>
               DNA Classification & Pathogen Detection
             </h1>
