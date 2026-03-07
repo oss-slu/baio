@@ -29,7 +29,7 @@ def test_classify_sequence_uses_model_prediction(monkeypatch) -> None:
     assert result.ood_score is None
 
 
-def test_classify_sequence_marks_low_confidence_as_novel(monkeypatch) -> None:
+def test_classify_sequence_marks_low_confidence_as_uncertain(monkeypatch) -> None:
     monkeypatch.setattr(
         "api.main.get_predictor",
         lambda _: _FixedPredictor(label="Host", confidence=0.55),
@@ -43,11 +43,31 @@ def test_classify_sequence_marks_low_confidence_as_novel(monkeypatch) -> None:
         ),
     )
 
-    assert result.prediction == "Novel"
+    assert result.prediction == "Uncertain"
+    assert result.uncertain is True
     assert result.confidence == 0.55
     assert result.ood_score == 0.45
     assert result.mahalanobis_distance is not None
     assert result.energy_score is not None
+
+
+def test_classify_sequence_marks_high_ood_as_novel(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "api.main.get_predictor",
+        lambda _: _FixedPredictor(label="Host", confidence=0.65),
+    )
+
+    result = classify_sequence(
+        seq_id="seq_3",
+        sequence="GGGGCCCCAAAA",
+        config=ModelConfig(
+            enable_ood=True, confidence_threshold=0.6, ood_threshold=0.3
+        ),
+    )
+
+    assert result.prediction == "Novel"
+    assert result.uncertain is False
+    assert result.ood_score == 0.35
 
 
 class _RoutingPredictor:
