@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any, List, Literal, Sequence, Tuple
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
+import numpy as np
 
 from .transformers.kmers_transformer import (
     KmerTransformer,
@@ -126,7 +127,25 @@ class PredictClass:
                 cls: float(prob) for cls, prob in zip(classes, probabilities)
             }
             if prediction in class_to_prob:
-                return class_to_prob[prediction]
+                base_prob = class_to_prob[prediction]
+
+                sorted_probs = sorted(probabilities, reverse=True)
+                margin = (
+                    sorted_probs[0] - sorted_probs[1] if len(sorted_probs) > 1 else 1.0
+                )
+
+                entropy = -sum(p * np.log2(p) if p > 0 else 0 for p in probabilities)
+                max_entropy = (
+                    np.log2(len(probabilities)) if len(probabilities) > 0 else 1
+                )
+                normalized_entropy = (
+                    1 - (entropy / max_entropy) if max_entropy > 0 else 1
+                )
+
+                confidence = (
+                    (0.5 * base_prob) + (0.3 * margin) + (0.2 * normalized_entropy)
+                )
+                return min(confidence, 1.0)
 
         return float(max(probabilities))
 
