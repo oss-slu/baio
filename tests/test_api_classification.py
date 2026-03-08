@@ -70,6 +70,25 @@ def test_classify_sequence_marks_high_ood_as_novel(monkeypatch) -> None:
     assert result.ood_score == 0.35
 
 
+def test_classify_sequence_marks_invalid_input(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "api.main.get_predictor",
+        lambda _: _FixedPredictor(label="Virus", confidence=0.99),
+    )
+
+    result = classify_sequence(
+        seq_id="bad_seq",
+        sequence="XYZ123",
+        config=ModelConfig(enable_ood=False),
+    )
+
+    assert result.prediction == "Invalid"
+    assert result.confidence == 0.0
+    assert result.uncertain is True
+    assert result.ood_score == 1.0
+    assert "Invalid input data" in (result.explanation or "")
+
+
 class _RoutingPredictor:
     def predict_with_confidence(self, sequence: str) -> tuple[str, float]:
         if sequence.startswith("A"):
@@ -82,8 +101,8 @@ def test_run_classification_counts_actual_labels(monkeypatch) -> None:
 
     response = run_classification(
         sequences=[
-            SequenceInput(id="v1", sequence="ATCGATCG"),
-            SequenceInput(id="h1", sequence="GCGCGCGC"),
+            SequenceInput(id="v1", sequence="ATCGATCGATCG"),
+            SequenceInput(id="h1", sequence="GCGCATATGCGC"),
         ],
         config=ModelConfig(enable_ood=False),
         source="unit_test",
