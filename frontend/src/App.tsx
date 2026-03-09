@@ -5,7 +5,6 @@ import Header from './components/Header'
 import SequenceInput from './components/SequenceInput'
 import ConfigPanel from './components/ConfigPanel'
 import ResultsDashboard from './components/ResultsDashboard'
-import ChatWidget from './components/ChatWidget'
 import type {
   ChatMessage,
   ClassificationResponse,
@@ -169,6 +168,11 @@ function App() {
         healthOk={healthOk} 
         darkMode={darkMode} 
         toggleDarkMode={() => setDarkMode(!darkMode)}
+        chatMessages={chatMessages}
+        chatInput={chatInput}
+        onChatInputChange={setChatInput}
+        onChatSend={handleChatSend}
+        chatLoading={chatLoading}
       />
 
       {error && (
@@ -258,14 +262,6 @@ function App() {
           </div>
         </div>
       </div>
-
-      <ChatWidget
-        messages={chatMessages}
-        input={chatInput}
-        onInputChange={setChatInput}
-        onSend={handleChatSend}
-        isLoading={chatLoading}
-      />
     </div>
   )
 }
