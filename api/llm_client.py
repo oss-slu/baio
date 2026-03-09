@@ -3,6 +3,7 @@ import time
 import requests
 import json
 from typing import Dict, List
+from dotenv import load_dotenv
 
 SYSTEM_PROMPTS = {
     "default": """You are BAIO, an expert bioinformatics assistant specialized in DNA sequence classification and pathogen detection.
@@ -22,9 +23,9 @@ Be concise, helpful, and scientific in your responses. Use emojis sparingly.""",
 class LLMClient:
 
     def __init__(self, model: str = "liquid/lfm-2.5-1.2b-instruct:free"):
+        load_dotenv()
         self.model = model
         self.api_key = os.getenv("OPENROUTER_API_KEY")
-
         if self.api_key is None:
             print(
                 "OpenRouter api key not found; falling back to mock responses.",
@@ -48,10 +49,16 @@ class LLMClient:
         """
 
         if self.api_key is None:
-            return self._mock_response(messages)
+            return "OpenRouter api key not found; falling back to mock responses."
 
         # Build the payload for OpenRouter API
-        payload = {"model": self.model, "messages": messages}
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                *messages,
+            ],
+        }
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
