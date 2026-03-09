@@ -1,7 +1,11 @@
 """Tests for data parsing utilities."""
 
 import pytest
-from data_processing.parsers import parse_fasta_text, parse_fastq_content
+from data_processing.parsers import (
+    parse_fasta_text,
+    parse_fastq_content,
+    parse_uploaded_file,
+)
 from data_processing.validators import (
     validate_input,
     validate_sequence,
@@ -101,6 +105,29 @@ ATCGATCGATCG
         result = parse_fastq_content(fastq_text)
 
         assert len(result) == 0
+
+
+class _UploadedFile:
+    def __init__(self, name, content):
+        self.name = name
+        self._content = content
+
+    def read(self):
+        return self._content
+
+
+class TestUploadedFileParsing:
+    def test_parse_uploaded_fasta_file(self):
+        uploaded = _UploadedFile("toy.fasta", b">seq1\natcg\n")
+        assert parse_uploaded_file(uploaded) == [("seq1", "ATCG")]
+
+    def test_parse_uploaded_fastq_file(self):
+        uploaded = _UploadedFile("toy.fastq", b"@seq1\natcg\n+\nIIII\n")
+        assert parse_uploaded_file(uploaded) == [("seq1", "ATCG")]
+
+    def test_parse_uploaded_file_returns_empty_list_on_decode_error(self):
+        uploaded = _UploadedFile("broken.fasta", b"\xff")
+        assert parse_uploaded_file(uploaded) == []
 
 
 class TestValidation:

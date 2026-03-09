@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime
 from functools import lru_cache
@@ -11,6 +12,61 @@ from api.llm_client import LLMClient, SYSTEM_PROMPTS
 from binary_classifiers.predict_class import PredictClass
 
 app = FastAPI()
+
+VALID_NUCLEOTIDES = set("ATGCNRYSWKMBDHV")
+DNA_PATTERN = re.compile(r"^[ATGCNRYSWKMBDHV]+$", re.IGNORECASE)
+
+
+def validate_dna_sequence(sequence: str, seq_id: str) -> tuple[bool, str]:
+    """Validate if sequence contains valid DNA nucleotides."""
+    if not sequence or len(sequence.strip()) == 0:
+        return False, "Empty sequence provided"
+
+    clean_seq = (
+        sequence.upper()
+        .replace(" ", "")
+        .replace("\n", "")
+        .replace("\r", "")
+        .replace("\t", "")
+    )
+
+    print(f"[DEBUG] Clean sequence: {clean_seq[:50]}...")
+    print(f"[DEBUG] Unique chars in sequence: {set(clean_seq)}")
+    print(f"[DEBUG] Valid nucleotides: {VALID_NUCLEOTIDES}")
+
+    if len(clean_seq) < 10:
+        return False, f"Sequence too short ({len(clean_seq)}bp). Minimum 10bp required"
+
+    invalid_chars = set(clean_seq) - VALID_NUCLEOTIDES
+    print(f"[DEBUG] Invalid chars: {invalid_chars}")
+    if invalid_chars:
+        return (
+            False,
+            f"Invalid characters found: {', '.join(sorted(invalid_chars))}. Only DNA nucleotides (A,T,G,C,N) allowed",
+        )
+
+    if not DNA_PATTERN.match(clean_seq):
+        return False, "Sequence contains non-DNA characters"
+
+    gc_content = (clean_seq.count("G") + clean_seq.count("C")) / len(clean_seq)
+    if gc_content == 0 or gc_content == 1:
+        return False, "Invalid sequence: 0% or 100% GC content indicates non-DNA data"
+
+    at_content = (clean_seq.count("A") + clean_seq.count("T")) / len(clean_seq)
+    if at_content > 0.9:
+        return False, "Invalid sequence: >90% A/T content suggests non-DNA data"
+    if gc_content > 0.9:
+        return False, "Invalid sequence: >90% G/C content suggests non-DNA data"
+
+    valid_bases = sum(1 for c in clean_seq if c in "ATGC")
+    valid_ratio = valid_bases / len(clean_seq)
+    if valid_ratio < 0.85:
+        return (
+            False,
+            f"Invalid sequence: Only {valid_ratio * 100:.0f}% are valid DNA bases (A,T,G,C). Expected >85%",
+        )
+
+    return True, ""
 
 
 app.add_middleware(
@@ -29,7 +85,7 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.01, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(0.75, ge=0.0, le=1.0)
     batch_size: int = Field(16, ge=1, le=1024)
     enable_ood: bool = False
     ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
@@ -45,7 +101,7 @@ class SequenceResult(BaseModel):
     sequence_id: str
     length: int
     gc_content: float
-    prediction: Literal["Virus", "Host", "Novel"]
+    prediction: Literal["Virus", "Host", "Novel", "Uncertain", "Invalid"]
     confidence: float
     sequence_preview: str
     organism_name: Optional[str] = None
@@ -53,6 +109,8 @@ class SequenceResult(BaseModel):
     mahalanobis_distance: Optional[float] = None
     energy_score: Optional[float] = None
     ood_score: Optional[float] = None
+    uncertain: Optional[bool] = False
+    threshold_used: Optional[float] = None
 
 
 ORGANISM_PATTERNS = {
@@ -128,6 +186,7 @@ class ClassificationResponse(BaseModel):
     virus_count: int
     host_count: int
     novel_count: int
+    uncertain_count: int
     detailed_results: List[SequenceResult]
     source: str
     timestamp: str
@@ -172,6 +231,24 @@ async def reload_models() -> Dict[str, str]:
 def classify_sequence(
     seq_id: str, sequence: str, config: ModelConfig
 ) -> SequenceResult:
+    is_valid, error_msg = validate_dna_sequence(sequence, seq_id)
+    print(f"[DEBUG] Validating sequence {seq_id}: valid={is_valid}, error={error_msg}")
+    print(f"[DEBUG] Sequence preview: {sequence[:50] if sequence else 'empty'}")
+    if not is_valid:
+        return SequenceResult(
+            sequence_id=seq_id,
+            length=len(sequence),
+            gc_content=0.0,
+            prediction="Invalid",
+            confidence=0.0,
+            sequence_preview=sequence[:50] + "..." if len(sequence) > 50 else sequence,
+            organism_name="N/A",
+            explanation=f"Invalid input data: {error_msg}. Please provide valid DNA sequences (A, T, G, C nucleotides only).",
+            uncertain=True,
+            threshold_used=config.confidence_threshold,
+            ood_score=1.0,
+        )
+
     model_name = _resolve_model_name(config)
     predictor = get_predictor(model_name)
 
@@ -182,15 +259,21 @@ def classify_sequence(
     confidence = round(float(raw_confidence), 3)
     ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
-    prediction: Literal["Virus", "Host", "Novel"] = predicted_label
-    if config.enable_ood and (
-        confidence < config.confidence_threshold or ood_score >= config.ood_threshold
-    ):
+    prediction: Literal["Virus", "Host", "Novel", "Uncertain", "Invalid"] = (
+        predicted_label
+    )
+    uncertain = False
+
+    # Mark as Uncertain if confidence is below threshold
+    if confidence < config.confidence_threshold:
+        prediction = "Uncertain"
+        uncertain = True
+    elif config.enable_ood and ood_score >= config.ood_threshold:
         prediction = "Novel"
 
     organism_name = detect_organism(seq_id, sequence)
     explanation = generate_explanation(
-        prediction, confidence, gc_content, len(sequence), organism_name
+        predicted_label, confidence, gc_content, len(sequence), organism_name
     )
 
     result: Dict[str, Any] = {
@@ -202,6 +285,8 @@ def classify_sequence(
         "sequence_preview": f"{sequence[:50]}..." if len(sequence) > 50 else sequence,
         "organism_name": organism_name,
         "explanation": explanation,
+        "uncertain": uncertain,
+        "threshold_used": config.confidence_threshold,
     }
 
     if config.enable_ood:
@@ -221,7 +306,7 @@ def run_classification(
 ) -> ClassificationResponse:
     start = time.time()
     detailed_results: List[SequenceResult] = []
-    virus_count = host_count = novel_count = 0
+    virus_count = host_count = novel_count = uncertain_count = 0
 
     for seq in sequences:
         result = classify_sequence(seq.id, seq.sequence, config)
@@ -231,8 +316,10 @@ def run_classification(
             virus_count += 1
         elif result.prediction == "Host":
             host_count += 1
-        else:
+        elif result.prediction == "Novel":
             novel_count += 1
+        elif result.prediction == "Uncertain":
+            uncertain_count += 1
 
     processing_time = time.time() - start
 
@@ -241,6 +328,7 @@ def run_classification(
         virus_count=virus_count,
         host_count=host_count,
         novel_count=novel_count,
+        uncertain_count=uncertain_count,
         detailed_results=detailed_results,
         source=source,
         timestamp=datetime.now().isoformat(),

@@ -15,7 +15,7 @@ import type {
 
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
-  confidence_threshold: 0.01,
+  confidence_threshold: 0.75,
   batch_size: 16,
   enable_ood: false,
   ood_threshold: 0.99,
@@ -248,11 +248,12 @@ function App() {
             sidebarOpen ? 'md:ml-80' : 'ml-0'
           }`}
         >
-          <div className="mx-auto max-w-6xl px-6 py-6">
+          <div className="mx-auto max-w-full px-6 py-6">
             <ResultsDashboard
               results={results}
               isLoading={isRunning}
               parsedCount={parsedSequences.length}
+              confidenceThreshold={config.confidence_threshold}
             />
           </div>
         </div>
