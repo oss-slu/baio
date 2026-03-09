@@ -40,7 +40,7 @@ export type ClassificationResponse = {
 }
 
 export type ChatMessage = {
-  role: 'user' | 'assistant'
+  role: 'user' | 'system' | 'assistant'
   content: string
 }
 

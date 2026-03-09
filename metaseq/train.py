@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Tuple, Optional, Dict, Any
 import os
 import json
-import yaml  # type: ignore[import-untyped]
+import yaml
 import pandas as pd
 from sklearn.model_selection import train_test_split  # type: ignore[import-untyped]
 from sklearn.metrics import classification_report  # type: ignore[import-untyped]
