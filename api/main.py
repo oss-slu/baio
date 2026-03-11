@@ -85,7 +85,7 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.75, ge=0.0, le=1.0)
+    confidence_threshold: float = Field(0.3, ge=0.0, le=1.0)
     batch_size: int = Field(16, ge=1, le=1024)
     enable_ood: bool = False
     ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
@@ -257,6 +257,9 @@ def classify_sequence(
     )
     predicted_label, raw_confidence = predictor.predict_with_confidence(sequence)
     confidence = round(float(raw_confidence), 3)
+    print(
+        f"[DEBUG] Sequence: {seq_id[:20]}... | Prediction: {predicted_label} | Confidence: {confidence}"
+    )
     ood_score = round(max(0.0, min(1.0, 1.0 - float(raw_confidence))), 3)
 
     prediction: Literal["Virus", "Host", "Novel", "Uncertain", "Invalid"] = (
