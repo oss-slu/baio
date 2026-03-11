@@ -1,6 +1,6 @@
 # BAIO: DNA Sequence Classification & Open-Set Pathogen Detection
 
-BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analysis platform that classifies DNA sequences using machine learning. It distinguishes between viral (e.g., COVID-19) and host genomic sequences, with optional open-set detection for identifying novel pathogens.
+BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analysis platform that classifies DNA sequences with machine learning. The current deployed inference path uses 6-mer sequence features with saved scikit-learn SVM and RandomForest models to distinguish viral and host DNA, with an optional novelty flag based on low-confidence predictions.
 
 ---
 
@@ -11,11 +11,11 @@ BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analy
 - **Confidence Visualization**: Color-coded confidence bars for each prediction
 - **GC Content Analysis**: Heatmap showing GC content distribution
 - **Risk Assessment**: Color-coded risk level indicators (Low/Moderate/High)
-- **Explainable AI**: Per-sequence explanations with probability distributions and feature importance
+- **Sequence Explanations**: Per-sequence summaries based on prediction, confidence, GC content, and organism-name heuristics
 - **Dark Mode**: Toggle between light and dark themes
 - **Export Options**: Download results as JSON, CSV, or PDF
 - **AI Assistant**: Gemini-powered chat for sequence analysis questions
-- **Open-Set Detection**: Flags sequences that don't fit known classes (optional)
+- **Novelty Flagging**: Optional heuristic flag for low-confidence or out-of-distribution-looking sequences
 
 ---
 
@@ -25,7 +25,7 @@ BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analy
 |-------|------------|
 | Frontend | React + Vite + TypeScript + Tailwind CSS |
 | Backend | FastAPI + Python 3.12 |
-| ML | PyTorch + Scikit-learn (RandomForest) |
+| ML | Scikit-learn (SVM, RandomForest) + optional research dependencies for embedding experiments |
 | AI | Google Gemini API |
 | DevOps | Docker, GitHub Actions, pytest |
 
@@ -59,8 +59,10 @@ This guide explains what each main file does - easy to understand for developers
 | File | What it does |
 |------|--------------|
 | `binary_classifiers/predict_class.py` | Core classification logic - takes DNA sequence, returns Virus/Host prediction |
-| `binary_classifiers/retrain_model.py` | Script to retrain the model with new data |
-| `binary_classifiers/train_model.py` | Training utilities and functions |
+| `binary_classifiers/transformers/kmers_transformer.py` | Converts raw DNA into overlapping 6-mers |
+| `binary_classifiers/evaluation.py` | Loads labeled data and computes classifier metrics |
+| `retrain_model.py` | Retrains saved SVM and RandomForest artifacts from local FASTA files |
+| `metaseq/train.py` | Separate configurable training pipeline for experiments and future consolidation |
 
 ### Root Scripts
 
@@ -68,6 +70,7 @@ This guide explains what each main file does - easy to understand for developers
 |------|--------------|
 | `retrain_model.py` | Standalone script to retrain the ML model |
 | `predict_class.py` | Quick prediction script for testing |
+| `scripts/evaluate_binary_classifier.py` | Evaluates the deployed model on labeled host/virus FASTA or FASTQ data |
 
 ---
 
@@ -95,15 +98,16 @@ baio/
 │   ├── package.json              # Node.js dependencies
 │   └── tailwind.config.js        # Tailwind configuration
 │
-├── binary_classifiers/           # ML classification core
-│   ├── predict_class.py          # Classification logic & LABEL_MAP
-│   ├── retrain_model.py          # Model retraining script
-│   ├── train_model.py            # Training utilities
+├── binary_classifiers/           # ML classification core used by the API
+│   ├── predict_class.py          # Loads saved models, predicts labels and probabilities
+│   ├── evaluation.py             # Evaluation helpers and metric generation
+│   ├── transformers/             # K-mer transformer + saved vectorizers
 │   └── models/                   # Saved model files (*.pkl)
 │
-├── metaseq/                      # Legacy metagenomics library
+├── metaseq/                      # Experimental/research ML utilities
 │   ├── dataio.py                 # FASTA/FASTQ file loaders
-│   └── models.py                 # Model definitions
+│   ├── models.py                 # Alternative pipeline definitions
+│   └── train.py                  # Config-driven training entry point
 │
 ├── prompting/                     # LLM prompting utilities
 │
@@ -118,6 +122,34 @@ baio/
 ├── docker-compose.yml            # Docker setup
 └── README.md                     # This file
 ```
+
+---
+
+## How The ML Pipeline Works
+
+1. **Validate input DNA**
+   The API checks sequence length, allowed nucleotide characters, GC/AT extremes, and ambiguous-base ratio before classification.
+
+2. **Convert sequence to 6-mers**
+   Each sequence is split into overlapping substrings of length 6. This turns DNA into a text-like representation the model can vectorize.
+
+3. **Vectorize and classify**
+   The saved vectorizer converts 6-mers into numeric features, then a saved SVM or RandomForest predicts `Virus` or `Host`.
+
+4. **Estimate confidence**
+   Confidence is derived from model probabilities plus prediction margin and entropy. The frontend shows that confidence directly.
+
+5. **Apply novelty heuristic**
+   If novelty mode is enabled, BAIO computes `ood_score = 1 - confidence`. This is a heuristic flag, not a full open-set model such as Mahalanobis distance or energy-based OOD detection.
+
+6. **Generate a human-readable explanation**
+   The API adds GC content, organism-name pattern matching, and a short explanation string for the UI.
+
+### Current Limitations
+
+- The default demo retraining data in `data/` is very small: 5 virus reads and 5 host reads.
+- The current API path is classical ML over k-mer features, not Evo2 embeddings.
+- The novelty score is heuristic, so "Novel" should be treated as "needs further validation," not proof of a new pathogen.
 
 ---
 
@@ -324,7 +356,7 @@ docker compose up -d --build
    - Upload a FASTA file
 
 3. **Configure Settings** (optional):
-   - Confidence threshold (default: 0.5)
+   - Confidence threshold (default: 0.75)
    - Enable/disable open-set detection
    - Select model type
 
@@ -337,9 +369,9 @@ docker compose up -d --build
    - GC content
 
 6. **Expand Row**: Click any row to see:
-   - Probability distribution
-   - Feature importance (top k-mers)
-   - Decision path
+   - Prediction explanation
+   - Confidence and novelty indicators
+   - Sequence preview and organism-name heuristic
 
 7. **Export**: Download as JSON, CSV, or PDF
 
@@ -394,8 +426,23 @@ python retrain_model.py
 This will:
 1. Load training data from `data/`
 2. Extract k-mer features
-3. Train RandomForest classifier
-4. Save model to `binary_classifiers/models/`
+3. Train both RandomForest and SVM classifiers
+4. Save model and vectorizer artifacts under `binary_classifiers/`
+
+The default training data in `data/covid_reads5.fasta` and `data/human_reads5.fasta` is only a tiny demo dataset. It is useful for development, but not enough for a robust biological classifier.
+
+To evaluate the current saved models on labeled files:
+
+```bash
+python scripts/evaluate_binary_classifier.py --model RandomForest
+python scripts/evaluate_binary_classifier.py --model SVM --output runs/metrics/svm_eval.json
+```
+
+The evaluation script reports:
+- accuracy, precision, recall, F1, and ROC-AUC
+- confusion matrix
+- per-class report
+- misclassified sequence IDs with confidence and virus probability
 
 ---
 
@@ -408,7 +455,7 @@ This will:
 | ModuleNotFoundError | Environment not activated | `conda activate baio` |
 | npm install fails | Node version | Upgrade to Node.js 18+ |
 | Gemini API error | Invalid API key | Check `.env` file |
-| Model returns "Novel" | Bug in LABEL_MAP | Run `python retrain_model.py` |
+| Model returns "Novel" | Low confidence or heuristic novelty threshold triggered | Inspect `confidence_threshold` and `ood_threshold`, then evaluate/retrain with broader data |
 | Docker build fails | Cache issue | `docker system prune -a` |
 | Conda env fails | Conflict | Use `mamba env create -f environment.yml` |
 
