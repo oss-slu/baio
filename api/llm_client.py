@@ -1,41 +1,44 @@
-"""LLM client wrapper for API chat functionality using Google Gemini."""
-
 import os
 import time
-from typing import Any, Dict, List
+import requests
+import json
+from typing import Dict, List
+from dotenv import load_dotenv
 
-try:
-    import google.generativeai as genai
-except ModuleNotFoundError:
-    genai = None
+SYSTEM_PROMPTS = {
+    "default": """You are BAIO, an expert bioinformatics assistant specialized in DNA sequence classification and pathogen detection.
+
+You help researchers:
+- Understand classification results (Virus vs Host predictions)
+- Interpret confidence scores and risk levels
+- Explain k-mer analysis and model predictions
+- Provide guidance on next steps for validation
+
+Be concise, helpful, and scientific in your responses. Use emojis sparingly.""",
+    "analysis_helper": "You are analyzing metagenomic sequencing data with BAIO. Help interpret the classification results and suggest next steps.",
+    "technical_expert": "You are a technical expert on BAIO's architecture, focusing on RandomForest models, k-mer tokenization, and TF-IDF features.",
+}
 
 
 class LLMClient:
-    """Wrapper class for Google Gemini LLM API calls."""
 
-    def __init__(self, provider: str = "google", model: str = "gemini-1.5-flash"):
-        self.provider = provider
+    def __init__(self, model: str = "liquid/lfm-2.5-1.2b-instruct:free"):
+        load_dotenv()
         self.model = model
-        self.api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        self.client: Any = None
-
-        if self.api_key and genai is not None:
-            try:
-                genai.configure(api_key=self.api_key)
-                self.client = genai.GenerativeModel(model)
-            except Exception as e:
-                print(f"Failed to initialize Gemini: {e}", flush=True)
-        elif self.api_key and genai is None:
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        if self.api_key is None:
             print(
-                "google-generativeai is not installed; falling back to mock responses.",
+                "OpenRouter api key not found; falling back to mock responses.",
                 flush=True,
             )
 
     def generate_response(
-        self, messages: List[Dict[str, str]], system_prompt: str
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str = SYSTEM_PROMPTS["default"],
     ) -> str:
         """
-        Generate response from Gemini LLM.
+        Generate response from the LLM or fallback to mock if API key missing/error.
 
         Args:
             messages: List of conversation messages
@@ -44,25 +47,39 @@ class LLMClient:
         Returns:
             Generated response text
         """
+
+        if self.api_key is None:
+            return "OpenRouter api key not found; falling back to mock responses."
+
+        # Build the payload for OpenRouter API
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                *messages,
+            ],
+        }
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+
         try:
-            if self.client is None:
-                return self._mock_response(messages)
+            response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                data=json.dumps(payload),
+                timeout=10,  # seconds
+            )
+            response.raise_for_status()
+            data = response.json()
 
-            history = []
-            for msg in messages[:-1]:
-                role = "user" if msg["role"] == "user" else "model"
-                history.append({"role": role, "parts": [msg["content"]]})
-
-            chat = self.client.start_chat(history=history)
-
-            last_message = messages[-1]["content"] if messages else ""
-            full_prompt = f"{system_prompt}\n\nUser: {last_message}"
-
-            response = chat.send_message(full_prompt)
-            return response.text
+            # Extract the assistant's reply
+            return data["choices"][0]["message"]["content"]
 
         except Exception as e:
-            print(f"Gemini API error: {str(e)}")
+            print(f"API error: {e}. Falling back to mock response.", flush=True)
             return self._mock_response(messages)
 
     def _mock_response(self, messages: List[Dict[str, str]]) -> str:
@@ -90,18 +107,3 @@ class LLMClient:
             "virus/host detection, confidence scores, and the analysis pipeline. "
             "What would you like to know?"
         )
-
-
-SYSTEM_PROMPTS = {
-    "default": """You are BAIO, an expert bioinformatics assistant specialized in DNA sequence classification and pathogen detection.
-
-You help researchers:
-- Understand classification results (Virus vs Host predictions)
-- Interpret confidence scores and risk levels
-- Explain k-mer analysis and model predictions
-- Provide guidance on next steps for validation
-
-Be concise, helpful, and scientific in your responses. Use emojis sparingly.""",
-    "analysis_helper": "You are analyzing metagenomic sequencing data with BAIO. Help interpret the classification results and suggest next steps.",
-    "technical_expert": "You are a technical expert on BAIO's architecture, focusing on RandomForest models, k-mer tokenization, and TF-IDF features.",
-}
