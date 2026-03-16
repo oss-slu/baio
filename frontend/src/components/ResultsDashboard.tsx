@@ -18,6 +18,15 @@ function calculateRiskLevel(
   confidence: number,
   oodScore?: number
 ): { level: RiskLevel; label: string; description: string } {
+  // Invalid sequences
+  if (prediction === 'Invalid') {
+    return {
+      level: 'moderate',
+      label: 'Invalid Data',
+      description: 'Input data is not valid DNA sequence'
+    }
+  }
+
   // Host sequences are always low risk
   if (prediction === 'Host') {
     return {
@@ -319,6 +328,11 @@ const statusStyles = {
     light: 'bg-slate-200 text-slate-600 border-slate-400',
     dark: 'dark:bg-slate-600/50 dark:text-slate-300 dark:border-slate-500',
     dot: 'bg-slate-500',
+  },
+  Invalid: {
+    light: 'bg-red-100 text-red-800 border-red-300',
+    dark: 'dark:bg-red-900/50 dark:text-red-300 dark:border-red-700',
+    dot: 'bg-red-500',
   },
 }
 

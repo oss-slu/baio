@@ -15,7 +15,7 @@ export type SequenceResult = {
   sequence_id: string
   length: number
   gc_content: number
-  prediction: 'Virus' | 'Host' | 'Novel' | 'Uncertain'
+  prediction: 'Virus' | 'Host' | 'Novel' | 'Uncertain' | 'Invalid'
   confidence: number
   sequence_preview: string
   organism_name?: string
@@ -40,7 +40,7 @@ export type ClassificationResponse = {
 }
 
 export type ChatMessage = {
-  role: 'user' | 'assistant'
+  role: 'user' | 'system' | 'assistant'
   content: string
 }
 

@@ -33,3 +33,20 @@ def test_inference_predict_file(tmp_path):
     inf = ClassifierInference(str(model_path))
     preds = inf.predict_file(str(fpath))
     assert len(preds) == 2
+
+
+def test_inference_predict_proba(tmp_path):
+    X = ["ACGTACGT", "TTTTTTTT", "ACACACAC", "GGGGGGGG"]
+    y = [1, 0, 1, 0]
+    pipe = build_pipeline("svm", {"k": 3, "C": 1.0, "kernel": "linear"})
+    pipe.fit(X, y)
+
+    model_path = tmp_path / "model.joblib"
+    save_model(pipe, str(model_path))
+
+    inf = ClassifierInference(str(model_path))
+    probabilities = inf.predict_proba(["ACGTACGT", "TTTTTTTT"])
+
+    assert probabilities is not None
+    assert len(probabilities) == 2
+    assert len(probabilities[0]) == 2
