@@ -192,7 +192,9 @@ class PredictClass:
             probability_map[label] = float(probability)
 
         if predicted_label is not None:
-            most_likely_label = max(probability_map, key=probability_map.get)
+            most_likely_label = max(
+                probability_map, key=lambda label: probability_map[label]
+            )
             if most_likely_label != predicted_label:
                 probability_map = {
                     "Host": probability_map["Virus"],

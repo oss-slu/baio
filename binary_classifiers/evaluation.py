@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Protocol, Sequence
 
-from sklearn.metrics import (
+from sklearn.metrics import (  # type: ignore[import-untyped]
     accuracy_score,
     classification_report,
     confusion_matrix,
