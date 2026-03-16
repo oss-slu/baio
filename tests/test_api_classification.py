@@ -10,6 +10,12 @@ class _FixedPredictor:
         return self.label, self.confidence
 
 
+def test_model_config_uses_stricter_default_confidence_threshold() -> None:
+    config = ModelConfig()
+
+    assert config.confidence_threshold == 0.6
+
+
 def test_classify_sequence_uses_model_prediction(monkeypatch) -> None:
     monkeypatch.setattr(
         "api.main.get_predictor",

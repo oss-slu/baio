@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Sequence, Tuple
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
-import numpy as np
 
 from .transformers.kmers_transformer import (
     KmerTransformer,
@@ -134,26 +133,8 @@ class PredictClass:
     def _extract_predicted_class_confidence(
         self, prediction: Any, classes: Sequence[Any], probabilities: Sequence[float]
     ) -> float:
-        predicted_label = self._prediction_to_label(prediction)
-        probability_map = self._map_probabilities_to_labels(
-            classes=classes,
-            probabilities=probabilities,
-            predicted_label=predicted_label,
-        )
-
-        base_prob = probability_map[predicted_label]
-        aligned_probabilities = list(probability_map.values())
-        sorted_probs = sorted(aligned_probabilities, reverse=True)
-        margin = sorted_probs[0] - sorted_probs[1] if len(sorted_probs) > 1 else 1.0
-
-        entropy = -sum(p * np.log2(p) if p > 0 else 0 for p in aligned_probabilities)
-        max_entropy = (
-            np.log2(len(aligned_probabilities)) if len(aligned_probabilities) > 0 else 1
-        )
-        normalized_entropy = 1 - (entropy / max_entropy) if max_entropy > 0 else 1
-
-        confidence = (0.5 * base_prob) + (0.3 * margin) + (0.2 * normalized_entropy)
-        return min(confidence, 1.0)
+        # Return the maximum probability from model
+        return max(probabilities)
 
     def _probability_mapping_for_features(
         self, features: object

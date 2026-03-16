@@ -14,8 +14,8 @@ import type {
 
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
-  confidence_threshold: 0.3,
-  batch_size: 16,
+  confidence_threshold: 0.6,
+  batch_size: 64,
   enable_ood: false,
   ood_threshold: 0.99,
 }
