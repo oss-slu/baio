@@ -46,7 +46,7 @@ function SequenceInput({
         type="button"
         onClick={onToggle}
         className={cn(
-          'flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition',
+          'flex-col w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition',
           'border-slate-200 bg-slate-50 hover:border-emerald-300 hover:bg-white',
           'dark:border-slate-600 dark:bg-slate-700/50 dark:hover:border-emerald-600 dark:hover:bg-slate-700'
         )}
@@ -64,7 +64,7 @@ function SequenceInput({
             </h2>
             <span className={cn(
               'rounded-full border px-3 py-1 text-xs font-semibold',
-              'border-emerald-200 bg-emerald-100 text-emerald-700',
+              'border-emerald-200 bg-emerald-100 text-emerald-700 text-center',
               'dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
             )}>
               {parsedCount} parsed

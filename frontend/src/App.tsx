@@ -163,6 +163,7 @@ function App() {
         ? 'bg-slate-950 text-slate-100' 
         : 'bg-slate-100 text-slate-900'
     }`}>
+      
       <Header 
         healthOk={healthOk} 
         darkMode={darkMode} 
@@ -186,10 +187,10 @@ function App() {
         </div>
       )}
 
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Left Sidebar - Collapsible */}
         <div
-          className={`fixed left-0 top-14 h-[calc(100vh-3.5rem)] z-30 transform transition-all duration-300 ease-in-out ${
+          className={`fixed left-0 top-15 h-[calc(100vh-3.5rem)] z-30 transform transition-all duration-300 ease-in-out ${
             sidebarOpen ? 'w-80' : 'w-0'
           } overflow-hidden ${
             darkMode 
@@ -226,6 +227,7 @@ function App() {
                 isRunning={isRunning}
                 parsedCount={parsedSequences.length}
               />
+
             </div>
           </div>
         </div>
