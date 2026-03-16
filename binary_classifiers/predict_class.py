@@ -1,8 +1,7 @@
 from pathlib import Path
-from typing import Any, List, Literal, Sequence, Tuple
+from typing import Any, Dict, List, Literal, Sequence, Tuple
 
 import joblib  # type: ignore[import-untyped] # noqa: E402
-import numpy as np
 
 from .transformers.kmers_transformer import (
     KmerTransformer,
@@ -46,6 +45,18 @@ class PredictClass:
         features = self._preprocess_batch(sequences)
         predictions = self.model.predict(features)
         return [self._prediction_to_label(pred) for pred in predictions]
+
+    def predict_probabilities(
+        self, sequence: str
+    ) -> Dict[Literal["Host", "Virus"], float]:
+        features = self._preprocess(sequence)
+        return self._probability_mapping_for_features(features)
+
+    def batch_predict_probabilities(
+        self, sequences: List[str]
+    ) -> List[Dict[Literal["Host", "Virus"], float]]:
+        features = self._preprocess_batch(sequences)
+        return self._batch_probability_mappings_for_features(features)
 
     def predict_with_confidence(
         self, sequence: str
@@ -122,32 +133,75 @@ class PredictClass:
     def _extract_predicted_class_confidence(
         self, prediction: Any, classes: Sequence[Any], probabilities: Sequence[float]
     ) -> float:
-        if len(classes) == len(probabilities):
-            class_to_prob = {
-                cls: float(prob) for cls, prob in zip(classes, probabilities)
-            }
-            if prediction in class_to_prob:
-                base_prob = class_to_prob[prediction]
+        # Return the maximum probability from model
+        return max(probabilities)
 
-                sorted_probs = sorted(probabilities, reverse=True)
-                margin = (
-                    sorted_probs[0] - sorted_probs[1] if len(sorted_probs) > 1 else 1.0
-                )
+    def _probability_mapping_for_features(
+        self, features: object
+    ) -> Dict[Literal["Host", "Virus"], float]:
+        if not hasattr(self.model, "predict_proba"):
+            raise ValueError(
+                f"Model '{self.model_name}' does not expose predict_proba and cannot return probabilities"
+            )
 
-                entropy = -sum(p * np.log2(p) if p > 0 else 0 for p in probabilities)
-                max_entropy = (
-                    np.log2(len(probabilities)) if len(probabilities) > 0 else 1
-                )
-                normalized_entropy = (
-                    1 - (entropy / max_entropy) if max_entropy > 0 else 1
-                )
+        probabilities = self.model.predict_proba(features)[0]
+        predicted_label = self._prediction_to_label(self.model.predict(features)[0])
+        return self._map_probabilities_to_labels(
+            classes=getattr(self.model, "classes_", []),
+            probabilities=probabilities,
+            predicted_label=predicted_label,
+        )
 
-                confidence = (
-                    (0.5 * base_prob) + (0.3 * margin) + (0.2 * normalized_entropy)
-                )
-                return min(confidence, 1.0)
+    def _batch_probability_mappings_for_features(
+        self, features: object
+    ) -> List[Dict[Literal["Host", "Virus"], float]]:
+        if not hasattr(self.model, "predict_proba"):
+            raise ValueError(
+                f"Model '{self.model_name}' does not expose predict_proba and cannot return probabilities"
+            )
 
-        return float(max(probabilities))
+        probabilities = self.model.predict_proba(features)
+        model_classes = getattr(self.model, "classes_", [])
+        predictions = self.model.predict(features)
+        return [
+            self._map_probabilities_to_labels(
+                classes=model_classes,
+                probabilities=row_probabilities,
+                predicted_label=self._prediction_to_label(prediction),
+            )
+            for prediction, row_probabilities in zip(predictions, probabilities)
+        ]
+
+    def _map_probabilities_to_labels(
+        self,
+        classes: Sequence[Any],
+        probabilities: Sequence[float],
+        predicted_label: Literal["Host", "Virus"] | None = None,
+    ) -> Dict[Literal["Host", "Virus"], float]:
+        if len(classes) != len(probabilities):
+            raise ValueError(
+                "Model class metadata does not align with the returned probability vector"
+            )
+
+        probability_map: Dict[Literal["Host", "Virus"], float] = {
+            "Host": 0.0,
+            "Virus": 0.0,
+        }
+        for model_class, probability in zip(classes, probabilities):
+            label = self._prediction_to_label(model_class)
+            probability_map[label] = float(probability)
+
+        if predicted_label is not None:
+            most_likely_label = max(
+                probability_map, key=lambda label: probability_map[label]
+            )
+            if most_likely_label != predicted_label:
+                probability_map = {
+                    "Host": probability_map["Virus"],
+                    "Virus": probability_map["Host"],
+                }
+
+        return probability_map
 
 
 if __name__ == "__main__":

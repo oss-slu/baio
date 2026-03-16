@@ -30,15 +30,17 @@ def validate_dna_sequence(sequence: str, seq_id: str) -> tuple[bool, str]:
         .replace("\t", "")
     )
 
-    print(f"[DEBUG] Clean sequence: {clean_seq[:50]}...")
-    print(f"[DEBUG] Unique chars in sequence: {set(clean_seq)}")
-    print(f"[DEBUG] Valid nucleotides: {VALID_NUCLEOTIDES}")
-
     if len(clean_seq) < 10:
         return False, f"Sequence too short ({len(clean_seq)}bp). Minimum 10bp required"
 
+    MAX_SEQ_LENGTH = 3_000_000_000  # 3GB max per sequence
+    if len(clean_seq) > MAX_SEQ_LENGTH:
+        return (
+            False,
+            f"Sequence too long ({len(clean_seq)}bp). Maximum {MAX_SEQ_LENGTH}bp allowed",
+        )
+
     invalid_chars = set(clean_seq) - VALID_NUCLEOTIDES
-    print(f"[DEBUG] Invalid chars: {invalid_chars}")
     if invalid_chars:
         return (
             False,
@@ -85,8 +87,8 @@ class SequenceInput(BaseModel):
 
 class ModelConfig(BaseModel):
     type: str = "Binary (Virus vs Host)"
-    confidence_threshold: float = Field(0.75, ge=0.0, le=1.0)
-    batch_size: int = Field(16, ge=1, le=1024)
+    confidence_threshold: float = Field(0.6, ge=0.0, le=1.0)
+    batch_size: int = Field(64, ge=1, le=1024)
     enable_ood: bool = False
     ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
 
@@ -264,7 +266,6 @@ def classify_sequence(
     )
     uncertain = False
 
-    # Mark as Uncertain if confidence is below threshold
     if confidence < config.confidence_threshold:
         prediction = "Uncertain"
         uncertain = True
