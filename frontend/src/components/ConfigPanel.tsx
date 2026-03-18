@@ -86,8 +86,14 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
             disabled={isRunning}
           >
             <option>Binary (Virus vs Host)</option>
+            <option>Binary (Evo 2 - GPU Required)</option>
             <option>Multi-class (Detailed Taxonomy)</option>
           </select>
+          {config.type === 'Binary (Evo 2 - GPU Required)' && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              ⚠️ Evo 2 requires NVIDIA GPU with 16GB+ VRAM
+            </p>
+          )}
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">

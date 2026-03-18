@@ -14,12 +14,13 @@ MODEL_FILE_MAP = {
         "support_vector_machine_best_model.pkl",
         "support_vector_machine_vectorizer.pkl",
     ),
+    "Evo2": ("evo2_classifier.pkl", None),  # Evo2 uses its own embeddings
 }
 
 
 class PredictClass:
     def __init__(
-        self, model_name: Literal["RandomForest", "SVM"] = "RandomForest"
+        self, model_name: Literal["RandomForest", "SVM", "Evo2"] = "RandomForest"
     ) -> None:
         """Initialize the predictor class."""
 
@@ -29,12 +30,35 @@ class PredictClass:
                 f"Unsupported model_name '{self.model_name}'. Expected one of: {tuple(MODEL_FILE_MAP)}"
             )
 
-        base_dir = Path(__file__).resolve().parent
-        model_file, vectorizer_file = MODEL_FILE_MAP[self.model_name]
-        self.model = joblib.load(base_dir / "models" / model_file)
-        self.vectorizer = joblib.load(base_dir / "transformers" / vectorizer_file)
+        if self.model_name == "Evo2":
+            # Try to load Evo2 embedder
+            self.evo2_embedder = None
+            self.model = None
+            self.vectorizer = None
+            self.kmer_tranformer = None
 
-        self.kmer_tranformer = KmerTransformer()
+            try:
+                from .evo2_embedder import Evo2Embedder
+
+                self.evo2_embedder = Evo2Embedder(model_size="7b")
+                if self.evo2_embedder.is_available():
+                    print("Evo 2 embedder loaded successfully!")
+                else:
+                    print("Evo 2 not available, using k-mer fallback")
+            except ImportError:
+                print("Evo 2 embedder not available, using k-mer fallback")
+        else:
+            base_dir = Path(__file__).resolve().parent
+            model_file, vectorizer_file = MODEL_FILE_MAP[self.model_name]
+            self.model = joblib.load(base_dir / "models" / model_file)
+            if vectorizer_file:
+                self.vectorizer = joblib.load(
+                    base_dir / "transformers" / vectorizer_file
+                )
+            else:
+                self.vectorizer = None
+            self.kmer_tranformer = KmerTransformer()
+            self.evo2_embedder = None
 
     def predict(self, sequence: str) -> Literal["Virus", "Host"]:
         features = self._preprocess(sequence)

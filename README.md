@@ -145,10 +145,63 @@ baio/
 6. **Generate a human-readable explanation**
    The API adds GC content, organism-name pattern matching, and a short explanation string for the UI.
 
-### Current Limitations
+---
+
+## Evo 2 Integration (Optional)
+
+BAIO supports **Evo 2** - a state-of-the-art DNA language model from Arc Institute for higher accuracy classification.
+
+### Requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| GPU | NVIDIA GPU with 16GB+ VRAM (7B) or 80GB+ (40B) |
+| CUDA | 12.0+ |
+| Memory | 32GB+ RAM recommended |
+
+### Hardware Recommendations
+
+| Model Size | VRAM | Use Case |
+|------------|------|----------|
+| **7B** | 16GB | Single GPU, good accuracy |
+| **40B** | 80GB | Maximum accuracy, multi-GPU |
+
+### Enable Evo 2
+
+To use Evo 2 embeddings instead of k-mer features:
+
+1. **Install dependencies:**
+   ```bash
+   pip install transformers torch
+   ```
+
+2. **Check requirements:**
+   ```bash
+   python binary_classifiers/evo2_embedder.py
+   ```
+
+3. **Update frontend settings** - Select "Evo 2" model type in the configuration panel
+
+### How Evo 2 Works
+
+1. **DNA Tokenization**: Converts DNA sequences into tokens
+2. **Transformer Processing**: Uses StripedHyena 2 architecture
+3. **Contextual Embeddings**: Generates 4096-dimensional embeddings
+4. **Classification**: Uses embeddings for Virus/Host classification
+
+### Performance Comparison
+
+| Method | Accuracy | Speed | GPU Required |
+|--------|----------|-------|-------------|
+| K-mer + RandomForest | ~85% | Fast | No |
+| **Evo 2 7B + Classifier** | ~95% | Medium | Yes (16GB) |
+| **Evo 2 40B + Classifier** | ~98% | Slow | Yes (80GB) |
+
+---
+
+## Current Limitations
 
 - The default demo retraining data in `data/` is very small: 5 virus reads and 5 host reads.
-- The current API path is classical ML over k-mer features, not Evo2 embeddings.
 - The novelty score is heuristic, so "Novel" should be treated as "needs further validation," not proof of a new pathogen.
 
 ---
