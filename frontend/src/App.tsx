@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
 import Header from './components/Header'
+import LandingPage from './components/LandingPage'
 import SequenceInput from './components/SequenceInput'
 import ConfigPanel from './components/ConfigPanel'
 import ResultsDashboard from './components/ResultsDashboard'
@@ -55,6 +56,7 @@ function parseFasta(text: string): SequenceInputType[] {
 }
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true)
   const [rawSequences, setRawSequences] = useState('')
   const [config, setConfig] = useState<ModelConfig>(defaultConfig)
   const [results, setResults] = useState<ClassificationResponse | null>(null)
@@ -70,6 +72,10 @@ function App() {
     }
     return false
   })
+
+  const handleGetStarted = () => {
+    setShowLanding(false)
+  }
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
@@ -156,6 +162,14 @@ function App() {
     value: ModelConfig[K],
   ) => {
     setConfig((prev) => ({ ...prev, [key]: value }))
+  }
+
+  if (showLanding) {
+    return (
+      <div className={darkMode ? 'dark' : ''}>
+        <LandingPage onGetStarted={handleGetStarted} />
+      </div>
+    )
   }
 
   return (
