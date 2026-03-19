@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Sequence, Tuple
 
@@ -30,44 +32,85 @@ class PredictClass:
                 f"Unsupported model_name '{self.model_name}'. Expected one of: {tuple(MODEL_FILE_MAP)}"
             )
 
+        self.model: Any | None = None
+        self.vectorizer: Any | None = None
+        self.kmer_tranformer: KmerTransformer | None = None
+        self.evo2_embedder: Any | None = None
+
         if self.model_name == "Evo2":
-            # Try to load Evo2 embedder
-            self.evo2_embedder = None
-            self.model = None
-            self.vectorizer = None
-            self.kmer_tranformer = None
-
-            try:
-                from .evo2_embedder import Evo2Embedder
-
-                self.evo2_embedder = Evo2Embedder(model_size="7b")
-                if self.evo2_embedder.is_available():
-                    print("Evo 2 embedder loaded successfully!")
-                else:
-                    print("Evo 2 not available, using k-mer fallback")
-            except ImportError:
-                print("Evo 2 embedder not available, using k-mer fallback")
+            self._configure_evo2()
         else:
-            base_dir = Path(__file__).resolve().parent
-            model_file, vectorizer_file = MODEL_FILE_MAP[self.model_name]
-            self.model = joblib.load(base_dir / "models" / model_file)
-            if vectorizer_file:
-                self.vectorizer = joblib.load(
-                    base_dir / "transformers" / vectorizer_file
-                )
-            else:
-                self.vectorizer = None
-            self.kmer_tranformer = KmerTransformer()
-            self.evo2_embedder = None
+            self._load_kmer_pipeline(self.model_name)
+
+    def _configure_evo2(self) -> None:
+        base_dir = Path(__file__).resolve().parent
+        evo2_model_path = base_dir / "models" / MODEL_FILE_MAP["Evo2"][0]
+
+        try:
+            from .evo2_embedder import Evo2Embedder
+        except ImportError:
+            print("Evo 2 embedder not available, using k-mer fallback")
+            self._fallback_to_random_forest()
+            return
+
+        self.evo2_embedder = Evo2Embedder(model_size="7b")
+        if not self.evo2_embedder.is_available():
+            print("Evo 2 not available, using k-mer fallback")
+            self._fallback_to_random_forest()
+            return
+
+        if not evo2_model_path.exists():
+            print("Evo 2 classifier artifact not found, using k-mer fallback")
+            self._fallback_to_random_forest()
+            return
+
+        self.model = joblib.load(evo2_model_path)
+        print("Evo 2 embedder loaded successfully!")
+
+    def _fallback_to_random_forest(self) -> None:
+        self.model_name = "RandomForest"
+        self.evo2_embedder = None
+        self._load_kmer_pipeline(self.model_name)
+
+    def _load_kmer_pipeline(
+        self,
+        model_name: Literal["RandomForest", "SVM"],
+    ) -> None:
+        base_dir = Path(__file__).resolve().parent
+        model_file, vectorizer_file = MODEL_FILE_MAP[model_name]
+        self.model = joblib.load(base_dir / "models" / model_file)
+        self.kmer_tranformer = KmerTransformer()
+
+        if vectorizer_file is None:
+            raise ValueError(f"Expected vectorizer artifact for model '{model_name}'")
+
+        self.vectorizer = joblib.load(base_dir / "transformers" / vectorizer_file)
+
+    def _require_model(self) -> Any:
+        if self.model is None:
+            raise RuntimeError(f"Model '{self.model_name}' is not loaded")
+        return self.model
+
+    def _preprocess_with_evo2(self, sequence: str) -> object:
+        if self.evo2_embedder is None:
+            raise RuntimeError("Evo 2 embedder is not available")
+
+        embedding = self.evo2_embedder.get_embedding(sequence)
+        if embedding is None:
+            raise RuntimeError("Evo 2 embedding generation failed")
+
+        return [embedding]
 
     def predict(self, sequence: str) -> Literal["Virus", "Host"]:
         features = self._preprocess(sequence)
-        prediction = self.model.predict(features)[0]
+        model = self._require_model()
+        prediction = model.predict(features)[0]
         return self._prediction_to_label(prediction)
 
     def batch_predict(self, sequences: List[str]) -> List[Literal["Virus", "Host"]]:
         features = self._preprocess_batch(sequences)
-        predictions = self.model.predict(features)
+        model = self._require_model()
+        predictions = model.predict(features)
         return [self._prediction_to_label(pred) for pred in predictions]
 
     def predict_probabilities(
@@ -86,7 +129,8 @@ class PredictClass:
         self, sequence: str
     ) -> Tuple[Literal["Virus", "Host"], float]:
         features = self._preprocess(sequence)
-        prediction = self.model.predict(features)[0]
+        model = self._require_model()
+        prediction = model.predict(features)[0]
         confidence = self._confidence_for_prediction(features, prediction)
         return self._prediction_to_label(prediction), confidence
 
@@ -94,7 +138,8 @@ class PredictClass:
         self, sequences: List[str]
     ) -> List[Tuple[Literal["Virus", "Host"], float]]:
         features = self._preprocess_batch(sequences)
-        predictions = self.model.predict(features)
+        model = self._require_model()
+        predictions = model.predict(features)
         confidences = self._batch_confidence_for_predictions(features, predictions)
         return [
             (self._prediction_to_label(prediction), confidence)
@@ -102,14 +147,34 @@ class PredictClass:
         ]
 
     def _preprocess(self, sequence: str) -> object:
+        if self.model_name == "Evo2":
+            return self._preprocess_with_evo2(sequence)
+
+        if self.kmer_tranformer is None or self.vectorizer is None:
+            raise RuntimeError(
+                f"Model '{self.model_name}' does not have a k-mer preprocessing pipeline"
+            )
+
         kmers = self.kmer_tranformer.transform([sequence])
-        features = self.vectorizer.transform(kmers)
-        return features
+        return self.vectorizer.transform(kmers)
 
     def _preprocess_batch(self, sequences: List[str]) -> object:
+        if self.model_name == "Evo2":
+            if self.evo2_embedder is None:
+                raise RuntimeError("Evo 2 embedder is not available")
+
+            embeddings = self.evo2_embedder.get_embeddings_batch(sequences)
+            if embeddings is None:
+                raise RuntimeError("Evo 2 batch embedding generation failed")
+            return embeddings
+
+        if self.kmer_tranformer is None or self.vectorizer is None:
+            raise RuntimeError(
+                f"Model '{self.model_name}' does not have a k-mer preprocessing pipeline"
+            )
+
         kmers = self.kmer_tranformer.transform(sequences)
-        features = self.vectorizer.transform(kmers)
-        return features
+        return self.vectorizer.transform(kmers)
 
     def _prediction_to_label(self, prediction: Any) -> Literal["Virus", "Host"]:
         if isinstance(prediction, str):
@@ -127,24 +192,26 @@ class PredictClass:
         return LABEL_MAP[pred_int]  # type: ignore[return-value]
 
     def _confidence_for_prediction(self, features: object, prediction: Any) -> float:
-        if not hasattr(self.model, "predict_proba"):
+        model = self._require_model()
+        if not hasattr(model, "predict_proba"):
             return 1.0
 
-        proba = self.model.predict_proba(features)[0]
+        proba = model.predict_proba(features)[0]
         return self._extract_predicted_class_confidence(
             prediction=prediction,
-            classes=getattr(self.model, "classes_", []),
+            classes=getattr(model, "classes_", []),
             probabilities=proba,
         )
 
     def _batch_confidence_for_predictions(
         self, features: object, predictions: Sequence[Any]
     ) -> List[float]:
-        if not hasattr(self.model, "predict_proba"):
+        model = self._require_model()
+        if not hasattr(model, "predict_proba"):
             return [1.0] * len(predictions)
 
-        all_proba = self.model.predict_proba(features)
-        model_classes = getattr(self.model, "classes_", [])
+        all_proba = model.predict_proba(features)
+        model_classes = getattr(model, "classes_", [])
         return [
             self._extract_predicted_class_confidence(
                 prediction=prediction,
@@ -163,15 +230,16 @@ class PredictClass:
     def _probability_mapping_for_features(
         self, features: object
     ) -> Dict[Literal["Host", "Virus"], float]:
-        if not hasattr(self.model, "predict_proba"):
+        model = self._require_model()
+        if not hasattr(model, "predict_proba"):
             raise ValueError(
                 f"Model '{self.model_name}' does not expose predict_proba and cannot return probabilities"
             )
 
-        probabilities = self.model.predict_proba(features)[0]
-        predicted_label = self._prediction_to_label(self.model.predict(features)[0])
+        probabilities = model.predict_proba(features)[0]
+        predicted_label = self._prediction_to_label(model.predict(features)[0])
         return self._map_probabilities_to_labels(
-            classes=getattr(self.model, "classes_", []),
+            classes=getattr(model, "classes_", []),
             probabilities=probabilities,
             predicted_label=predicted_label,
         )
@@ -179,14 +247,15 @@ class PredictClass:
     def _batch_probability_mappings_for_features(
         self, features: object
     ) -> List[Dict[Literal["Host", "Virus"], float]]:
-        if not hasattr(self.model, "predict_proba"):
+        model = self._require_model()
+        if not hasattr(model, "predict_proba"):
             raise ValueError(
                 f"Model '{self.model_name}' does not expose predict_proba and cannot return probabilities"
             )
 
-        probabilities = self.model.predict_proba(features)
-        model_classes = getattr(self.model, "classes_", [])
-        predictions = self.model.predict(features)
+        probabilities = model.predict_proba(features)
+        model_classes = getattr(model, "classes_", [])
+        predictions = model.predict(features)
         return [
             self._map_probabilities_to_labels(
                 classes=model_classes,
