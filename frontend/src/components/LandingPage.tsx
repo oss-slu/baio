@@ -1,11 +1,29 @@
-import { Dna, Shield, Zap, FileText, Bot, BarChart3, GitBranch, Code, Database, Brain, ChevronRight, ExternalLink, Github, Play, CheckCircle, AlertTriangle, Users, BookOpen, Activity, FlaskConical } from 'lucide-react'
+import { useState } from 'react'
+import { Dna, Shield, Zap, FileText, Bot, BarChart3, GitBranch, Code, Database, Brain, ChevronRight, ExternalLink, Github, Play, CheckCircle, AlertTriangle, Users, BookOpen, Activity, FlaskConical, GitPullRequest } from 'lucide-react'
 import { cn } from '../lib/utils'
+import ArchitectureDiagram from './ArchitectureDiagram'
 
 type LandingPageProps = {
   onGetStarted: () => void
 }
 
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
+  const [showArchitecture, setShowArchitecture] = useState(false)
+
+  if (showArchitecture) {
+    return (
+      <div className="dark">
+        <button
+          onClick={() => setShowArchitecture(false)}
+          className="fixed top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          <ChevronRight className="h-4 w-4 rotate-180" />
+          Back to Home
+        </button>
+        <ArchitectureDiagram />
+      </div>
+    )
+  }
   const features = [
     {
       icon: Dna,
@@ -105,6 +123,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <Play className="h-5 w-5" />
                 Get Started
               </button>
+              <button
+                onClick={() => setShowArchitecture(true)}
+                className={cn(
+                  'flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                )}
+              >
+                <GitPullRequest className="h-5 w-5" />
+                View Architecture
+              </button>
               <a
                 href="https://github.com/oss-slu/baio"
                 target="_blank"
@@ -114,7 +141,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 )}
               >
                 <Github className="h-5 w-5" />
-                View on GitHub
+                GitHub
                 <ExternalLink className="h-4 w-4" />
               </a>
             </div>
