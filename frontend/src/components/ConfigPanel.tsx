@@ -96,7 +96,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           )}
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3">
           <div className={cn(
             'space-y-2 rounded-xl border p-4',
             'border-slate-200 bg-slate-50',
@@ -134,7 +134,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           </div>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3">
           <div className={cn(
             'space-y-2 rounded-xl border p-4',
             'border-slate-200 bg-slate-50',
@@ -161,13 +161,13 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           </div>
 
           <div className={cn(
-            'space-y-2 rounded-xl border p-4',
+            'rounded-xl border p-4',
             'border-slate-200 bg-slate-50',
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-500" />
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   Novel / OOD detection
                 </p>
@@ -176,21 +176,17 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
                 type="button"
                 onClick={() => onChange('enable_ood', !config.enable_ood)}
                 className={cn(
-                  'flex h-8 w-14 items-center rounded-full border px-1 transition',
+                  'flex h-7 w-12 shrink-0 items-center rounded-full border px-0.5 transition',
                   config.enable_ood
                     ? 'justify-end border-emerald-500 bg-emerald-500'
                     : 'justify-start border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700',
                 )}
                 disabled={isRunning}
               >
-                <span
-                  className={cn(
-                    'h-6 w-6 rounded-full bg-white shadow-md transition',
-                  )}
-                />
+                <span className="h-6 w-6 rounded-full bg-white shadow-md transition" />
               </button>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
               Flags sequences outside training distribution.
             </p>
           </div>

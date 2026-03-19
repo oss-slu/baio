@@ -1,4 +1,4 @@
-import { BarChart3, Clock, Shield, Sparkles, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, Download, FileJson, FileSpreadsheet, FileText, FileDown } from 'lucide-react'
+import { BarChart3, Clock, Shield, Info, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, Download, FileJson, FileSpreadsheet, FileText, FileDown, SlidersHorizontal } from 'lucide-react'
 import type { ClassificationResponse, SequenceResult } from '../types'
 import { cn } from '../lib/utils'
 import { useState, Fragment } from 'react'
@@ -278,6 +278,84 @@ function MetricCard({
         >
           <Icon className={cn('h-6 w-6', styles.iconColor)} />
         </div>
+      </div>
+    </div>
+  )
+}
+
+function DistributionBar({ results }: { results: ClassificationResponse }) {
+  const total = results.total_sequences || 1
+  const virusPct = (results.virus_count / total) * 100
+  const hostPct = (results.host_count / total) * 100
+  const novelPct = (results.novel_count / total) * 100
+  const uncertainPct = ((results.uncertain_count ?? 0) / total) * 100
+
+  return (
+    <div className={cn(
+      'rounded-xl border p-4',
+      'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50'
+    )}>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Sequence Breakdown
+        </p>
+        <p className="text-xs text-slate-400 dark:text-slate-500">{total} total</p>
+      </div>
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+        {virusPct > 0 && (
+          <div
+            className="h-full bg-rose-500 transition-all duration-700"
+            style={{ width: `${virusPct}%` }}
+            title={`Virus: ${results.virus_count}`}
+          />
+        )}
+        {hostPct > 0 && (
+          <div
+            className="h-full bg-emerald-500 transition-all duration-700"
+            style={{ width: `${hostPct}%` }}
+            title={`Host: ${results.host_count}`}
+          />
+        )}
+        {novelPct > 0 && (
+          <div
+            className="h-full bg-amber-400 transition-all duration-700"
+            style={{ width: `${novelPct}%` }}
+            title={`Novel: ${results.novel_count}`}
+          />
+        )}
+        {uncertainPct > 0 && (
+          <div
+            className="h-full bg-slate-400 transition-all duration-700"
+            style={{ width: `${uncertainPct}%` }}
+            title={`Uncertain: ${results.uncertain_count}`}
+          />
+        )}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-3 text-xs">
+        {results.virus_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
+            Virus <strong className="text-rose-600 dark:text-rose-400">{results.virus_count}</strong>
+          </span>
+        )}
+        {results.host_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Host <strong className="text-emerald-600 dark:text-emerald-400">{results.host_count}</strong>
+          </span>
+        )}
+        {results.novel_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-amber-400" />
+            Novel <strong className="text-amber-600 dark:text-amber-400">{results.novel_count}</strong>
+          </span>
+        )}
+        {(results.uncertain_count ?? 0) > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-slate-400" />
+            Uncertain <strong className="text-slate-600 dark:text-slate-300">{results.uncertain_count}</strong>
+          </span>
+        )}
       </div>
     </div>
   )
@@ -1086,24 +1164,39 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
 
         {!results && !isLoading && (
           <div className={cn(
-            'flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 text-center',
+            'rounded-xl border-2 border-dashed p-10',
             'border-slate-200 bg-slate-50',
             'dark:border-slate-700 dark:bg-slate-800/50'
           )}>
-            <Sparkles className="h-12 w-12 text-slate-300 dark:text-slate-600" />
-            <p className={cn(
-              'mt-4 text-lg font-medium',
-              'text-slate-600 dark:text-slate-300'
-            )}>
-              {parsedCount
-                ? 'Ready to classify sequences'
-                : 'No sequences loaded'}
-            </p>
-            <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
-              {parsedCount
-                ? 'Click "Run Classification" in the sidebar to start'
-                : 'Open the sidebar to add FASTA sequences'}
-            </p>
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 mb-3">
+                <Dna className="h-8 w-8 text-indigo-500 dark:text-indigo-400" />
+              </div>
+              <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
+                {parsedCount ? 'Ready to classify' : 'Get started with BAIO'}
+              </p>
+              <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
+                {parsedCount
+                  ? `${parsedCount} sequence${parsedCount > 1 ? 's' : ''} loaded — click Run Classification in the sidebar`
+                  : 'Follow the steps below to analyze your DNA sequences'}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { step: '1', icon: FileJson, title: 'Paste or Upload', desc: 'Add FASTA sequences in the sidebar — or load the sample data', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/30' },
+                { step: '2', icon: SlidersHorizontal, title: 'Configure Model', desc: 'Choose a classifier, set your confidence threshold and detection mode', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
+                { step: '3', icon: Zap, title: 'Run & Explore', desc: 'Classify sequences and drill into per-read breakdowns and explanations', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/30' },
+              ].map(({ step, icon: Icon, title, desc, color, bg }) => (
+                <div key={step} className={cn('rounded-xl p-4', bg)}>
+                  <div className={cn('mb-2 flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white', color === 'text-blue-500' ? 'bg-blue-500' : color === 'text-emerald-500' ? 'bg-emerald-500' : 'bg-amber-500')}>
+                    {step}
+                  </div>
+                  <Icon className={cn('mb-2 h-5 w-5', color)} />
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{title}</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -1160,14 +1253,15 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
         )}
 
         {results && (
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <DistributionBar results={results} />
             <div className={cn(
               'flex flex-wrap items-center gap-2 rounded-card border px-3 py-2 text-xs',
-              'border-slate-200 bg-white'
+              'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50'
             )}>
               <div className={cn(
                 'inline-flex items-center gap-1.5 rounded-full border px-2 py-1 font-medium',
-                'border-slate-200 bg-slate-50 text-slate-600'
+                'border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300'
               )}>
                 <Shield className="h-3 w-3 text-emerald-500" />
                 {parsedCount} sequences
@@ -1198,19 +1292,36 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
           'dark:border-slate-800 dark:bg-slate-900'
         )}>
           <div className={cn(
-            'border-b px-6 py-4',
+            'flex items-center justify-between gap-4 border-b px-6 py-4',
             'border-slate-200 bg-slate-50',
             'dark:border-slate-800 dark:bg-slate-800/50'
           )}>
-            <h3 className={cn(
-              'text-lg font-semibold',
-              'text-slate-900 dark:text-white'
-            )}>
-              Detailed Results
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Click on a row to see classification explanation
-            </p>
+            <div>
+              <h3 className={cn(
+                'text-lg font-semibold',
+                'text-slate-900 dark:text-white'
+              )}>
+                Detailed Results
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Click a row to expand classification explanation
+              </p>
+            </div>
+            {results && (
+              <div className="flex shrink-0 items-center gap-1.5 text-xs">
+                <span className="rounded-full bg-rose-100 px-2 py-0.5 font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+                  {results.virus_count} Virus
+                </span>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                  {results.host_count} Host
+                </span>
+                {results.novel_count > 0 && (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                    {results.novel_count} Novel
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse text-sm">
@@ -1239,14 +1350,16 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                     const risk = calculateRiskLevel(row.prediction, row.confidence, row.ood_score)
                     const isExpanded = expandedRow === row.sequence_id
                     const isEven = idx % 2 === 0
+                    const riskRowBorder = risk.level === 'high' ? 'border-l-2 border-l-rose-500' : risk.level === 'moderate' ? 'border-l-2 border-l-amber-400' : 'border-l-2 border-l-emerald-400'
                     return (
                       <Fragment key={row.sequence_id}>
                         <tr
                           className={cn(
                             'cursor-pointer transition-all',
-                            isEven ? 'bg-white' : 'bg-slate-50/50',
-                            'hover:bg-blue-50/50',
-                            isExpanded && 'bg-blue-50'
+                            riskRowBorder,
+                            isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30',
+                            'hover:bg-blue-50/50 dark:hover:bg-blue-900/20',
+                            isExpanded && 'bg-blue-50 dark:bg-blue-900/30'
                           )}
                           onClick={() =>
                             setExpandedRow(
@@ -1262,17 +1375,17 @@ function ResultsDashboard({ results, isLoading, parsedCount }: ResultsDashboardP
                               )} />
                               <span className={cn(
                                 'font-medium text-sm',
-                                'text-slate-900',
-                                isExpanded && 'text-blue-700'
+                                'text-slate-900 dark:text-slate-100',
+                                isExpanded && 'text-blue-700 dark:text-blue-400'
                               )}>
-                                {row.sequence_id.length > 25 
-                                  ? `${row.sequence_id.slice(0, 25)}...` 
+                                {row.sequence_id.length > 25
+                                  ? `${row.sequence_id.slice(0, 25)}...`
                                   : row.sequence_id}
                               </span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">
                               {row.organism_name || 'Unknown'}
                             </span>
                           </td>
