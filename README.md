@@ -4,6 +4,31 @@ BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analy
 
 ---
 
+## ⚡ Quick Start (2 Minutes)
+
+### Option A: Docker (Easiest)
+```bash
+docker compose up
+# Frontend: http://localhost:4173
+# Backend: http://localhost:8080
+```
+
+### Option B: Local Development
+```bash
+# Terminal 1 - Backend
+source .venv/bin/activate
+uvicorn api.main:app --reload --port 8080
+
+# Terminal 2 - Frontend
+cd frontend && npm install && npm run dev
+# Frontend: http://localhost:5173
+# API: http://localhost:8080
+```
+
+⚠️ **First time?** Make sure `.env` has `GOOGLE_API_KEY` set. [Get API Key](https://makersuite.google.com/app/apikey)
+
+---
+
 ## Features
 
 - **Sequence Classification**: Classifies DNA sequences into Virus or Host categories
@@ -16,61 +41,6 @@ BAIO (Bioinformatics AI for Open-set detection) is a web-based metagenomic analy
 - **Export Options**: Download results as JSON, CSV, or PDF
 - **AI Assistant**: Gemini-powered chat for sequence analysis questions
 - **Novelty Flagging**: Optional heuristic flag for low-confidence or out-of-distribution-looking sequences
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Frontend | React + Vite + TypeScript + Tailwind CSS |
-| Backend | FastAPI + Python 3.12 |
-| ML | Scikit-learn (SVM, RandomForest) + optional research dependencies for embedding experiments |
-| AI | Google Gemini API |
-| DevOps | Docker, GitHub Actions, pytest |
-
----
-
-## Code File Guide
-
-This guide explains what each main file does - easy to understand for developers.
-
-### Backend (API)
-
-| File | What it does |
-|------|--------------|
-| `api/main.py` | Main FastAPI server - handles all API requests like `/classify`, `/chat`, `/health` |
-| `api/llm_client.py` | Connects to Google Gemini AI for the chat assistant |
-
-### Frontend (React UI)
-
-| File | What it does |
-|------|--------------|
-| `frontend/src/App.tsx` | Main React component - ties everything together |
-| `frontend/src/components/Header.tsx` | Top navigation bar with AI Assistant, dark mode, health status |
-| `frontend/src/components/SequenceInput.tsx` | Input form for pasting DNA sequences or uploading FASTA files |
-| `frontend/src/components/ConfigPanel.tsx` | Settings panel (threshold, model selection, OOD toggle) |
-| `frontend/src/components/ResultsDashboard.tsx` | Shows classification results, tables, charts, export options |
-| `frontend/src/components/ChatWidget.tsx` | AI Assistant floating chat window (legacy - now in Header) |
-| `frontend/src/api.ts` | Functions to call backend API endpoints |
-
-### Machine Learning
-
-| File | What it does |
-|------|--------------|
-| `binary_classifiers/predict_class.py` | Core classification logic - takes DNA sequence, returns Virus/Host prediction |
-| `binary_classifiers/transformers/kmers_transformer.py` | Converts raw DNA into overlapping 6-mers |
-| `binary_classifiers/evaluation.py` | Loads labeled data and computes classifier metrics |
-| `retrain_model.py` | Retrains saved SVM and RandomForest artifacts from local FASTA files |
-| `metaseq/train.py` | Separate configurable training pipeline for experiments and future consolidation |
-
-### Root Scripts
-
-| File | What it does |
-|------|--------------|
-| `retrain_model.py` | Standalone script to retrain the ML model |
-| `predict_class.py` | Quick prediction script for testing |
-| `scripts/evaluate_binary_classifier.py` | Evaluates the deployed model on labeled host/virus FASTA or FASTQ data |
 
 ---
 
@@ -125,7 +95,9 @@ baio/
 
 ---
 
-## How The ML Pipeline Works
+## 🔬 Advanced Features & Workflows
+
+### How The ML Pipeline Works
 
 1. **Validate input DNA**
    The API checks sequence length, allowed nucleotide characters, GC/AT extremes, and ambiguous-base ratio before classification.
@@ -199,176 +171,145 @@ To use Evo 2 embeddings instead of k-mer features:
 
 ---
 
-## Current Limitations
+## 📚 Technical Documentation
 
-- The default demo retraining data in `data/` is very small: 5 virus reads and 5 host reads.
-- The novelty score is heuristic, so "Novel" should be treated as "needs further validation," not proof of a new pathogen.
+### Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React + Vite + TypeScript + Tailwind CSS |
+| Backend | FastAPI + Python 3.12 |
+| ML | Scikit-learn (SVM, RandomForest) + optional research dependencies for embedding experiments |
+| AI | Google Gemini API |
+| DevOps | Docker, GitHub Actions, pytest |
 
 ---
 
-## Prerequisites
+### Code File Guide
+
+This guide explains what each main file does - easy to understand for developers.
+
+#### Backend (API)
+
+| File | What it does |
+|------|--------------|
+| `api/main.py` | Main FastAPI server - handles all API requests like `/classify`, `/chat`, `/health` |
+| `api/llm_client.py` | Connects to Google Gemini AI for the chat assistant |
+
+#### Frontend (React UI)
+
+| File | What it does |
+|------|--------------|
+| `frontend/src/App.tsx` | Main React component - ties everything together |
+| `frontend/src/components/Header.tsx` | Top navigation bar with AI Assistant, dark mode, health status |
+| `frontend/src/components/SequenceInput.tsx` | Input form for pasting DNA sequences or uploading FASTA files |
+| `frontend/src/components/ConfigPanel.tsx` | Settings panel (threshold, model selection, OOD toggle) |
+| `frontend/src/components/ResultsDashboard.tsx` | Shows classification results, tables, charts, export options |
+| `frontend/src/components/ChatWidget.tsx` | AI Assistant floating chat window (legacy - now in Header) |
+| `frontend/src/api.ts` | Functions to call backend API endpoints |
+
+#### Machine Learning
+
+| File | What it does |
+|------|--------------|
+| `binary_classifiers/predict_class.py` | Core classification logic - takes DNA sequence, returns Virus/Host prediction |
+| `binary_classifiers/transformers/kmers_transformer.py` | Converts raw DNA into overlapping 6-mers |
+| `binary_classifiers/evaluation.py` | Loads labeled data and computes classifier metrics |
+| `retrain_model.py` | Retrains saved SVM and RandomForest artifacts from local FASTA files |
+| `metaseq/train.py` | Separate configurable training pipeline for experiments and future consolidation |
+
+#### Root Scripts
+
+| File | What it does |
+|------|--------------|
+| `retrain_model.py` | Standalone script to retrain the ML model |
+| `predict_class.py` | Quick prediction script for testing |
+| `scripts/evaluate_binary_classifier.py` | Evaluates the deployed model on labeled host/virus FASTA or FASTQ data |
+
+---
+
+## Installation & Setup
+
+### Prerequisites
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
 | Python | 3.10+ (3.12 recommended) | Required for backend |
 | Node.js | 18+ | Required for frontend |
 | Git | Any recent version | For cloning |
-| Conda | Optional | Recommended for Python env |
 | Docker | Optional | For containerized deployment |
 
----
-
-## Dependencies
-
-### Python Dependencies (Backend)
-
-**Core:**
-- python-dotenv>=1.0
-- numpy>=2.2
-- pandas>=2.2
-- scikit-learn>=1.5
-- matplotlib>=3.9
-- seaborn>=0.13
-- plotly>=5.20
-- tqdm>=4.67
-- pyyaml>=6.0
-- requests>=2.32
-
-**Bioinformatics:**
-- biopython>=1.85
-- hdbscan>=0.8.39
-- umap-learn==0.5.7
-
-**ML/AI:**
-- torch>=2.8.0
-- transformers==4.56.1
-- tokenizers==0.22.0
-- accelerate>=0.30
-- datasets>=2.19
-- joblib>=1.3
-
-**API:**
-- fastapi>=0.115.0
-- uvicorn
-
-**Testing/Dev:**
-- pytest
-- pytest-cov
-- black
-- flake8
-- mypy
-
-### Node.js Dependencies (Frontend)
-
-**Dependencies:**
-- react^18.3.1
-- react-dom^18.3.1
-- lucide-react^0.562.0
-- clsx^2.1.1
-- tailwind-merge^3.4.0
-- jspdf^4.2.0
-
-**Dev Dependencies:**
-- vite^6.0.5
-- typescript^5.7.3
-- tailwindcss^3.4.17
-- postcss^8.4.49
-- autoprefixer^10.4.20
-- eslint^9.17.0
-- @vitejs/plugin-react^4.3.3
-
----
-
-## Installation
-
-### Option 1: Conda (Recommended)
+### Step 1: Clone Repository
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/oss-slu/baio.git
 cd baio
+```
 
-# 2. Create conda environment
+### Step 2: Set Up Environment
+
+**Option A: Conda (Recommended)**
+```bash
 conda env create -f environment.yml
 conda activate baio
-
-# 3. Verify installation
-python --version
-conda list | head -20
 ```
 
-### Option 2: Virtual Environment
-
+**Option B: Python venv**
 ```bash
-# 1. Clone the repository
-git clone https://github.com/oss-slu/baio.git
-cd baio
-
-# 2. Create virtual environment
-python3 -m venv baio-env
-
-# 3. Activate
-# macOS/Linux:
-source baio-env/bin/activate
-# Windows:
-baio-env\Scripts\activate
-
-# 4. Install dependencies
-pip install --upgrade pip
+python3 -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate   # Windows
 pip install -r requirements.txt
-pip install fastapi uvicorn
-
-# 5. Verify
-python --version
-pip list
 ```
 
-### Option 3: Docker
+### Step 3: Configure API Keys
 
-```bash
-# Build and run
-docker compose up --build
+Create `.env` in project root:
 ```
-
----
-
-## Environment Setup
-
-### 1. Create .env File
-
-Create a `.env` file in the project root:
-
-```bash
-# .env
 GOOGLE_API_KEY=your_google_api_key_here
 ```
 
-### 2. Get Google API Key
-
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key
-3. Copy it to your `.env` file
+[Get Google API Key](https://makersuite.google.com/app/apikey)
 
 ---
 
-## Running the Project
+## 🚀 Running the Project
 
-### Development Mode (Recommended)
+### Method 1: Docker (Production-Like)
 
-**Terminal 1 - Backend:**
+```bash
+# Build and run both frontend and backend
+docker compose up --build
 
+# Run in background
+docker compose up -d --build
+
+# Stop
+docker compose down
+```
+
+**Access:**
+- 🌐 Frontend: http://localhost:4173
+- 📊 Backend API: http://localhost:8080
+- 📖 API Docs: http://localhost:8080/docs
+
+---
+
+### Method 2: Local Development (Recommended for Development)
+
+#### Terminal 1: Start Backend
 ```bash
 # Activate environment
 conda activate baio
-# OR (venv):
-source baio-env/bin/activate
+# OR: source .venv/bin/activate
 
-# Start FastAPI server
-python -m uvicorn api.main:app --reload --port 8080
+# Start API server
+uvicorn api.main:app --reload --port 8080
 ```
 
-**Terminal 2 - Frontend:**
+**Backend ready at:** http://localhost:8080
 
+#### Terminal 2: Start Frontend
 ```bash
 cd frontend
 
@@ -379,24 +320,19 @@ npm install
 npm run dev
 ```
 
-**Access:**
-- Frontend: http://localhost:5173
-- API: http://localhost:8080
-- API Docs: http://localhost:8080/docs
+**Frontend ready at:** http://localhost:5173
 
-### Production Mode (Docker)
+---
+
+### Verify Everything Works
 
 ```bash
-# Build and start
-docker compose up --build
+# Check backend health
+curl http://localhost:8080/health
 
-# Or run in background
-docker compose up -d --build
+# Frontend should load automatically
+# Open: http://localhost:5173
 ```
-
-**Access:**
-- Frontend: http://localhost:4173
-- API: http://localhost:8080
 
 ---
 
@@ -432,43 +368,7 @@ docker compose up -d --build
 
 ---
 
-## Testing
-
-```bash
-# Activate environment first
-conda activate baio
-
-# Run all tests
-pytest tests/
-
-# Run specific test
-pytest tests/test_api_classification.py
-
-# With coverage
-pytest --cov=. tests/
-```
-
----
-
-## Code Quality
-
-```bash
-# Format code
-black .
-
-# Lint
-ruff check .
-
-# Type check
-mypy .
-
-# All at once
-black . && ruff check . && mypy .
-```
-
----
-
-## Model Training
+### Model Training & Retraining
 
 If you need to retrain the model:
 
@@ -484,7 +384,7 @@ This will:
 
 The default training data in `data/covid_reads5.fasta` and `data/human_reads5.fasta` is only a tiny demo dataset. It is useful for development, but not enough for a robust biological classifier.
 
-To evaluate the current saved models on labeled files:
+**To evaluate the current saved models on labeled files:**
 
 ```bash
 python scripts/evaluate_binary_classifier.py --model RandomForest
@@ -496,6 +396,40 @@ The evaluation script reports:
 - confusion matrix
 - per-class report
 - misclassified sequence IDs with confidence and virus probability
+
+---
+
+### Testing & Code Quality
+
+**Run Tests:**
+```bash
+# Activate environment first
+conda activate baio
+
+# Run all tests
+pytest tests/
+
+# Run specific test
+pytest tests/test_api_classification.py
+
+# With coverage
+pytest --cov=. tests/
+```
+
+**Code Quality:**
+```bash
+# Format code
+black .
+
+# Lint
+ruff check .
+
+# Type check
+mypy .
+
+# All at once
+black . && ruff check . && mypy .
+```
 
 ---
 
@@ -514,14 +448,23 @@ The evaluation script reports:
 
 ---
 
-## Project URLs
+## ⚠️ Current Limitations
+
+- **Small Demo Dataset**: The default demo retraining data in `data/` is very small: 5 virus reads and 5 host reads.
+- **Heuristic Novelty Score**: The novelty score is heuristic-based, so "Novel" should be treated as "needs further validation," not proof of a new pathogen.
+- **Limited Scope**: Current models distinguish only Virus vs Host. Multi-class classification coming in future versions.
+
+---
+
+## Project URLs & Resources
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:5173 |
-| API | http://localhost:8080 |
+| Frontend (Dev) | http://localhost:5173 |
+| Frontend (Docker) | http://localhost:4173 |
 | API Docs | http://localhost:8080/docs |
-| Health Check | http://localhost:8080/health |
+| API Health | http://localhost:8080/health |
+| GitHub Repository | https://github.com/oss-slu/baio |
 
 ---
 
