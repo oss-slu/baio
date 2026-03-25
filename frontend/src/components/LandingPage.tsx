@@ -14,13 +14,25 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
 
   if (showArchitecture) {
     return (
-      <div className="dark">
+      <div className={darkMode ? 'dark' : ''}>
         <button
           onClick={() => setShowArchitecture(false)}
           className="fixed top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <ChevronRight className="h-4 w-4 rotate-180" />
           Back to Home
+        </button>
+        <button
+          onClick={toggleDarkMode}
+          className={cn(
+            'fixed top-4 right-4 z-50 flex h-9 w-9 items-center justify-center rounded-lg border shadow-md transition-all',
+            darkMode
+              ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700'
+              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+          )}
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
         <ArchitectureDiagram />
       </div>
