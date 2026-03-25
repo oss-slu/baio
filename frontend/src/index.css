@@ -21,7 +21,7 @@ body:not(.dark) {
   @apply text-slate-900;
 }
 
-body.dark, .dark {
+body.dark, .dark, html.dark body {
   background: #0f172a;
   @apply text-slate-100;
 }

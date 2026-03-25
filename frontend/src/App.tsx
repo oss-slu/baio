@@ -91,8 +91,10 @@ function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark')
+      document.body.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
     }
     localStorage.setItem('darkMode', String(darkMode))
   }, [darkMode])
@@ -167,7 +169,7 @@ function App() {
   if (showLanding) {
     return (
       <div className={darkMode ? 'dark' : ''}>
-        <LandingPage onGetStarted={handleGetStarted} />
+        <LandingPage onGetStarted={handleGetStarted} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
       </div>
     )
   }
