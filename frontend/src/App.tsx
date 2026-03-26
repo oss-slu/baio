@@ -6,6 +6,7 @@ import LandingPage from './components/LandingPage'
 import SequenceInput from './components/SequenceInput'
 import ConfigPanel from './components/ConfigPanel'
 import ResultsDashboard from './components/ResultsDashboard'
+import ChatWidget from './components/ChatWidget'
 import type {
   ChatMessage,
   ClassificationResponse,
@@ -180,15 +181,17 @@ function App() {
         ? 'bg-slate-950 text-slate-100' 
         : 'bg-slate-100 text-slate-900'
     }`}>
-      <Header 
-        healthOk={healthOk} 
-        darkMode={darkMode} 
+      <Header
+        healthOk={healthOk}
+        darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
-        chatMessages={chatMessages}
-        chatInput={chatInput}
-        onChatInputChange={setChatInput}
-        onChatSend={handleChatSend}
-        chatLoading={chatLoading}
+      />
+      <ChatWidget
+        messages={chatMessages}
+        input={chatInput}
+        onInputChange={setChatInput}
+        onSend={handleChatSend}
+        isLoading={chatLoading}
       />
 
       {error && (
