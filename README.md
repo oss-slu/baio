@@ -479,6 +479,7 @@ MIT License - see [LICENSE](LICENSE)
 - **Mainuddin** - Tech Lead
 - **Luis Palmejar** - Developer
 - **Kevin Yang** - Developer
+- **Vrinda Thakur** - Developer
 
 ---
 
