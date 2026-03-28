@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, constr
 
-from api.llm_client import LLMClient, SYSTEM_PROMPTS
+from .llm_client import LLMClient, SYSTEM_PROMPTS
 from binary_classifiers.predict_class import PredictClass
 
 app = FastAPI()
