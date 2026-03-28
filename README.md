@@ -479,7 +479,7 @@ pytest tests/test_api_classification.py
 pytest --cov=. tests/
 ```
 
----
+---   
 
 ## Contributors
 
