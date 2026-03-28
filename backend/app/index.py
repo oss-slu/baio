@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from routes import system, classification, chat
+from app.routers import api_router
 
 app = FastAPI()
 
@@ -14,7 +13,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the grouped routes
-app.include_router(system.router)
-app.include_router(classification.router)
-app.include_router(chat.router)
+app.include_router(api_router)
