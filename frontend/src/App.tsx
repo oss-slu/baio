@@ -5,6 +5,8 @@ import Header from './components/Header'
 import SequenceInput from './components/SequenceInput'
 import ConfigPanel from './components/ConfigPanel'
 import ResultsDashboard from './components/ResultsDashboard'
+import SummaryCards from './components/SummaryCards'
+
 import type {
   ChatMessage,
   ClassificationResponse,
@@ -176,6 +178,10 @@ function App() {
         chatLoading={chatLoading}
       />
 
+
+
+
+
       {error && (
         <div className={`mx-auto max-w-7xl px-4 pt-4 ${sidebarOpen ? 'md:ml-80' : ''} transition-all duration-300`}>
           <div className={`rounded-xl border px-4 py-3 ${
@@ -188,7 +194,7 @@ function App() {
         </div>
       )}
 
-      <div className="flex flex-1">
+      <div className="flex-col flex-1">
         {/* Left Sidebar - Collapsible */}
         <div
           className={`fixed left-0 top-15 h-[calc(100vh-3.5rem)] z-30 transform transition-all duration-300 ease-in-out ${
@@ -199,15 +205,16 @@ function App() {
               : 'border-r border-slate-200 bg-white'
           } shadow-xl`}
         >
-          <div className="flex h-full w-80 flex-col overflow-y-auto p-4">
+          {/* Sidebar Toggle Button */}
+          <div className="flex-col h-full w-full p-4 overflow-y-auto">
             <button
               onClick={() => setSidebarOpen(false)}
-              className={`mb-4 flex items-center gap-2 text-sm ${
-                darkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700'
+              className={`mb-4 font-normal font-custom2 flex items-center gap-2 text-sm ${
+                darkMode ? 'text-slate-50 hover:text-slate-200' : 'text-slate-950 hover:text-slate-700'
               }`}
             >
               <ChevronLeft className="h-4 w-4" />
-              Close sidebar
+              Close Sidebar
             </button>
 
             <SequenceInput
@@ -233,11 +240,15 @@ function App() {
           </div>
         </div>
 
+        
+        
+    
+
         {/* Sidebar Toggle Button */}
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className={`fixed left-4 top-20 z-30 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
+            className={`fixed left-4 top-20 z-50 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
               darkMode 
                 ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700' 
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
@@ -250,21 +261,29 @@ function App() {
 
         {/* Main Content Area */}
         <div
-          className={`flex-1 transition-all duration-300 ${
+          className={`flex-row transition-all duration-300 ${
             sidebarOpen ? 'md:ml-80' : 'ml-0'
           }`}
         >
-          <div className="mx-auto max-w-full px-6 py-6">
-            <ResultsDashboard
-              results={results}
-              isLoading={isRunning}
-              parsedCount={parsedSequences.length}
-              confidenceThreshold={config.confidence_threshold}
-            />
+          <div className="flex flex-col">
+            <div className=" mx-auto w-full z-40">
+              <SummaryCards
+                    results={results}
+                    isLoading={isRunning}
+                    parsedCount={parsedSequences.length}
+                  />
+            </div>
+            <div className="fixed mx-auto h-80 max-w-full px-6 py-80 overflow-y-auto">           
+                <ResultsDashboard
+                  results={results}
+                  isLoading={isRunning}
+                />
+            </div>
           </div>
         </div>
-      </div>
+        
     </div>
+  </div>
   )
 }
 

@@ -10,6 +10,9 @@ export default {
         sans: ['Inter', 'DM Sans', ...defaultTheme.fontFamily.sans],
         mono: ['JetBrains Mono', 'Roboto Mono', ...defaultTheme.fontFamily.mono],
         dna: ['JetBrains Mono', 'Roboto Mono', 'SF Mono', 'Monaco', 'monospace'],
+        custom: ["Krona One", 'sans-serif'],
+        custom2: ["DM Sans", 'sans-serif'],
+        custom3: ["Cal Sans", 'sans-serif'],
       },
       colors: {
         primary: {
