@@ -1,4 +1,4 @@
-import { Activity, Dna, Moon, Sun, Database, Cpu, FileText, ChevronDown } from 'lucide-react'
+import { Activity, Dna, Moon, Sun, Database, Cpu, FileText, ChevronDown, Bot } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
 
@@ -6,6 +6,8 @@ type HeaderProps = {
   healthOk: boolean | null
   darkMode: boolean
   toggleDarkMode: () => void
+  chatOpen?: boolean
+  onToggleChat?: () => void
 }
 
 function HealthBadge({ healthOk }: { healthOk: boolean | null }) {
@@ -104,12 +106,18 @@ function ModelInfoBadge() {
   )
 }
 
-function Header({ healthOk, darkMode, toggleDarkMode }: HeaderProps) {
+function Header({
+  healthOk,
+  darkMode,
+  toggleDarkMode,
+  chatOpen = false,
+  onToggleChat,
+}: HeaderProps) {
   return (
     <header className={cn(
       'sticky top-0 z-40 border-b backdrop-blur-md transition-colors',
-      darkMode 
-        ? 'border-slate-800 bg-slate-900/95' 
+      darkMode
+        ? 'border-slate-800 bg-slate-900/95'
         : 'border-slate-200 bg-white/95'
     )}>
       <div className="mx-auto flex max-w-full items-center justify-between px-6 py-3">
@@ -133,13 +141,30 @@ function Header({ healthOk, darkMode, toggleDarkMode }: HeaderProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {onToggleChat && (
+            <button
+              onClick={onToggleChat}
+              className={cn(
+                'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
+                chatOpen
+                  ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-md'
+                  : darkMode
+                    ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              )}
+              aria-label="Toggle AI Assistant"
+            >
+              <Bot className="h-4 w-4" />
+              AI Assistant
+            </button>
+          )}
           <ModelInfoBadge />
           <button
             onClick={toggleDarkMode}
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-lg border transition-all',
-              darkMode 
-                ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700' 
+              darkMode
+                ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700'
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
             )}
             aria-label="Toggle dark mode"
