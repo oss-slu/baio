@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
 import Header from './components/Header'
+import LandingPage from './components/LandingPage'
 import SequenceInput from './components/SequenceInput'
 import ConfigPanel from './components/ConfigPanel'
 import ResultsDashboard from './components/ResultsDashboard'
+import ChatWidget from './components/ChatWidget'
 import SummaryCards from './components/SummaryCards'
 
 import type {
@@ -57,6 +59,7 @@ function parseFasta(text: string): SequenceInputType[] {
 }
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true)
   const [rawSequences, setRawSequences] = useState('')
   const [config, setConfig] = useState<ModelConfig>(defaultConfig)
   const [results, setResults] = useState<ClassificationResponse | null>(null)
@@ -73,6 +76,11 @@ function App() {
     return false
   })
 
+  const handleGetStarted = () => {
+    setShowLanding(false)
+  }
+
+  const [chatOpen, setChatOpen] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       "role": 'assistant',
@@ -87,8 +95,10 @@ function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark')
+      document.body.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
     }
     localStorage.setItem('darkMode', String(darkMode))
   }, [darkMode])
@@ -160,22 +170,35 @@ function App() {
     setConfig((prev) => ({ ...prev, [key]: value }))
   }
 
+  if (showLanding) {
+    return (
+      <div className={darkMode ? 'dark' : ''}>
+        <LandingPage onGetStarted={handleGetStarted} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
+      </div>
+    )
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
       darkMode 
         ? 'bg-slate-950 text-slate-100' 
         : 'bg-slate-100 text-slate-900'
     }`}>
-      
-      <Header 
-        healthOk={healthOk} 
-        darkMode={darkMode} 
+      <Header
+        healthOk={healthOk}
+        darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
-        chatMessages={chatMessages}
-        chatInput={chatInput}
-        onChatInputChange={setChatInput}
-        onChatSend={handleChatSend}
-        chatLoading={chatLoading}
+        chatOpen={chatOpen}
+        onToggleChat={() => setChatOpen((prev) => !prev)}
+      />
+      <ChatWidget
+        messages={chatMessages}
+        input={chatInput}
+        onInputChange={setChatInput}
+        onSend={handleChatSend}
+        isLoading={chatLoading}
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
       />
 
 

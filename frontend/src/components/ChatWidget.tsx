@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Loader2, Bot, X, Minus, Plus } from 'lucide-react'
+import { Loader2, Bot, X, Minus, Plus, Maximize2, Minimize2 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import type { ChatMessage } from '../types'
 
@@ -19,19 +19,34 @@ type ChatWidgetProps = {
   onInputChange: (value: string) => void
   onSend: () => void
   isLoading: boolean
+  isOpen?: boolean
+  onClose?: () => void
 }
 
-function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatWidgetProps) {
+function ChatWidget({
+  messages,
+  input,
+  onInputChange,
+  onSend,
+  isLoading,
+  isOpen,
+  onClose,
+}: ChatWidgetProps) {
+  const isControlled = typeof isOpen === 'boolean'
   const [open, setOpen] = useState(false)
   const [minimized, setMinimized] = useState(false)
-  const [position, setPosition] = useState<Position>({ x: 1000, y: 50 })
+  const [position, setPosition] = useState<Position>(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth - 420 : 900,
+    y: 64,
+  }))
   const [size, setSize] = useState<Size>({ width: 380, height: 450 })
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 })
   const [resizeStart, setResizeStart] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
+  const [isMaximized, setIsMaximized] = useState(false)
+  const [preMaximizeState, setPreMaximizeState] = useState<{ position: Position; size: Size } | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
-  const widgetRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -41,18 +56,18 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
     if (savedPosition) {
       try {
         const parsed = JSON.parse(savedPosition)
-        if (typeof parsed.x === 'number' && typeof parsed.y === 'number' && 
-            parsed.x >= 0 && parsed.y >= 0 && 
+        if (typeof parsed.x === 'number' && typeof parsed.y === 'number' &&
+            parsed.x >= 0 && parsed.y >= 0 &&
             parsed.x < window.innerWidth - 100 && parsed.y < window.innerHeight - 100) {
           setPosition(parsed)
         } else {
-          setPosition({ x: 1000, y: 50 })
+          setPosition({ x: window.innerWidth - 420, y: 64 })
         }
       } catch {
-        setPosition({ x: 1000, y: 50 })
+        setPosition({ x: window.innerWidth - 420, y: 64 })
       }
     } else {
-      setPosition({ x: 1000, y: 50 })
+      setPosition({ x: window.innerWidth - 420, y: 64 })
     }
     
     if (savedSize) {
@@ -70,17 +85,31 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
   }, [])
 
   useEffect(() => {
+    if (!isControlled) {
+      return
+    }
+
+    if (isOpen) {
+      setOpen(true)
+      setMinimized(false)
+    } else {
+      setOpen(false)
+    }
+  }, [isControlled, isOpen])
+
+  useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, isLoading])
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.chat-input-area') || 
+    if (isMaximized) return
+    if ((e.target as HTMLElement).closest('.chat-input-area') ||
         (e.target as HTMLElement).closest('.resize-handle') ||
         (e.target as HTMLElement).closest('button')) return
     e.preventDefault()
     setIsDragging(true)
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
-  }, [position])
+  }, [position, isMaximized])
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging) {
@@ -133,10 +162,8 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
   }
 
   const resetPosition = () => {
-    const defaultPos = { x: 1000, y: 50 }
+    const defaultPos = { x: window.innerWidth - 420, y: 64 }
     setPosition(defaultPos)
-    setOpen(false)
-    setMinimized(true)
     localStorage.removeItem('chatWidgetPosition')
   }
 
@@ -151,9 +178,25 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
     resetSize()
   }
 
+  const handleMaximize = () => {
+    if (isMaximized) {
+      if (preMaximizeState) {
+        setPosition(preMaximizeState.position)
+        setSize(preMaximizeState.size)
+      }
+      setIsMaximized(false)
+    } else {
+      setPreMaximizeState({ position, size })
+      setPosition({ x: 0, y: 56 })
+      setSize({ width: window.innerWidth, height: window.innerHeight - 56 })
+      setIsMaximized(true)
+    }
+  }
+
   const handleClose = () => {
     setOpen(false)
     setMinimized(true)
+    onClose?.()
   }
 
   if (!isInitialized) {
@@ -162,45 +205,46 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
 
   return (
     <>
-      <div
-        ref={widgetRef}
-        style={{
-          position: 'fixed',
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          zIndex: 9999,
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => {
-            if (minimized) {
-              setMinimized(false)
-              setOpen(true)
-            } else if (open) {
+      {!isControlled && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            zIndex: 9999,
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              if (minimized) {
+                setMinimized(false)
+                setOpen(true)
+              } else if (open) {
+                setOpen(false)
+                setMinimized(true)
+              } else {
+                setOpen(true)
+              }
+            }}
+            onDoubleClick={() => {
+              setPosition({ x: window.innerWidth - 420, y: 64 })
               setOpen(false)
               setMinimized(true)
-            } else {
-              setOpen(true)
-            }
-          }}
-          onDoubleClick={() => {
-            setPosition({ x: 1000, y: 50 })
-            setOpen(false)
-            setMinimized(true)
-          }}
-          onMouseDown={handleMouseDown}
-          className={cn(
-            'flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-xl',
-            'bg-gradient-to-r from-blue-500 to-violet-500',
-            isDragging ? 'cursor-grabbing' : 'cursor-grab'
-          )}
-          title={minimized ? "Click to open" : "Double-click to reset position"}
-        >
-          {minimized ? <Plus className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-          {minimized ? 'Show AI' : 'AI Assistant'}
-        </button>
-      </div>
+            }}
+            onMouseDown={handleMouseDown}
+            className={cn(
+              'flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-xl',
+              'bg-gradient-to-r from-blue-500 to-violet-500',
+              isDragging ? 'cursor-grabbing' : 'cursor-grab'
+            )}
+            title={minimized ? 'Click to open' : 'Double-click to reset position'}
+          >
+            {minimized ? <Plus className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+            {minimized ? 'Show AI' : 'AI Assistant'}
+          </button>
+        </div>
+      )}
 
       {open && !minimized && (
         <div
@@ -223,7 +267,7 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
             )}
           >
             <div 
-              className="flex items-center justify-between gap-3 px-4 py-2 bg-gradient-to-r from-blue-500 to-violet-500 cursor-grab flex-shrink-0"
+              className={cn("flex items-center justify-between gap-3 px-4 py-2 bg-gradient-to-r from-blue-500 to-violet-500 flex-shrink-0", !isMaximized && "cursor-grab")}
               onMouseDown={handleMouseDown}
             >
               <div className="flex items-center gap-2">
@@ -244,10 +288,15 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setOpen(false)
-                    setMinimized(true)
-                  }}
+                  onClick={handleMaximize}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-white hover:bg-white/30"
+                  title={isMaximized ? 'Restore' : 'Maximize'}
+                >
+                  {isMaximized ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
                   className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-white hover:bg-white/30"
                   title="Minimize"
                 >
@@ -330,8 +379,8 @@ function ChatWidget({ messages, input, onInputChange, onSend, isLoading }: ChatW
             </div>
 
             <div
-              className="resize-handle absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-center justify-center"
-              onMouseDown={handleResizeStart}
+              className={cn("resize-handle absolute bottom-0 right-0 w-4 h-4 flex items-center justify-center", !isMaximized && "cursor-se-resize")}
+              onMouseDown={isMaximized ? undefined : handleResizeStart}
               title="Drag to resize"
             >
               <svg width="12" height="12" viewBox="0 0 12 12" className="text-white/60">

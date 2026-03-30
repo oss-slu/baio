@@ -13,6 +13,8 @@ from binary_classifiers.predict_class import PredictClass
 
 app = FastAPI()
 
+llm_client = LLMClient()
+
 VALID_NUCLEOTIDES = set("ATGCNRYSWKMBDHV")
 DNA_PATTERN = re.compile(r"^[ATGCNRYSWKMBDHV]+$", re.IGNORECASE)
 
@@ -209,8 +211,10 @@ class ChatResponse(BaseModel):
     reply: str
 
 
-def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM"]:
+def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM", "Evo2"]:
     model_hint = config.type.lower()
+    if "evo" in model_hint:
+        return "Evo2"
     if "random forest" in model_hint or "random_forest" in model_hint:
         return "RandomForest"
     if "svm" in model_hint:
@@ -218,8 +222,8 @@ def _resolve_model_name(config: ModelConfig) -> Literal["RandomForest", "SVM"]:
     return "RandomForest"
 
 
-@lru_cache(maxsize=2)
-def get_predictor(model_name: Literal["RandomForest", "SVM"]) -> PredictClass:
+@lru_cache(maxsize=3)
+def get_predictor(model_name: Literal["RandomForest", "SVM", "Evo2"]) -> PredictClass:
     return PredictClass(model_name=model_name)
 
 
@@ -364,8 +368,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=400, detail="Messages cannot be empty.")
 
     mode_prompt = SYSTEM_PROMPTS.get(request.mode, SYSTEM_PROMPTS["default"])
-    client = LLMClient()
-    reply = client.generate_response(
+    reply = llm_client.generate_response(
         [{"role": msg.role, "content": msg.content} for msg in request.messages],
         mode_prompt,
     )

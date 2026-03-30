@@ -22,15 +22,24 @@ Be concise, helpful, and scientific in your responses. Use emojis sparingly.""",
 
 class LLMClient:
 
-    def __init__(self, model: str = "liquid/lfm-2.5-1.2b-instruct:free"):
+    def __init__(self, model: str = "meta-llama/llama-3.1-8b-instruct:free"):
         load_dotenv()
         self.model = model
-        self.api_key = os.getenv("OPENROUTER_API_KEY")
-        if self.api_key is None:
-            print(
-                "OpenRouter api key not found; falling back to mock responses.",
-                flush=True,
-            )
+        self.openrouter_key = os.getenv("OPENROUTER_API_KEY")
+        self.gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+        # Treat placeholder value as unset
+        if self.openrouter_key == "your_openrouter_key_here":
+            self.openrouter_key = None
+
+        if self.openrouter_key:
+            self._backend = "openrouter"
+        elif self.gemini_key:
+            self._backend = "gemini"
+            print("OpenRouter key not found; using Gemini API.", flush=True)
+        else:
+            self._backend = "mock"
+            print("No LLM API key found; falling back to mock responses.", flush=True)
 
     def generate_response(
         self,
@@ -47,11 +56,16 @@ class LLMClient:
         Returns:
             Generated response text
         """
+        if self._backend == "openrouter":
+            return self._call_openrouter(messages, system_prompt)
+        elif self._backend == "gemini":
+            return self._call_gemini(messages, system_prompt)
+        else:
+            return self._mock_response(messages)
 
-        if self.api_key is None:
-            return "OpenRouter api key not found; falling back to mock responses."
-
-        # Build the payload for OpenRouter API
+    def _call_openrouter(
+        self, messages: List[Dict[str, str]], system_prompt: str
+    ) -> str:
         payload = {
             "model": self.model,
             "messages": [
@@ -59,27 +73,45 @@ class LLMClient:
                 *messages,
             ],
         }
-
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {self.openrouter_key}",
             "Content-Type": "application/json",
         }
-
         try:
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers=headers,
                 data=json.dumps(payload),
-                timeout=10,  # seconds
+                timeout=30,
             )
             response.raise_for_status()
-            data = response.json()
-
-            # Extract the assistant's reply
-            return data["choices"][0]["message"]["content"]
-
+            return response.json()["choices"][0]["message"]["content"]
         except Exception as e:
-            print(f"API error: {e}. Falling back to mock response.", flush=True)
+            print(f"OpenRouter error: {e}. Falling back to mock response.", flush=True)
+            return self._mock_response(messages)
+
+    def _call_gemini(self, messages: List[Dict[str, str]], system_prompt: str) -> str:
+        try:
+            import google.generativeai as genai
+
+            genai.configure(api_key=self.gemini_key)
+            gemini_model = genai.GenerativeModel(
+                model_name="gemini-2.0-flash",
+                system_instruction=system_prompt,
+            )
+
+            # Convert messages to Gemini's format
+            history = []
+            for msg in messages[:-1]:
+                role = "user" if msg["role"] == "user" else "model"
+                history.append({"role": role, "parts": [msg["content"]]})
+
+            chat = gemini_model.start_chat(history=history)
+            last_message = messages[-1]["content"] if messages else ""
+            response = chat.send_message(last_message)
+            return response.text
+        except Exception as e:
+            print(f"Gemini error: {e}. Falling back to mock response.", flush=True)
             return self._mock_response(messages)
 
     def _mock_response(self, messages: List[Dict[str, str]]) -> str:

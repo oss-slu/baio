@@ -44,6 +44,15 @@ class TestBinaryClassifierIntegration:
         assert predictor.vectorizer is not None
         assert predictor.kmer_tranformer is not None
 
+    def test_evo2_initialization_falls_back_to_random_forest(self) -> None:
+        """Test Evo2 selection degrades safely when Evo2 is not fully configured."""
+        predictor = PredictClass(model_name="Evo2")
+
+        assert predictor.model_name == "RandomForest"
+        assert predictor.model is not None
+        assert predictor.vectorizer is not None
+        assert predictor.kmer_tranformer is not None
+
     def test_predict_viral_sequence_random_forest(
         self, viral_sequences: List[str]
     ) -> None:

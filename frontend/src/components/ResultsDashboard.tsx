@@ -1,4 +1,4 @@
-import { Info, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight, } from 'lucide-react'
+import {Info, AlertTriangle, ShieldCheck, ShieldAlert, Activity, Layers, Zap, Brain, ChevronRight} from 'lucide-react'
 import type { ClassificationResponse, SequenceResult } from '../types'
 import { cn } from '../lib/utils'
 import { useState, Fragment } from 'react'
@@ -138,6 +138,224 @@ function RiskBadge({ level, compact = false }: { level: RiskLevel; compact?: boo
       <Icon className="h-3.5 w-3.5" />
       {level === 'high' ? 'High Risk' : level === 'moderate' ? 'Moderate' : 'Low Risk'}
     </span>
+  )
+}
+
+function OverallRiskBanner({ results }: { results: ClassificationResponse }) {
+  if (!results) return null
+
+  const virusCount = results.virus_count
+  const novelCount = results.novel_count
+  const total = results.total_sequences
+
+  let overallLevel: RiskLevel = 'low'
+  if (virusCount > 0 || novelCount > 0) {
+    const riskRatio = (virusCount + novelCount) / total
+    if (riskRatio > 0.5 || novelCount > 0) {
+      overallLevel = 'high'
+    } else {
+      overallLevel = 'moderate'
+    }
+  }
+
+  const styles = {
+    low: {
+      bg: 'bg-emerald-50 border-emerald-200',
+      text: 'text-emerald-700',
+      icon: ShieldCheck,
+    },
+    moderate: {
+      bg: 'bg-blue-50 border-blue-200',
+      text: 'text-blue-700',
+      icon: AlertTriangle,
+    },
+    high: {
+      bg: 'bg-rose-50 border-rose-200',
+      text: 'text-rose-700',
+      icon: ShieldAlert,
+    },
+  }
+
+  const style = styles[overallLevel]
+  const Icon = style.icon
+
+  const getMessage = () => {
+    if (overallLevel === 'high') return `${virusCount + novelCount} detected`
+    if (overallLevel === 'moderate') return `${virusCount} viral`
+    return 'No threats'
+  }
+
+  return (
+    <div
+      className={cn(
+        'inline-flex items-center gap-1.5 rounded-card border px-2 py-1 text-xs font-medium',
+        style.bg, style.text
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      <span className="font-semibold capitalize">{overallLevel === 'low' ? 'Safe' : overallLevel}</span>
+      <span className="text-slate-400">·</span>
+      <span>{getMessage()}</span>
+    </div>
+  )
+}
+
+function MetricCard({
+  label,
+  value,
+  icon: Icon,
+  tone,
+  hint,
+}: {
+  label: string
+  value: number | string
+  icon: React.ElementType
+  tone?: 'rose' | 'emerald' | 'amber' | 'slate' | 'blue'
+  hint?: string
+}) {
+  const toneMap: Record<string, { 
+    border: string; 
+    text: string; 
+    iconBg: string;
+    iconColor: string;
+  }> = {
+    rose: {
+      border: 'border-l-rose-500',
+      text: 'text-rose-600',
+      iconBg: 'bg-rose-100',
+      iconColor: 'text-rose-600',
+    },
+    emerald: {
+      border: 'border-l-emerald-500',
+      text: 'text-emerald-600',
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-600',
+    },
+    amber: {
+      border: 'border-l-amber-500',
+      text: 'text-amber-600',
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+    },
+    slate: {
+      border: 'border-l-slate-500',
+      text: 'text-slate-600',
+      iconBg: 'bg-slate-100',
+      iconColor: 'text-slate-600',
+    },
+    blue: {
+      border: 'border-l-blue-500',
+      text: 'text-blue-600',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
+    },
+  }
+
+  const styles = tone ? toneMap[tone] : toneMap.slate
+
+  return (
+    <div
+      className={cn(
+        'group relative overflow-hidden rounded-card border border-slate-200 bg-card p-4 shadow-card transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5',
+        styles.border
+      )}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            {label}
+          </p>
+          <p className={cn('mt-1 text-2xl tabular-nums font-bold', styles.text)}>{value}</p>
+          {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+        </div>
+        <div
+          className={cn(
+            'flex h-12 w-12 items-center justify-center rounded-lg',
+            styles.iconBg
+          )}
+        >
+          <Icon className={cn('h-6 w-6', styles.iconColor)} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DistributionBar({ results }: { results: ClassificationResponse }) {
+  const total = results.total_sequences || 1
+  const virusPct = (results.virus_count / total) * 100
+  const hostPct = (results.host_count / total) * 100
+  const novelPct = (results.novel_count / total) * 100
+  const uncertainPct = ((results.uncertain_count ?? 0) / total) * 100
+
+  return (
+    <div className={cn(
+      'rounded-xl border p-4',
+      'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50'
+    )}>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Sequence Breakdown
+        </p>
+        <p className="text-xs text-slate-400 dark:text-slate-500">{total} total</p>
+      </div>
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+        {virusPct > 0 && (
+          <div
+            className="h-full bg-rose-500 transition-all duration-700"
+            style={{ width: `${virusPct}%` }}
+            title={`Virus: ${results.virus_count}`}
+          />
+        )}
+        {hostPct > 0 && (
+          <div
+            className="h-full bg-emerald-500 transition-all duration-700"
+            style={{ width: `${hostPct}%` }}
+            title={`Host: ${results.host_count}`}
+          />
+        )}
+        {novelPct > 0 && (
+          <div
+            className="h-full bg-amber-400 transition-all duration-700"
+            style={{ width: `${novelPct}%` }}
+            title={`Novel: ${results.novel_count}`}
+          />
+        )}
+        {uncertainPct > 0 && (
+          <div
+            className="h-full bg-slate-400 transition-all duration-700"
+            style={{ width: `${uncertainPct}%` }}
+            title={`Uncertain: ${results.uncertain_count}`}
+          />
+        )}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-3 text-xs">
+        {results.virus_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
+            Virus <strong className="text-rose-600 dark:text-rose-400">{results.virus_count}</strong>
+          </span>
+        )}
+        {results.host_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Host <strong className="text-emerald-600 dark:text-emerald-400">{results.host_count}</strong>
+          </span>
+        )}
+        {results.novel_count > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-amber-400" />
+            Novel <strong className="text-amber-600 dark:text-amber-400">{results.novel_count}</strong>
+          </span>
+        )}
+        {(results.uncertain_count ?? 0) > 0 && (
+          <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-slate-400" />
+            Uncertain <strong className="text-slate-600 dark:text-slate-300">{results.uncertain_count}</strong>
+          </span>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -581,7 +799,6 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
 
   return (
-    
     <div className="space-y-6 z-0">
 
       {/* Data Table */}
@@ -592,19 +809,36 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
           'dark:border-slate-800 dark:bg-slate-900'
         )}>
           <div className={cn(
-            'border-b px-6 py-4',
+            'flex items-center justify-between gap-4 border-b px-6 py-4',
             'border-slate-200 bg-slate-50',
             'dark:border-slate-800 dark:bg-slate-800/50'
           )}>
-            <h3 className={cn(
-              'text-lg font-semibold',
-              'text-slate-900 dark:text-white'
-            )}>
-              Detailed Results
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Click on a row to see classification explanation
-            </p>
+            <div>
+              <h3 className={cn(
+                'text-lg font-semibold',
+                'text-slate-900 dark:text-white'
+              )}>
+                Detailed Results
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Click a row to expand classification explanation
+              </p>
+            </div>
+            {results && (
+              <div className="flex shrink-0 items-center gap-1.5 text-xs">
+                <span className="rounded-full bg-rose-100 px-2 py-0.5 font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+                  {results.virus_count} Virus
+                </span>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                  {results.host_count} Host
+                </span>
+                {results.novel_count > 0 && (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                    {results.novel_count} Novel
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse text-sm">
@@ -633,14 +867,16 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
                     const risk = calculateRiskLevel(row.prediction, row.confidence, row.ood_score)
                     const isExpanded = expandedRow === row.sequence_id
                     const isEven = idx % 2 === 0
+                    const riskRowBorder = risk.level === 'high' ? 'border-l-2 border-l-rose-500' : risk.level === 'moderate' ? 'border-l-2 border-l-amber-400' : 'border-l-2 border-l-emerald-400'
                     return (
                       <Fragment key={row.sequence_id}>
                         <tr
                           className={cn(
                             'cursor-pointer transition-all',
-                            isEven ? 'bg-white' : 'bg-slate-50/50',
-                            'hover:bg-blue-50/50',
-                            isExpanded && 'bg-blue-50'
+                            riskRowBorder,
+                            isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30',
+                            'hover:bg-blue-50/50 dark:hover:bg-blue-900/20',
+                            isExpanded && 'bg-blue-50 dark:bg-blue-900/30'
                           )}
                           onClick={() =>
                             setExpandedRow(
@@ -656,17 +892,17 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
                               )} />
                               <span className={cn(
                                 'font-medium text-sm',
-                                'text-slate-900',
-                                isExpanded && 'text-blue-700'
+                                'text-slate-900 dark:text-slate-100',
+                                isExpanded && 'text-blue-700 dark:text-blue-400'
                               )}>
-                                {row.sequence_id.length > 25 
-                                  ? `${row.sequence_id.slice(0, 25)}...` 
+                                {row.sequence_id.length > 25
+                                  ? `${row.sequence_id.slice(0, 25)}...`
                                   : row.sequence_id}
                               </span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">
                               {row.organism_name || 'Unknown'}
                             </span>
                           </td>
