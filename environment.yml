@@ -67,6 +67,7 @@ dependencies:
       - accelerate>=0.30
       - datasets>=2.19
       - fastapi>=0.115.0
+      - sqlalchemy>=2.0
 
       # dev / profiling / type stubs
       - line-profiler>=4.1
