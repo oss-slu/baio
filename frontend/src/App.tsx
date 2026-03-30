@@ -78,6 +78,7 @@ function App() {
     setShowLanding(false)
   }
 
+  const [chatOpen, setChatOpen] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       "role": 'assistant',
@@ -185,6 +186,8 @@ function App() {
         healthOk={healthOk}
         darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
+        chatOpen={chatOpen}
+        onToggleChat={() => setChatOpen((prev) => !prev)}
       />
       <ChatWidget
         messages={chatMessages}
@@ -192,6 +195,8 @@ function App() {
         onInputChange={setChatInput}
         onSend={handleChatSend}
         isLoading={chatLoading}
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
       />
 
       {error && (
