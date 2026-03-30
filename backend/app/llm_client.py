@@ -22,7 +22,7 @@ Be concise, helpful, and scientific in your responses. Use emojis sparingly.""",
 
 class LLMClient:
 
-    def __init__(self, model: str = "nvidia/nemotron-nano-9b-v2:free"):
+    def __init__(self, model: str = "meta-llama/llama-3.1-8b-instruct:free"):
         load_dotenv()
         self.model = model
         self.openrouter_key = os.getenv("OPENROUTER_API_KEY")

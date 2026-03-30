@@ -1,24 +1,38 @@
 import { useState } from 'react'
-import { Dna, Shield, Zap, FileText, Bot, BarChart3, GitBranch, Code, Database, Brain, ChevronRight, ExternalLink, Github, Play, CheckCircle, AlertTriangle, Users, BookOpen, Activity, FlaskConical, GitPullRequest } from 'lucide-react'
+import { Dna, Shield, Zap, FileText, Bot, BarChart3, GitBranch, Code, Database, Brain, ChevronRight, ExternalLink, Github, Play, CheckCircle, AlertTriangle, Activity, FlaskConical, GitPullRequest, Moon, Sun } from 'lucide-react'
 import { cn } from '../lib/utils'
 import ArchitectureDiagram from './ArchitectureDiagram'
 
 type LandingPageProps = {
   onGetStarted: () => void
+  darkMode: boolean
+  toggleDarkMode: () => void
 }
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: LandingPageProps) {
   const [showArchitecture, setShowArchitecture] = useState(false)
 
   if (showArchitecture) {
     return (
-      <div className="dark">
+      <div className={darkMode ? 'dark' : ''}>
         <button
           onClick={() => setShowArchitecture(false)}
           className="fixed top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           <ChevronRight className="h-4 w-4 rotate-180" />
           Back to Home
+        </button>
+        <button
+          onClick={toggleDarkMode}
+          className={cn(
+            'fixed top-4 right-4 z-50 flex h-9 w-9 items-center justify-center rounded-lg border shadow-md transition-all',
+            darkMode
+              ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700'
+              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+          )}
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
         <ArchitectureDiagram />
       </div>
@@ -86,7 +100,23 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Dark Mode Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={toggleDarkMode}
+          className={cn(
+            'flex h-9 w-9 items-center justify-center rounded-lg border shadow-md transition-all',
+            darkMode
+              ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700'
+              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+          )}
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+      </div>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden px-6 py-20 lg:py-32">
         <div className="absolute inset-0 -z-10">
@@ -332,39 +362,6 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Contributors Section */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Our Team
-          </h2>
-          <p className="mt-4 text-lg text-slate-500 dark:text-slate-400">
-            Open-source project from Saint Louis University
-          </p>
-          
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            {[
-              { name: 'Mainuddin', role: 'Tech Lead', icon: Users },
-              { name: 'Luis Palmejar', role: 'Developer', icon: Code },
-              { name: 'Kevin Yang', role: 'Developer', icon: BookOpen },
-            ].map((contributor, idx) => (
-              <div
-                key={idx}
-                className={cn(
-                  'flex flex-col items-center rounded-2xl border p-6',
-                  'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
-                )}
-              >
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600">
-                  <contributor.icon className="h-8 w-8 text-white" />
-                </div>
-                <p className="mt-4 font-semibold text-slate-900 dark:text-white">{contributor.name}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{contributor.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="px-6 py-20">
