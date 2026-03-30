@@ -1,4 +1,5 @@
-from api.main import ModelConfig, SequenceInput, classify_sequence, run_classification
+from backend.app.schemas.routers import ModelConfig, SequenceInput
+from backend.app.services.classification import classify_sequence, run_classification
 
 
 class _FixedPredictor:
