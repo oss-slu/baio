@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from ..models import ChatRequest, ChatResponse
+from ..schemas.routers import ChatResponse, ChatRequest
 from ..llm_client import LLMClient, SYSTEM_PROMPTS
 
 router = APIRouter(prefix="/chat", tags=["AI Assistant"])
