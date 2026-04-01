@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: backend/Dockerfile
     container_name: baio-api
     restart: unless-stopped
     env_file:
