@@ -25,15 +25,6 @@ dependencies = [
     "plotly",
     "joblib>=1.3",
 
-    # Torch (CPU/MPS)
-    "torch==2.8.0",
-
-    # HuggingFace / ML
-    "transformers==4.56.1",
-    "tokenizers==0.22.0",
-    "accelerate>=0.30",
-    "datasets>=2.19",
-
     # Bioinformatics
     "biopython>=1.85",
     "hdbscan==0.8.39",
@@ -92,6 +83,15 @@ notebook = [
     "jupyterlab>=4.0",
     "ipywidgets",
     "ipykernel>=6.0",
+]
+
+# Evo2 foundation-model path (requires NVIDIA GPU with 16GB+ VRAM)
+evo2 = [
+    "torch==2.8.0",
+    "transformers==4.56.1",
+    "tokenizers==0.22.0",
+    "accelerate>=0.30",
+    "datasets>=2.19",
 ]
 
 [project.urls]

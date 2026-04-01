@@ -3,8 +3,23 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
-import binary_classifiers.evo2_embedder as evo2_module
+_evo2_deps_available = False
+try:
+    import torch  # noqa: F401
+    import transformers  # noqa: F401
+
+    _evo2_deps_available = True
+except ImportError:
+    pass
+
+pytestmark = pytest.mark.skipif(
+    not _evo2_deps_available,
+    reason="Evo2 dependencies not installed — run: pip install baio[evo2]",
+)
+
+import binary_classifiers.evo2_embedder as evo2_module  # noqa: E402
 
 
 class _FakeTensor:
