@@ -83,7 +83,7 @@ class Evo2Embedder:
 
         if not TRANSFORMERS_AVAILABLE:
             print(
-                "WARNING: transformers library not installed. Install with: pip install transformers torch"
+                "WARNING: Evo2 dependencies not installed. Install with: pip install baio[evo2]"
             )
             return
 
