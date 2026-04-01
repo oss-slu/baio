@@ -18,8 +18,7 @@ pytestmark = pytest.mark.skipif(
     reason="Evo2 dependencies not installed — run: pip install baio[evo2]",
 )
 
-import binary_classifiers.evo2_embedder as evo2_module
-
+import binary_classifiers.evo2_embedder as evo2_module  # noqa: E402
 
 class _FakeTensor:
     def __init__(self, data) -> None:
