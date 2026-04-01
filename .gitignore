@@ -7,6 +7,7 @@ __pycache__/
 env/
 venv/
 
+
 # OS / editor files
 .DS_Store
 
@@ -95,6 +96,7 @@ weights/
 *.log
 logs/
 log/
+/node_modules
 
 # OS / Editor junk
 .DS_Store

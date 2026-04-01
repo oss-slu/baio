@@ -1,4 +1,4 @@
-import { Activity, Dna, Moon, Sun, Database, Cpu, FileText, ChevronDown, Bot } from 'lucide-react'
+import { Activity, Dna, Moon, Sun, Database, Cpu, FileText, ChevronDown, Bot} from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
 
@@ -106,7 +106,7 @@ function ModelInfoBadge() {
   )
 }
 
-function Header({
+function Header({ 
   healthOk,
   darkMode,
   toggleDarkMode,
@@ -116,28 +116,23 @@ function Header({
   return (
     <header className={cn(
       'sticky top-0 z-40 border-b backdrop-blur-md transition-colors',
-      darkMode
-        ? 'border-slate-800 bg-slate-900/95'
+      darkMode 
+        ? 'border-slate-800 bg-slate-900/95' 
         : 'border-slate-200 bg-white/95'
     )}>
-      <div className="mx-auto flex max-w-full items-center justify-between px-6 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25">
-            <Dna className="h-6 w-6" />
+      <div className="flex max-w-full items-center justify-between px-8 py-3">
+        <div className="flex items-center gap-1">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg text-black dark:text-white">
+            <Dna className="h-10 w-10" />
           </div>
           <div>
             <p className={cn(
-              'text-sm font-bold uppercase tracking-widest',
-              darkMode ? 'text-primary-400' : 'text-primary-600'
+              'text-4xl font-custom uppercase',
+              darkMode ? 'text-slate-50' : 'text-slate-950'
             )}>
               BAIO
             </p>
-            <h1 className={cn(
-              'text-sm font-medium',
-              darkMode ? 'text-slate-400' : 'text-slate-500'
-            )}>
-              DNA Classification & Pathogen Detection
-            </h1>
+
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -163,8 +158,8 @@ function Header({
             onClick={toggleDarkMode}
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-lg border transition-all',
-              darkMode
-                ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700'
+              darkMode 
+                ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700' 
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
             )}
             aria-label="Toggle dark mode"
