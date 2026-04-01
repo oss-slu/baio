@@ -53,7 +53,7 @@ export async function sendChat(
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    await request('/health', { method: 'GET' })
+    await request('/system/health', { method: 'GET' })
     return true
   } catch {
     return false

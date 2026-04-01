@@ -252,7 +252,7 @@ conda activate baio
 
 ```bash
 conda activate baio
-uvicorn api.main:app --reload --port 8080
+uvicorn backend.app.main:app --reload --port 8080 
 ```
 
 You should see:

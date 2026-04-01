@@ -14,8 +14,6 @@ class ClassificationCreate(BaseModel):
 
 
 # Response Checks
-
-
 class ClassificationResponse(BaseModel):
     id: int
     sequence: str
