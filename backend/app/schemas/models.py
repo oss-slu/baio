@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
+from .routers import SequenceResult
 
 
 # Create Lists
@@ -8,26 +9,22 @@ class UserCreate(BaseModel):
     email: str
 
 
-class ClassificationCreate(BaseModel):
-    sequence: str
-    classification: str
-
-
-# Response Checks
-class ClassificationResponse(BaseModel):
+# Storing Sequences
+class ClassificationRead(BaseModel):
     id: int
     sequence: str
-    classification: str
+    classification: SequenceResult
 
     class Config:
         from_attributes = True
 
 
+# Response Check
 class UserResponse(BaseModel):
     id: int
     name: str
     email: str
-    classifications: List[ClassificationResponse] = Field(default_factory=list)
+    classifications: List[SequenceResult] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
