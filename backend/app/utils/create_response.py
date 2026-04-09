@@ -4,7 +4,7 @@ from ..schemas.routers import ClassificationResponse, SequenceResult
 
 
 def create_classification_response(
-    sequences: List[SequenceResult], source: str = "Unknown", ptime: Any = 0
+    sequences: List[SequenceResult], source: str = "db", ptime: Any = 0
 ) -> ClassificationResponse:
     virus_count = host_count = novel_count = uncertain_count = 0
 

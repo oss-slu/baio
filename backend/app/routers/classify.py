@@ -44,6 +44,10 @@ def save_classification(
     result = Classification(user_id=current_user.id, classification=payload)
 
     db.add(result)
+    db.flush()
+
+    payload.model_copy(update={"id": result.id})
+
     db.commit()
 
 
@@ -61,7 +65,7 @@ def get_user_classifications(
     return create_classification_response(results)
 
 
-@router.delete("/delete", status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def delete_classification(
     class_id: int,
     db: Session = Depends(get_db),
