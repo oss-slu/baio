@@ -209,6 +209,25 @@ This runs everything with one command. No need to set up Python or Node manually
 
 **Requirements:** Docker Desktop must be running.
 
+#### Step 1: Set up your `.env` file
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set your API keys (optional — the app works without them, but the AI chatbot will use mock responses):
+
+```
+OPENROUTER_API_KEY=your_openrouter_key_here
+GEMINI_API_KEY=your_gemini_key_here
+```
+
+> **No API keys?** That's fine. DNA classification works fully without them. The chatbot will fall back to built-in responses instead of a live AI model.
+
+#### Step 2: Build and run
+
 ```bash
 docker compose up --build
 ```
@@ -457,6 +476,26 @@ Try clearing Docker's cache:
 docker system prune -a
 docker compose up --build
 ```
+
+### Adding a new Python dependency
+
+All Python dependencies live in **`pyproject.toml`** — this is the single source of truth for both local and Docker environments.
+
+1. Add the package to the `dependencies` list in `pyproject.toml`:
+   ```toml
+   "your-package>=1.0",
+   ```
+2. Rebuild the Docker image:
+   ```bash
+   docker compose build api
+   docker compose up -d
+   ```
+3. For local development, reinstall:
+   ```bash
+   pip install -e .
+   ```
+
+> **Do not** add packages directly to the `Dockerfile` — use `pyproject.toml` so local and Docker environments stay in sync.
 
 ### Frontend shows "Cannot connect to API"
 The backend is not running. Make sure Terminal 1 (uvicorn) is still active and showing no errors.
