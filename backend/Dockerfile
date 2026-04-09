@@ -19,8 +19,7 @@ COPY binary_classifiers /app/binary_classifiers
 
 # install the project and API deps
 RUN pip install --upgrade pip && \
-    pip install -e . && \
-    pip install fastapi uvicorn[standard] pydantic
+    pip install -e .
 
 # copy API code
 COPY backend/app /app/app
