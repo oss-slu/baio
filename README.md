@@ -520,6 +520,70 @@ pytest --cov=. tests/
 
 ---   
 
+## Deployment (Modal — GPU Cloud)
+
+Modal runs the backend on demand — you only pay when a request is processed. No idle cost. Evo2 inference runs on an A10G GPU that spins up automatically.
+
+**Cost:** ~$0 when idle. ~$0.30/hr only while actively running Evo2 inference.
+
+### Step 1: Install Modal and log in
+
+```bash
+pip install modal
+modal token new
+```
+
+This opens a browser to create a free Modal account and authenticate.
+
+### Step 2: Create secrets
+
+```bash
+modal secret create baio-secrets \
+  OPENROUTER_API_KEY=your_key_here \
+  GEMINI_API_KEY=your_key_here
+```
+
+### Step 3: Upload model weights
+
+```bash
+# Upload the trained classifier weights to Modal's persistent storage
+modal volume put baio-weights weights/random_forest_best_model.pkl random_forest_best_model.pkl
+modal volume put baio-weights weights/support_vector_machine_best_model.pkl support_vector_machine_best_model.pkl
+```
+
+### Step 4: Deploy
+
+```bash
+modal deploy modal_app.py
+```
+
+Modal will print a URL like:
+```
+https://your-username--baio-fastapi-app.modal.run
+```
+
+That is your live API endpoint — update `VITE_API_BASE` in your frontend `.env` to point to it.
+
+### Step 5: Test locally before deploying
+
+```bash
+modal serve modal_app.py
+```
+
+This runs the app locally with the same Modal environment — useful for testing.
+
+### How it works
+
+| Request type | Container | GPU | Cold start |
+|-------------|-----------|-----|-----------|
+| Classification (RandomForest/SVM) | CPU | No | ~5s |
+| Chat (LLM) | CPU | No | ~5s |
+| Evo2 inference | GPU (A10G) | Yes | ~30-90s |
+
+The CPU container has `keep_warm=1` so it's always ready. The GPU container scales to zero when not in use and spins up only when Evo2 is selected.
+
+---
+
 ## Contributors
 
 - **Mainuddin** — Tech Lead
