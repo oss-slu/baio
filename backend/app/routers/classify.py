@@ -41,3 +41,12 @@ async def save_classification(
 
     db.add(result)
     db.commit()
+
+
+@router.get("/get", response_model=ClassificationResponse)
+def get_user_classifications(
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+) -> ClassificationResponse:
+    return (
+        db.query(Classification).filter(Classification.user_id == current_user.id).all()
+    )
