@@ -9,17 +9,17 @@ router = APIRouter(prefix="/system", tags=["System"])
 
 
 @router.post("/reload_models")
-async def reload_models() -> Dict[str, str]:
+def reload_models() -> Dict[str, str]:
     """Clear model cache to reload updated models."""
     get_predictor.cache_clear()
     return {"status": "model cache cleared"}
 
 
 @router.get("/health")
-async def health() -> Dict[str, str]:
+def health() -> Dict[str, str]:
     return {"status": "healthy"}
 
 
 @router.post("/run_pipeline")
-async def run_pipeline() -> Dict[str, Any]:
+def run_pipeline() -> Dict[str, Any]:
     return {"result": "success"}

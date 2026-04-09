@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Any, str
+from typing import List, Any
 from ..schemas.routers import ClassificationResponse, SequenceResult
 
 
