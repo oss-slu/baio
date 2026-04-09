@@ -1,5 +1,4 @@
 import time
-from datetime import datetime
 from functools import lru_cache
 from typing import Any, Dict, List, Literal
 
@@ -15,6 +14,7 @@ from ..schemas.routers import (
 # Helpers
 from ..utils.dna_validation import validate_dna_sequence
 from ..utils.organism_patterns import detect_organism
+from ..utils.create_response import create_classification_response
 
 
 @lru_cache(maxsize=3)
@@ -110,35 +110,14 @@ def run_classification(
 ) -> ClassificationResponse:
     start = time.time()
     detailed_results: List[SequenceResult] = []
-    virus_count = host_count = novel_count = uncertain_count = 0
 
     for seq in sequences:
         result = classify_sequence(seq.id, seq.sequence, config)
         detailed_results.append(result)
 
-        if result.prediction == "Virus":
-            virus_count += 1
-        elif result.prediction == "Host":
-            host_count += 1
-        elif result.prediction == "Novel":
-            novel_count += 1
-        elif result.prediction == "Uncertain":
-            uncertain_count += 1
-
     processing_time = time.time() - start
 
-    response = ClassificationResponse(
-        total_sequences=len(sequences),
-        virus_count=virus_count,
-        host_count=host_count,
-        novel_count=novel_count,
-        uncertain_count=uncertain_count,
-        detailed_results=detailed_results,
-        source=source,
-        timestamp=datetime.now().isoformat(),
-        processing_time=processing_time,
-    )
-    return response
+    return create_classification_response(detailed_results, source, processing_time)
 
 
 def generate_explanation(
