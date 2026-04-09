@@ -45,8 +45,11 @@ dependencies = [
     "requests>=2.32",
     "python-json-logger>=3.0",
 
-    # FastAPI
+    # FastAPI / API server
     "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",
+    "sqlalchemy>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -101,7 +104,7 @@ Issues = "https://github.com/oss-slu/baio/issues"
 Documentation = "https://github.com/oss-slu/baio/blob/main/docs/"
 
 [tool.setuptools]
-packages = ["metaseq", "prompting", "data_processing"]
+packages = ["metaseq", "prompting", "data_processing", "binary_classifiers"]
 
 [tool.setuptools.package-data]
 metaseq = ["*.yml", "*.yaml", "*.json"]
