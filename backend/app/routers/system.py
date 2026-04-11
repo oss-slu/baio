@@ -16,8 +16,16 @@ def reload_models() -> Dict[str, str]:
 
 
 @router.get("/health")
-def health() -> Dict[str, str]:
-    return {"status": "healthy"}
+def health() -> Dict[str, Any]:
+    from binary_classifiers.evo2_embedder import check_evo2_requirements
+
+    evo2 = check_evo2_requirements()
+    return {
+        "status": "healthy",
+        "evo2_available": evo2["meets_requirements"],
+        "gpu": evo2["gpu_name"],
+        "gpu_memory_gb": evo2["gpu_memory_gb"],
+    }
 
 
 @router.post("/run_pipeline")
