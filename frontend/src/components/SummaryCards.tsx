@@ -1,4 +1,4 @@
-import { BarChart3, Clock, Shield, Sparkles, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Download, FileJson, FileSpreadsheet, FileText, FileDown } from 'lucide-react'
+import { Clock, Shield, Dna, Bug, User, HelpCircle, AlertTriangle, ShieldCheck, ShieldAlert, Download, FileJson, FileSpreadsheet, FileText, FileDown } from 'lucide-react'
 import type { ClassificationResponse } from '../types'
 import { cn } from '../lib/utils'
 import { useState} from 'react'
@@ -103,18 +103,18 @@ function OverallRiskBanner({ results }: { results: ClassificationResponse }) {
 
   const styles = {
     low: {
-      bg: 'bg-emerald-50 border-emerald-50',
-      text: 'text-emerald-700 font-custom2',
+      bg: 'bg-emerald-600 border-emerald-50',
+      text: 'text-white font-custom2',
       icon: ShieldCheck,
     },
     moderate: {
-      bg: 'bg-blue-50 border-blue-50',
-      text: 'text-blue-700 font-custom2',
+      bg: 'bg-blue-600 border-blue-50',
+      text: 'text-white font-custom3 tracking-wide',
       icon: AlertTriangle,
     },
     high: {
-      bg: 'bg-rose-50 border-rose-50',
-      text: 'text-rose-700 font-custom2',
+      bg: 'bg-rose-600 border-rose-50',
+      text: 'text-white font-custom2',
       icon: ShieldAlert,
     },
   }
@@ -136,7 +136,7 @@ function OverallRiskBanner({ results }: { results: ClassificationResponse }) {
       )}
     >
       <Icon className="h-3.5 w-3.5" />
-      <span className="font-semibold capitalize">{overallLevel === 'low' ? 'Safe' : overallLevel}</span>
+      <span className="font-normal capitalize">{overallLevel === 'low' ? 'Safe' : overallLevel}</span>
       <span className="text-slate-400">·</span>
       <span>{getMessage()}</span>
     </div>
@@ -196,37 +196,45 @@ function MetricCard({
 
   const styles = tone ? toneMap[tone] : toneMap.slate
 
+  if (value != 0)
+  {
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-card  border-slate-200 bg-card p-4  transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5',
-        styles.border, styles.iconBg
+        'group relative overflow-hidden rounded-card  border-slate-200 bg-blakc p-4  transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5',
+        styles.border,
       )}
     >
-      <div className="flex lg:flex-col justify-between gap-3">
-        <div className="flex lg:flex-row justify-center gap-6">
-          <p className={cn(
-            'h-4 w-2  text-white', )}
+
+    {
+      <div className="flex lg:flex-col justify-between items-center gap-3">
+        <div className={cn(
+            'h-6 w-6', styles.iconColor )}
           >
-          <Icon className={cn('h-6 w-6')} />
+          <Icon className={cn('h-8 w-8')} />
+        </div>
+        
+        <div className="flex flex-row items-center gap-3">
+          <p className={'text-xl font-custom3 tabular-nums font-bold text-black'}>
+            {value}
           </p>
 
-          <p className="text-lg font-normal font-custom3 tracking-wider text-white">
+          <p className="text-lg font-normal font-custom3 tracking-wider text-black">
             {label}
           </p>
           
           
         </div>
 
-
-        <div className="items-end gap-2 text-center">
-          <p className={'mt-1 text-2xl font-custom3 tabular-nums font-bold text-white'}>{value}</p>
-          {hint && <p className="mt-1 text-xs font-custom2 text-white">{hint}</p>}
+        <div className="items-end gap-1 text-center">
+          {hint && <p className="text-xs font-custom2 text-black">{hint}</p>}
         </div>
         
       </div>
-    </div>
+    }
+    </div> 
   )
+  }
 }
 
 
@@ -571,17 +579,9 @@ function SummaryCards({ results, isLoading, parsedCount }: ResultsDashboardProps
 
   return (
     <section className={cn(
-      'top-autoborder-b p-5 h-80 bg-white transition-colors',
+      'top-autoborder-b p-5 h-65 bg-white transition-colors',
     )}>
       <div className="flexspace-y-6 flex flex-col">
-        <section className="flex justify-center">
-          <div className="flex h-10 w-rounded-xl text-slate-950 dark:text-white ">
-            <BarChart3 className="h-8 w-8" />
-          </div>
-          <div className="mb-2  flex-column text-3xl text-center font-custom3 items-center gap-3">
-            Classification Summary
-          </div>
-        </section>
 
         {/* Summary Cards - Full Width */}
         
@@ -595,7 +595,6 @@ function SummaryCards({ results, isLoading, parsedCount }: ResultsDashboardProps
               'flex flex-col items-center justify-center rounded-xl border-dashed text-center',
               'border-slate-950',
             )}>
-              <Sparkles className="h-12 w-12 text-slate-950 dark:text-slate-600" />
               <p className={cn(
                 'mt-4 text-2xl font-custom3 font-medium',
                 'text-slate-950 dark:text-slate-300'
@@ -671,15 +670,15 @@ function SummaryCards({ results, isLoading, parsedCount }: ResultsDashboardProps
                 'border-white bg-white'
               )}>
                 <div className={cn(
-                  'inline-flex items-center font-custom2 gap-1.5 rounded-lg border px-2 py-1 font-medium',
-                  'border-slate-50 bg-slate-50 text-slate-950'
+                  'inline-flex items-center font-custom3 tracking-wide gap-1.5 rounded-lg border px-2 py-1 font-medium',
+                  'bg-slate-950 text-white'
                 )}>
-                  <Shield className="h-3 w-3 text-slate-950'" />
+                  <Shield className="h-3 w-3 text-white" />
                   {parsedCount} sequences
                 </div>
                 <OverallRiskBanner results={results} />
                 <div className={cn(
-                  'inline-flex items-center font-custom2 gap-1.5 rounded-full border px-2 py-1 font-custom2 font-medium',
+                  'inline-flex items-center font-custom2 gap-1.5 rounded-full border px-2 py-1 font-custom3 font-medium',
                   'border-slate-50 bg-slate-50 text-slate-950'
                 )}>
                   <Clock className="h-3 w-3 text-slate-950" />

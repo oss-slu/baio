@@ -29,12 +29,6 @@ function SequenceInput({
     onChange(text)
   }
 
-  const preview = rawSequences
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(' · ')
 
   return (
     <section>

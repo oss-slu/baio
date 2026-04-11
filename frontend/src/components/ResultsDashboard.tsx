@@ -85,23 +85,23 @@ function calculateRiskLevel(
 function RiskBadge({ level, compact = false }: { level: RiskLevel; compact?: boolean }) {
   const styles = {
     low: {
-      bg: 'bg-emerald-100 dark:bg-emerald-900/40',
-      border: 'border-emerald-300 dark:border-emerald-700',
-      text: 'text-emerald-700 dark:text-emerald-300',
+      bg: 'bg-emerald-500 dark:bg-emerald-900/40',
+      border: 'border-emerald-500 dark:border-emerald-700',
+      text: 'text-white font-custom2 dark:text-emerald-300',
       dot: 'bg-emerald-500',
       icon: ShieldCheck,
     },
     moderate: {
-      bg: 'bg-amber-100 dark:bg-amber-900/40',
-      border: 'border-amber-300 dark:border-amber-700',
-      text: 'text-amber-700 dark:text-amber-300',
+      bg: 'bg-amber-500 dark:bg-amber-900/40',
+      border: 'border-amber-500 dark:border-amber-700',
+      text: 'text-white font-custom2 dark:text-amber-300',
       dot: 'bg-amber-500',
       icon: AlertTriangle,
     },
     high: {
-      bg: 'bg-rose-100 dark:bg-rose-900/40',
-      border: 'border-rose-300 dark:border-rose-700',
-      text: 'text-rose-700 dark:text-rose-300',
+      bg: 'bg-rose-500 dark:bg-rose-900/40',
+      border: '',
+      text: 'text-white font-custom2 dark:text-rose-300',
       dot: 'bg-rose-500',
       icon: ShieldAlert,
     },
@@ -386,29 +386,26 @@ function SkeletonRow() {
 
 const statusStyles = {
   Virus: {
-    light: 'bg-rose-100 text-rose-800 border-rose-300',
+    light: 'bg-rose-500 text-white',
+    icon: 'Bug',
     dark: 'dark:bg-rose-900/50 dark:text-rose-300 dark:border-rose-700',
-    dot: 'bg-rose-500',
   },
   Host: {
-    light: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    light: 'bg-emerald-500 text-white',
+    
     dark: 'dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700',
-    dot: 'bg-emerald-500',
   },
   Novel: {
-    light: 'bg-amber-100 text-amber-800 border-amber-300',
+    light: 'bg-amber-500 text-white',
     dark: 'dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700',
-    dot: 'bg-amber-500',
   },
   Uncertain: {
-    light: 'bg-slate-200 text-slate-600 border-slate-400',
+    light: 'bg-slate-500 text-white',
     dark: 'dark:bg-slate-600/50 dark:text-slate-300 dark:border-slate-500',
-    dot: 'bg-slate-500',
   },
   Invalid: {
-    light: 'bg-red-100 text-red-800 border-red-300',
+    light: 'bg-red-500 text-white',
     dark: 'dark:bg-red-900/50 dark:text-red-300 dark:border-red-700',
-    dot: 'bg-red-500',
   },
 }
 
@@ -445,33 +442,10 @@ function ConfidenceBar({ confidence }: { confidence: number }) {
 function GCCell({ gcContent }: { gcContent: number }) {
   const pct = gcContent * 100
   
-  // Calculate background intensity based on GC content
-  // Low GC (0-30%): blue tint, Medium (30-50%): neutral, High (50-100%): green tint
-  const getBackgroundStyle = (gc: number) => {
-    const intensity = Math.min(gc * 1.5, 1) // Scale up for visibility
-    
-    if (gc <= 0.35) {
-      // Low GC - blue tint
-      return {
-        background: `linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, ${intensity * 0.15}) 100%)`,
-      }
-    } else if (gc <= 0.55) {
-      // Medium GC - neutral/slate
-      return {
-        background: `linear-gradient(90deg, transparent 0%, rgba(100, 116, 139, ${intensity * 0.1}) 100%)`,
-      }
-    } else {
-      // High GC - green tint
-      return {
-        background: `linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, ${intensity * 0.15}) 100%)`,
-      }
-    }
-  }
 
   return (
     <div 
       className="relative flex items-center justify-end rounded-md px-2 py-1"
-      style={getBackgroundStyle(gcContent)}
     >
       {/* Mini bar indicator */}
       <div className="mr-2 h-1.5 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-600">
@@ -804,48 +778,33 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
       {/* Data Table */}
       {((results && results.detailed_results.length > 0) || isLoading) && (
         <section className={cn(
-          'overflow-hidden rounded-2xl border shadow-lg',
-          'border-slate-200 bg-white',
+          'overflow-hidden rounded-2xl',
+          'bg-white',
           'dark:border-slate-800 dark:bg-slate-900'
         )}>
           <div className={cn(
             'flex items-center justify-between gap-4 border-b px-6 py-4',
-            'border-slate-200 bg-slate-50',
+            'bg-white bg-slate-50',
             'dark:border-slate-800 dark:bg-slate-800/50'
           )}>
             <div>
               <h3 className={cn(
-                'text-lg font-semibold',
+                'text-xl font-normal font-custom3',
                 'text-slate-900 dark:text-white'
               )}>
                 Detailed Results
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-slate-900 font-custom2 dark:text-slate-400">
                 Click a row to expand classification explanation
               </p>
             </div>
-            {results && (
-              <div className="flex shrink-0 items-center gap-1.5 text-xs">
-                <span className="rounded-full bg-rose-100 px-2 py-0.5 font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
-                  {results.virus_count} Virus
-                </span>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                  {results.host_count} Host
-                </span>
-                {results.novel_count > 0 && (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-                    {results.novel_count} Novel
-                  </span>
-                )}
-              </div>
-            )}
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse text-sm">
               <thead className={cn(
                 'bg-slate-50 dark:bg-slate-800/50'
               )}>
-                <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <tr className="text-left text-md font-light tracking-wider text-slate-950 font-custom2 dark:text-slate-400">
                   <th className="px-6 py-4">Sequence ID</th>
                   <th className="px-6 py-4">Organism</th>
                   <th className="px-6 py-4">Prediction</th>
@@ -909,16 +868,16 @@ function ResultsDashboard({ results, isLoading }: ResultsDashboardProps) {
                           <td className="px-4 py-3">
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold',
+                                'items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold',
                                 styles.light,
                                 styles.dark
                               )}
                             >
-                              <span className={cn('h-2 w-2 rounded-full', styles.dot)} />
+                              <span className={cn('h-2 w-2 rounded-full')} />
                               {row.prediction}
                             </span>
                             {row.prediction === 'Uncertain' && (
-                              <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400">
+                              <p className="mt-1 text-[10px] text-amber-600 font-custom2 dark:text-amber-400">
                                 Confidence below threshold — result unreliable
                               </p>
                             )}
