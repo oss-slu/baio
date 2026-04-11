@@ -22,6 +22,7 @@ class ClassificationRequest(BaseModel):
 
 
 class SequenceResult(BaseModel):
+    id: int | None = None
     sequence_id: str
     length: int
     gc_content: float
