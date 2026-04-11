@@ -26,6 +26,8 @@ image = (
     .pip_install(
         "fastapi", "uvicorn[standard]", "pydantic", "sqlalchemy", "python-multipart"
     )
+    .add_local_dir("backend/app", "/root/app")
+    .add_local_dir("binary_classifiers", "/root/binary_classifiers")
 )
 
 # ---------------------------------------------------------------------------
@@ -62,7 +64,7 @@ WEIGHTS_MOUNT_PATH = "/data/weights"
         WEIGHTS_MOUNT_PATH: weights_volume,
     },
     # Keep one warm container to avoid cold starts on first request
-    keep_warm=1,
+    min_containers=1,
     # Max 10 concurrent containers
     max_containers=10,
     timeout=120,
@@ -73,13 +75,13 @@ def fastapi_app():
     import sys
 
     # Add project root to path so backend can find binary_classifiers, etc.
-    sys.path.insert(0, "/app")
+    sys.path.insert(0, "/root")
 
     # Point SQLite DB to the persistent volume
     os.environ["DB_PATH"] = f"{DB_MOUNT_PATH}/app.db"
     os.environ["WEIGHTS_DIR"] = WEIGHTS_MOUNT_PATH
 
-    from backend.app.main import app as _app
+    from app.main import app as _app
 
     return _app
 
@@ -96,10 +98,10 @@ def fastapi_app():
         WEIGHTS_MOUNT_PATH: weights_volume,
     },
     # Do NOT keep warm — GPU is expensive; spin up on demand only
-    keep_warm=0,
+    min_containers=0,
     timeout=300,
     # Cache the Evo2 model weights on the volume between requests
-    container_idle_timeout=60,
+    scaledown_window=60,
 )
 def run_evo2_inference(sequence: str, model_size: str = "7b") -> dict:
     """
@@ -111,7 +113,7 @@ def run_evo2_inference(sequence: str, model_size: str = "7b") -> dict:
     import os
     import sys
 
-    sys.path.insert(0, "/app")
+    sys.path.insert(0, "/root")
     os.environ["WEIGHTS_DIR"] = WEIGHTS_MOUNT_PATH
 
     try:
