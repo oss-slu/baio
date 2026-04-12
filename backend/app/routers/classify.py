@@ -1,16 +1,12 @@
-from fastapi import APIRouter, HTTPException, Response, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 # Import models and logic
 from ..database import get_db
 from ..services.classification import run_classification
-from ..schemas.routers import (
-    ClassificationRequest,
-    ClassificationResponse,
-    ModelConfig,
-    SequenceResult,
-)
+from ..schemas.routers import ModelConfig
+from ..schemas.db import ClassificationRequest, ClassificationResponse, SequenceResult
 from ..models import Classification, User
 
 # Import utilities
@@ -29,10 +25,11 @@ def classify(request: ClassificationRequest) -> ClassificationResponse:
 
     config = request.config or ModelConfig()
     source = request.source or f"{len(request.sequences)}_sequences"
+
     return run_classification(request.sequences, config, source)
 
 
-@router.post("/save")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def save_classification(
     payload: SequenceResult,
     db: Session = Depends(get_db),
@@ -44,14 +41,13 @@ def save_classification(
     result = Classification(user_id=current_user.id, classification=payload)
 
     db.add(result)
-    db.flush()
-
-    payload.model_copy(update={"id": result.id})
-
     db.commit()
+    db.refresh(result)
+
+    return {"id": result.id}
 
 
-@router.get("/get", response_model=ClassificationResponse)
+@router.get("/", response_model=ClassificationResponse)
 def get_user_classifications(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ) -> ClassificationResponse:
@@ -65,11 +61,23 @@ def get_user_classifications(
     return create_classification_response(results)
 
 
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{class_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_classification(
     class_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> Response:
+):
+    classification = (
+        db.query(Classification)
+        .filter(
+            Classification.id == class_id,
+            Classification.user_id == current_user.id,
+        )
+        .one_or_none()
+    )
 
-    return Response(status.HTTP_204_NO_CONTENT)
+    if classification:
+        db.delete(classification)
+        db.commit()
+
+    return

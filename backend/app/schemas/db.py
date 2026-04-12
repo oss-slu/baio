@@ -1,0 +1,57 @@
+from pydantic import BaseModel, Field, constr
+from typing import List, Literal, Optional
+from .routers import ModelConfig
+
+
+class SequenceInput(BaseModel):
+    id: constr(strip_whitespace=True, min_length=1)
+    sequence: constr(strip_whitespace=True, min_length=1)
+
+
+class ClassificationRequest(BaseModel):
+    sequences: List[SequenceInput]
+    config: Optional[ModelConfig] = None
+    source: Optional[str] = None
+
+
+class SequenceResult(BaseModel):
+    sequence_id: str
+    length: int
+    gc_content: float
+    prediction: Literal["Virus", "Host", "Novel", "Uncertain", "Invalid"]
+    confidence: float
+    sequence_preview: str
+    organism_name: Optional[str] = None
+    explanation: Optional[str] = None
+    mahalanobis_distance: Optional[float] = None
+    energy_score: Optional[float] = None
+    ood_score: Optional[float] = None
+    uncertain: Optional[bool] = False
+    threshold_used: Optional[float] = None
+
+
+class ClassificationResponse(BaseModel):
+    total_sequences: int
+    virus_count: int
+    host_count: int
+    novel_count: int
+    uncertain_count: int
+    detailed_results: List[SequenceResult]
+    source: str
+    timestamp: str
+    processing_time: float
+
+
+class UserCreate(BaseModel):
+    name: str
+    email: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    classifications: List[SequenceResult] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
