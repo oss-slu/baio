@@ -16,7 +16,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
   
   const sliderLabel = (label: string, value: number, tooltip?: string) => (
     <div className="flex-column text-xs">
-      <span className="flex items-center gap-1 text-slate-950 font-custom2 dark:text-slate-400">
+      <span className="flex items-center gap-1 text-slate-950 uppercase tracking-widest font-bold font-custom2 dark:text-slate-400">
         {label}
         {tooltip && (
           <div className="relative">
@@ -39,31 +39,30 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
 
   return (
     <section className={cn(
-      'dark:border-slate-700 dark:bg-slate-800'
+      'dark:border-slate-700 dark:bg-slate-950'
     )}>
       <div className="flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg',
-            'dark:border-slate-600 dark:bg-slate-700'
           )}>
-            <SlidersHorizontal className="h-8 w-8 text-black" />
+            <SlidersHorizontal className="h-8 w-8 text-black dark:text-white" />
           </div>
           <div>
-            <p className="text-3xl font-normal font-custom3 tracking-wider text-black dark:text-slate-400">
+            <p className="text-3xl font-normal font-custom3 tracking-wider text-black dark:text-white">
               Configuration
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4">
+      <div className="mt-4  gap-4">
         <div className={cn(
-          'space-y-2 rounded-xl border p-4 text-center',
+          'space-y-2 rounded-xl border p-4',
           'border-white bg-white',
           'dark:border-slate-600 dark:bg-slate-700/50'
         )}>
-          <label className="text-sm font-custom2 text-center font-normal text-slate-800 dark:text-slate-200">Classification Type</label>
+          <label className="text-sm text-start font-custom2 tracking-widest uppercase font-bold  text-slate-800 dark:text-slate-200">Classification Type</label>
           <select
             value={config.type}
             onChange={(e) => onChange('type', e.target.value)}
@@ -129,7 +128,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
             <div className="flex items-center justify-between gap-2 text-md font-custom2">
-              <span className="text-black dark:text-slate-400">Batch size</span>
+              <span className="text-black tracking-widest uppercase text-sm font-bold dark:text-slate-400">Batch size</span>
               <span className="font-bold text-black dark:text-emerald-400">{config.batch_size}</span>
             </div>
             <input
@@ -154,8 +153,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           )}>
             <div className="flex flex-col gap-2 justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-8 w-8 text-black" />
-                <p className="text-xl font-custom2 font-normal text-black dark:text-white">
+                <p className="text-sm font-custom2 tracking-widest uppercase font-bold text-black dark:text-white">
                   Novel / OOD detection
                 </p>
               </div>
@@ -165,12 +163,12 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
                 className={cn(
                   'flex h-8 w-14 items-center rounded-full px-1 transition',
                   config.enable_ood
-                    ? 'justify-end border-emerald-500 bg-emerald-500'
+                    ? 'justify-end  bg-emerald-500'
                     : 'justify-start border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700',
                 )}
                 disabled={isRunning}
               >
-                <span className="h-6 w-6 rounded-full bg-white shadow-md transition" />
+                <span className="h-6 w-6 rounded-full bg-white" />
               </button>
             </div>
             <p className="text-xs text-black font-custom2 dark:text-slate-400">
@@ -185,7 +183,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
         'dark:border-emerald-900/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-blue-950/30'
       )}>
         <div className="flex flex-col gap-1">
-          <p className="text-md font-semibold text-center tracking-wider text-black font-custom2 dark:text-slate-400">
+          <p className="text-sm font-bold text-left uppercase tracking-widest text-black font-custom2 dark:text-slate-400">
             Ready to Run
           </p>
           <p className="text-sm text-slate-700 font-custom2 dark:text-slate-300">
@@ -197,11 +195,11 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           onClick={onRun}
           disabled={isRunning || parsedCount === 0}
           className={cn(
-            'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white shadow-lg transition',
-            'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25',
+            'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-md font-custom3 tracking-wider text-white shadow-lg transition',
+            'bg-slate-500 ',
             'hover:shadow-xl hover:shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600',
             'disabled:cursor-not-allowed disabled:opacity-60',
-            parsedCount > 0 && !isRunning && 'animate-pulse'
+            parsedCount > 0 && !isRunning && 'bg-emerald-500 animate-pulse'
           )}
         >
           {isRunning ? (

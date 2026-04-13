@@ -49,7 +49,7 @@ function ModelInfoBadge() {
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-0 z-60" onClick={() => setIsOpen(false)} />
           <div className={cn(
             'absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border p-4 shadow-xl',
             'border-slate-200 bg-white',
@@ -121,16 +121,27 @@ function Header({
         : 'border-slate-200 bg-white/95'
     )}>
       <div className="flex max-w-full items-center justify-between px-8 py-3">
-        <div className="flex items-center gap-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg text-black dark:text-white">
-            <Dna className="h-10 w-10" />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg text-black dark:text-white">
+              <Dna className="h-10 w-10" />
+            </div>
+            <div>
+              <p className={cn(
+                'text-4xl font-custom uppercase',
+                darkMode ? 'text-slate-50' : 'text-slate-950'
+              )}>
+                BAIO
+              </p>
+
+            </div>
           </div>
           <div>
             <p className={cn(
-              'text-4xl font-custom uppercase',
+              'text-4xl font-custom2 ',
               darkMode ? 'text-slate-50' : 'text-slate-950'
             )}>
-              BAIO
+              Classification Summary
             </p>
 
           </div>

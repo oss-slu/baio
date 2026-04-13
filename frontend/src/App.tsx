@@ -271,7 +271,7 @@ function App() {
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className={`fixed left-4 top-20 z-50 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
+            className={`fixed left-4 top-20 z-20 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
               darkMode 
                 ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700' 
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
@@ -289,7 +289,7 @@ function App() {
           }`}
         >
           <div className="flex flex-col">
-            <div className=" mx-auto w-full z-40">
+            <div className=" mx-auto w-full z-30">
               <SummaryCards
                     results={results}
                     isLoading={isRunning}
