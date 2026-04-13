@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.user import User
-from ..schemas.models import UserCreate, UserResponse
+from ..schemas.db import UserCreate, UserResponse
 from ..utils.user import get_user_by_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -17,7 +17,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> User:
     return user
 
 
-@router.post("/create", response_model=UserResponse)
+@router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User:
     if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User already exists")
@@ -30,7 +30,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User:
     return new_user
 
 
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, db: Session = Depends(get_db)) -> Response:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

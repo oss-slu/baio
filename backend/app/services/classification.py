@@ -4,12 +4,8 @@ from typing import Any, Dict, List, Literal
 
 # Pydantic/Data models
 from binary_classifiers.predict_class import PredictClass
-from ..schemas.routers import (
-    SequenceInput,
-    SequenceResult,
-    ClassificationResponse,
-    ModelConfig,
-)
+from ..schemas.routers import ModelConfig
+from ..schemas.db import SequenceInput, SequenceResult, ClassificationResponse
 
 # Helpers
 from ..utils.dna_validation import validate_dna_sequence
