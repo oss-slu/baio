@@ -181,19 +181,20 @@ BAIO uses Google Gemini AI for the chat assistant. You need a free API key.
 3. Click **"Create API Key"**
 4. Copy the key
 
-Now create a file called `.env` in the `baio` folder:
+Now create a file called `.env` in the `baio` folder (copy from `.env.example`):
 
 **macOS / Git Bash (Windows):**
 ```bash
-echo "GOOGLE_API_KEY=paste_your_key_here" > .env
+cp .env.example .env
 ```
 
-Or open any text editor, create a file named `.env` in the `baio` folder, and add:
+Then open `.env` and set:
 ```
-GOOGLE_API_KEY=paste_your_key_here
+GEMINI_API_KEY=paste_your_key_here
+OPENROUTER_API_KEY=paste_your_openrouter_key_here   # optional
 ```
 
-> Replace `paste_your_key_here` with the actual key you copied.
+> Replace the placeholders with the actual keys you copied. The app works without these — the chatbot will fall back to mock responses.
 
 ---
 
@@ -392,35 +393,51 @@ Once the app is open in your browser:
 
 ```
 baio/
-├── api/                        # FastAPI backend
-│   ├── main.py                 # API endpoints (/classify, /chat, /health)
-│   ├── llm_client.py           # Google Gemini AI client
+├── backend/                    # FastAPI backend
+│   ├── app/
+│   │   ├── main.py             # App entrypoint
+│   │   ├── routers/            # API routes (classify, chat, system, user)
+│   │   ├── services/           # Business logic (classification, llm_client)
+│   │   ├── models/             # ORM models
+│   │   ├── schemas/            # Pydantic request/response schemas
+│   │   ├── database.py         # DB connection
+│   │   └── utils/              # Shared helpers
 │   └── Dockerfile              # Docker config for the backend
 │
-├── frontend/                   # React + Vite frontend (what you see in the browser)
+├── frontend/                   # React + Vite frontend
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.tsx       # Top navigation bar
-│   │   │   ├── SequenceInput.tsx # DNA input form
-│   │   │   ├── ConfigPanel.tsx   # Settings panel
-│   │   │   └── ResultsDashboard.tsx # Results table and charts
-│   │   ├── App.tsx              # Main React component
-│   │   ├── api.ts               # Functions to call the backend
-│   │   └── types.ts             # TypeScript type definitions
-│   └── package.json             # Node.js dependencies
+│   │   │   ├── Header.tsx             # Top navigation bar
+│   │   │   ├── LandingPage.tsx        # Landing/home view
+│   │   │   ├── SequenceInput.tsx      # DNA input form
+│   │   │   ├── ConfigPanel.tsx        # Settings panel
+│   │   │   ├── ResultsDashboard.tsx   # Results table and charts
+│   │   │   ├── SummaryCards.tsx       # Top-level result summary cards
+│   │   │   ├── ChatWidget.tsx         # AI chatbot UI
+│   │   │   └── ArchitectureDiagram.tsx # Architecture visualization
+│   │   ├── App.tsx             # Main React component
+│   │   ├── api.ts              # Functions to call the backend
+│   │   └── types.ts            # TypeScript type definitions
+│   └── package.json            # Node.js dependencies
 │
 ├── binary_classifiers/         # ML classification core
 │   ├── predict_class.py        # Takes DNA sequence, returns Virus/Host prediction
 │   ├── evaluation.py           # Computes model metrics
-│   └── models/                 # Saved model files (.pkl)
+│   ├── evo2_embedder.py        # Evo2 embedding generator
+│   ├── models/                 # Saved model files (.pkl)
+│   └── training_scripts/       # Model training pipelines
 │
-├── data/                       # Sample FASTA files for testing
+├── data_processing/            # FASTA parsing and validation
+├── examples/                   # Sample FASTA files for testing
 ├── tests/                      # Unit tests
 ├── scripts/                    # Evaluation and utility scripts
-├── .env                        # Your API key (you create this)
+├── weights/                    # Trained model weights
+├── modal_app.py                # Modal (GPU cloud) deployment entrypoint
+├── .env                        # Your API keys (you create this)
+├── .env.example                # Template for .env
 ├── environment.yml             # Conda environment definition
 ├── docker-compose.yml          # Docker setup
-├── requirements.txt            # Python dependencies reference
+├── pyproject.toml              # Python dependencies (single source of truth)
 └── README.md                   # This file
 ```
 
@@ -467,7 +484,7 @@ Your Node.js version may be too old. Check with `node --version` — it must be 
 ### Gemini API error / chat not working
 Your `.env` file is missing or the key is wrong. Make sure the file is in the root `baio/` folder and contains:
 ```
-GOOGLE_API_KEY=your_actual_key
+GEMINI_API_KEY=your_actual_key
 ```
 
 ### Docker build fails
