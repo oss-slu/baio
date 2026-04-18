@@ -2,8 +2,8 @@
 **Project:** BAIO (Bioinformatics AI for Open-Set Detection)
 **Course:** Open Source Software — Saint Louis University
 **Sprint:** 5
-**Tech Lead:** Mainuddin Sarker
-**Team:** Mainuddin Sarker, Luis Palmejar, Kevin Yang
+**Tech Lead:** Mainuddin
+**Team:** Mainuddin, Luis Palmejar, Kevin Yang
 **Repository:** https://github.com/oss-slu/baio
 
 ---

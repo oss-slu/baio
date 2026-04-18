@@ -1,6 +1,10 @@
 import os
 import time
+from pathlib import Path
+from dotenv import load_dotenv
 from .types import LLMResponse
+
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 
 class Evo2Client:
