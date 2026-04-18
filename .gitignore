@@ -109,3 +109,9 @@ Thumbs.db
 .vscode/
 *.iml
 *.exe
+.env
+.env.local
+.env.*.local
+.env
+.env.local
+.env.*.local
