@@ -115,38 +115,32 @@ function Header({
 }: HeaderProps) {
   return (
     <header className={cn(
-      'sticky top-0 z-40 border-b backdrop-blur-md transition-colors',
-      darkMode 
-        ? 'border-slate-800 bg-slate-900/95' 
-        : 'border-slate-200 bg-white/95'
+      'sticky top-0 z-40 border-b transition-colors',
+      darkMode
+        ? 'border-indigo-900 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900'
+        : 'border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-cyan-50'
     )}>
-      <div className="flex max-w-full items-center justify-between px-8 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg text-black dark:text-white">
-              <Dna className="h-10 w-10" />
-            </div>
-            <div>
-              <p className={cn(
-                'text-4xl font-custom uppercase',
-                darkMode ? 'text-slate-50' : 'text-slate-950'
-              )}>
-                BAIO
-              </p>
-
-            </div>
+      <div className="flex w-full items-center justify-between px-8 py-3">
+        {/* Left — BAIO logo */}
+        <div className="flex items-center gap-1">
+          <div className={cn(
+            'flex h-11 w-11 items-center justify-center rounded-lg',
+            darkMode ? 'text-indigo-400' : 'text-indigo-600'
+          )}>
+            <Dna className="h-10 w-10" />
           </div>
-          <div>
-            <p className={cn(
-              'text-4xl font-custom2 ',
-              darkMode ? 'text-slate-50' : 'text-slate-950'
-            )}>
-              Classification Summary
-            </p>
-
-          </div>
+          <p className="text-4xl font-custom uppercase bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-500 bg-clip-text text-transparent">
+            BAIO
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Right — title + actions */}
+        <div className="flex items-center gap-4">
+          <p className={cn(
+            'text-4xl font-custom2 whitespace-nowrap bg-gradient-to-r from-violet-500 via-indigo-500 to-cyan-500 bg-clip-text text-transparent'
+          )}>
+            Classification Summary
+          </p>
           {onToggleChat && (
             <button
               onClick={onToggleChat}
