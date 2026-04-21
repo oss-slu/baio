@@ -46,10 +46,10 @@ def validate_dna_sequence(sequence: str, seq_id: str = "") -> Tuple[bool, str]:
     at_content = (clean_seq.count("A") + clean_seq.count("T")) / len(clean_seq)
     if gc_content in (0, 1):
         return False, "Invalid sequence: 0% or 100% GC content indicates non-DNA data"
-    if at_content > 0.9:
-        return False, "Invalid sequence: >90% A/T content suggests non-DNA data"
-    if gc_content > 0.9:
-        return False, "Invalid sequence: >90% G/C content suggests non-DNA data"
+    if at_content > 0.97:
+        return False, "Invalid sequence: >97% A/T content suggests non-DNA data"
+    if gc_content > 0.97:
+        return False, "Invalid sequence: >97% G/C content suggests non-DNA data"
 
     # Check ratio of standard DNA bases (A,T,G,C)
     valid_bases = sum(1 for c in clean_seq if c in "ATGC")
