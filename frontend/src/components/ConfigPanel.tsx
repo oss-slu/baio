@@ -1,4 +1,4 @@
-import { Loader2, PlayCircle, ShieldCheck, SlidersHorizontal, HelpCircle } from 'lucide-react'
+import { Loader2, PlayCircle, ShieldCheck, SlidersHorizontal, HelpCircle, ChevronDown } from 'lucide-react'
 import type { ModelConfig } from '../types'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
@@ -13,6 +13,7 @@ type ConfigPanelProps = {
 
 function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: ConfigPanelProps) {
   const [showThresholdHelp, setShowThresholdHelp] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   
   const sliderLabel = (label: string, value: number, tooltip?: string) => (
     <div className="flex-column text-xs">
@@ -37,182 +38,142 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
     </div>
   )
 
+  const fieldCls = cn(
+    'w-full rounded-md border px-3 py-1.5 text-xs outline-none transition',
+    'border-slate-200 bg-white text-slate-800 placeholder:text-slate-400',
+    'focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100',
+    'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30',
+    'disabled:cursor-not-allowed disabled:opacity-50'
+  )
+
   return (
-    <section className={cn(
-      'dark:border-slate-700 dark:bg-slate-950'
-    )}>
-      <div className="flex-wrap items-center justify-between gap-3">
+    <section className="space-y-3">
+      {/* Collapsible toggle */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={cn(
+          'flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs transition',
+          'hover:bg-slate-100 dark:hover:bg-slate-800'
+        )}
+      >
         <div className="flex items-center gap-2">
-          <div className={cn(
-            'flex h-10 w-10 items-center justify-center rounded-lg',
-          )}>
-            <SlidersHorizontal className="h-8 w-8 text-black dark:text-white" />
-          </div>
-          <div>
-            <p className="text-3xl font-normal font-custom3 tracking-wider text-black dark:text-white">
-              Configuration
-            </p>
-          </div>
+          <SlidersHorizontal className="h-3.5 w-3.5 text-slate-400" />
+          <span className="font-semibold text-slate-600 dark:text-slate-300">Configuration</span>
         </div>
-      </div>
+        <ChevronDown className={cn('h-3.5 w-3.5 text-slate-400 transition-transform duration-200', isOpen && 'rotate-180')} />
+      </button>
 
-      <div className="mt-4  gap-4">
-        <div className={cn(
-          'space-y-2 rounded-xl border p-4',
-          'border-white bg-white',
-          'dark:border-slate-600 dark:bg-slate-700/50'
-        )}>
-          <label className="text-sm text-start font-custom2 tracking-widest uppercase font-bold  text-slate-800 dark:text-slate-200">Classification Type</label>
-          <select
-            value={config.type}
-            onChange={(e) => onChange('type', e.target.value)}
-            className={cn(
-              'w-full rounded-lg border px-3 py-2 text-sm font-medium font-custom2 outline-none transition',
-              'border-slate-950 bg-white text-slate-950 hover:bg-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-slate-100',
-              'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-900'
+      {isOpen && (
+        <div className="space-y-4">
+          {/* Classification type */}
+          <div className="space-y-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Classification Type
+            </label>
+            <select value={config.type} onChange={(e) => onChange('type', e.target.value)} className={fieldCls} disabled={isRunning}>
+              <option>Binary (Virus vs Host)</option>
+              <option>Binary (Evo 2 - GPU Required)</option>
+              <option>Multi-class (Detailed Taxonomy)</option>
+            </select>
+            {config.type === 'Binary (Evo 2 - GPU Required)' && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                ⚠ Requires NVIDIA GPU with 16 GB+ VRAM
+              </p>
             )}
-            disabled={isRunning}
-          >
-            <option>Binary (Virus vs Host)</option>
-            <option>Binary (Evo 2 - GPU Required)</option>
-            <option>Multi-class (Detailed Taxonomy)</option>
-          </select>
-          {config.type === 'Binary (Evo 2 - GPU Required)' && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              ⚠️ Evo 2 requires NVIDIA GPU with 16GB+ VRAM
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className={cn(
-            'space-y-2 rounded-xl border p-4',
-            'border-white bg-white',
-            'dark:border-slate-600 dark:bg-slate-700/50'
-          )}>
-            {sliderLabel('Confidence threshold', config.confidence_threshold, 'Sequences below this threshold will be marked as Uncertain')}
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.01}
-              value={config.confidence_threshold}
-              onChange={(e) => onChange('confidence_threshold', Number(e.target.value))}
-              className="accent-slate-500 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-900 dark:bg-slate-600 outline-none"
-              disabled={isRunning}
-            />
           </div>
 
-          <div className={cn(
-            'space-y-2 rounded-xl border p-4',
-            'border-white bg-white',
-            'dark:border-slate-600 dark:bg-slate-700/50'
-          )}>
-            {sliderLabel('Novelty sensitivity', config.ood_threshold)}
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.01}
-              value={config.ood_threshold}
-              onChange={(e) => onChange('ood_threshold', Number(e.target.value))}
-              className="accent-slate-500 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-900 dark:bg-slate-600 outline-none"
-              disabled={isRunning}
-            />
-          </div>
-        </div>
+          {/* Sliders — full width, stacked */}
+          {[
+            { key: 'confidence_threshold' as const, label: 'Confidence Threshold', val: config.confidence_threshold, tip: 'Sequences below this are marked Uncertain' },
+            { key: 'ood_threshold' as const,        label: 'Novelty Sensitivity',   val: config.ood_threshold,         tip: undefined },
+          ].map(({ key, label, val, tip }) => (
+            <div key={key} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  {label}
+                  {tip && (
+                    <div className="group relative">
+                      <HelpCircle className="h-3 w-3 cursor-help text-slate-300 dark:text-slate-600" />
+                      <div className="absolute bottom-full left-0 z-10 mb-2 hidden w-44 rounded-md bg-slate-800 px-2.5 py-1.5 text-xs text-white shadow-lg group-hover:block">
+                        {tip}
+                      </div>
+                    </div>
+                  )}
+                </span>
+                <span className="text-xs font-bold tabular-nums text-indigo-600 dark:text-indigo-400">
+                  {val.toFixed(2)}
+                </span>
+              </div>
+              <div className="relative h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700">
+                <div
+                  className="absolute left-0 top-0 h-full rounded-full bg-indigo-500"
+                  style={{ width: `${val * 100}%` }}
+                />
+                <input
+                  type="range" min={0} max={1} step={0.01} value={val}
+                  onChange={(e) => onChange(key, Number(e.target.value))}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  disabled={isRunning}
+                />
+              </div>
+            </div>
+          ))}
 
-        <div className="grid grid-r-2 gap-2">
-          <div className={cn(
-            'space-y-2 rounded-xl p-1',
-            'dark:border-slate-600 dark:bg-slate-700/50'
-          )}>
-            <div className="flex items-center justify-between gap-2 text-md font-custom2">
-              <span className="text-black tracking-widest uppercase text-sm font-bold dark:text-slate-400">Batch size</span>
-              <span className="font-bold text-black dark:text-emerald-400">{config.batch_size}</span>
+          {/* Batch size */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Batch Size</label>
+              <span className="text-xs text-slate-400 dark:text-slate-500">throughput vs. latency</span>
             </div>
             <input
-              type="number"
-              min={1}
-              max={512}
-              value={config.batch_size}
+              type="number" min={1} max={512} value={config.batch_size}
               onChange={(e) => onChange('batch_size', Number(e.target.value))}
+              className={fieldCls}
+              disabled={isRunning}
+            />
+          </div>
+
+          {/* Novel / OOD toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">Novel / OOD Detection</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Flags sequences outside training distribution</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onChange('enable_ood', !config.enable_ood)}
               className={cn(
-                'w-full rounded-lg border px-3 py-2 text-sm font-semibold outline-none transition',
-                'border-black bg-white text-slate-800 hover:border-emerald-300 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100',
-                'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-900'
+                'flex h-5 w-9 shrink-0 items-center rounded-full px-0.5 transition-colors duration-200',
+                config.enable_ood ? 'justify-end bg-emerald-500' : 'justify-start bg-slate-200 dark:bg-slate-700'
               )}
               disabled={isRunning}
-            />
-            <p className="text-xs text-black font-custom2 dark:text-slate-400">Controls throughput vs. latency.</p>
-          </div>
-
-          <div className={cn(
-            'space-y-2 rounded-xl p-1',
-            'dark:border-slate-600 dark:bg-slate-700/50'
-          )}>
-            <div className="flex flex-col gap-2 justify-between">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-custom2 tracking-widest uppercase font-bold text-black dark:text-white">
-                  Novel / OOD detection
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onChange('enable_ood', !config.enable_ood)}
-                className={cn(
-                  'flex h-8 w-14 items-center rounded-full px-1 transition',
-                  config.enable_ood
-                    ? 'justify-end  bg-emerald-500'
-                    : 'justify-start border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700',
-                )}
-                disabled={isRunning}
-              >
-                <span className="h-6 w-6 rounded-full bg-white" />
-              </button>
-            </div>
-            <p className="text-xs text-black font-custom2 dark:text-slate-400">
-              Flags sequences outside training distribution.
-            </p>
+            >
+              <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className={cn(
-        'mt-5 flex flex-col gap-3 rounded-xl',
-        'dark:border-emerald-900/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-blue-950/30'
-      )}>
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-bold text-left uppercase tracking-widest text-black font-custom2 dark:text-slate-400">
-            Ready to Run
-          </p>
-          <p className="text-sm text-slate-700 font-custom2 dark:text-slate-300">
-            {parsedCount ? `${parsedCount} sequences queued for classification.` : 'Add FASTA to get started.'}
-          </p>
-        </div>
+      {/* Run button — always visible */}
+      <div className="space-y-1.5 border-t border-slate-100 pt-3 dark:border-slate-800">
+        <p className="text-xs text-slate-400 dark:text-slate-500">
+          {parsedCount ? `${parsedCount} sequences queued` : 'Add FASTA sequences to get started'}
+        </p>
         <button
           type="button"
           onClick={onRun}
           disabled={isRunning || parsedCount === 0}
           className={cn(
-            'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-md font-custom3 tracking-wider text-white shadow-lg transition',
-            'bg-slate-500 ',
-            'hover:shadow-xl hover:shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600',
-            'disabled:cursor-not-allowed disabled:opacity-60',
-            parsedCount > 0 && !isRunning && 'bg-emerald-500 animate-pulse'
+            'inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-xs font-semibold text-white shadow-sm transition',
+            'bg-slate-300 disabled:cursor-not-allowed disabled:opacity-50',
+            parsedCount > 0 && !isRunning && 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20 animate-pulse'
           )}
         >
-          {isRunning ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Running...
-            </>
-          ) : (
-            <>
-              <PlayCircle className="h-4 w-4" />
-              Run Classification
-            </>
-          )}
+          {isRunning
+            ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Running…</>
+            : <><PlayCircle className="h-3.5 w-3.5" /> Run Classification</>
+          }
         </button>
       </div>
     </section>
