@@ -40,10 +40,10 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
 
   const fieldCls = cn(
     'w-full rounded-md border px-3 py-1.5 text-xs outline-none transition',
-    'border-slate-200 bg-white text-slate-800 placeholder:text-slate-400',
-    'focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100',
-    'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-900/30',
-    'disabled:cursor-not-allowed disabled:opacity-50'
+    'border-[#E5E7EB] bg-white text-[#1E293B] placeholder:text-slate-400',
+    'focus:border-blue-500 focus:ring-2 focus:ring-blue-100',
+    'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/30',
+    'disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400'
   )
 
   return (
@@ -165,9 +165,13 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           onClick={onRun}
           disabled={isRunning || parsedCount === 0}
           className={cn(
-            'inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-xs font-semibold text-white shadow-sm transition',
-            'bg-slate-300 disabled:cursor-not-allowed disabled:opacity-50',
-            parsedCount > 0 && !isRunning && 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20 animate-pulse'
+            'inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-xs font-semibold shadow-sm transition-all duration-150',
+            // Disabled / no sequences — clear muted state
+            (parsedCount === 0 || isRunning) && 'cursor-not-allowed bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500',
+            // Running — keep it blue but show spinner context
+            isRunning && 'bg-blue-600/70 text-white cursor-not-allowed',
+            // Ready — solid primary blue with subtle glow
+            parsedCount > 0 && !isRunning && 'bg-[#2563EB] text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 hover:shadow-blue-600/30',
           )}
         >
           {isRunning
