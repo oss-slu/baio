@@ -1,3 +1,5 @@
+export type FilterStatus = 'ALL' | 'Virus' | 'Host' | 'Novel' | 'Uncertain'
+
 export type SequenceInput = {
   id: string
   sequence: string

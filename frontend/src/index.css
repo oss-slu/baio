@@ -21,7 +21,7 @@ body {
 }
 
 body:not(.dark) {
-  background: #F8FAFC;
+  background: #f9fafb;
   @apply text-slate-900;
 }
 
