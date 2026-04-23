@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
+import { cn } from './lib/utils'
 import Header from './components/Header'
 import LandingPage from './components/LandingPage'
 import SequenceInput from './components/SequenceInput'
@@ -229,16 +230,14 @@ function App() {
           } overflow-hidden ${
             darkMode
               ? 'border-r border-slate-800 bg-slate-900'
-              : 'border-r border-slate-200 bg-white shadow-sm'
+              : 'border-r border-[#E5E7EB] bg-white'
           }`}
         >
           {/* Sidebar Toggle Button */}
-          <div className="flex-col h-full w-full p-5 overflow-y-auto space-y-5">
+          <div className="flex-col h-full w-full p-6 overflow-y-auto space-y-6">
             <button
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-1.5 text-xs font-medium transition ${
-                darkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-400 hover:text-slate-700'
-              }`}
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
             >
               <ChevronLeft className="h-4 w-4" />
               Close Sidebar
@@ -254,7 +253,7 @@ function App() {
               onToggle={() => setInputOpen((prev) => !prev)}
             />
 
-            <div className="border-t border-slate-100 pt-4 dark:border-slate-800">
+            <div className="border-t border-[#E5E7EB] pt-5 dark:border-slate-800">
               <ConfigPanel
                 config={config}
                 onChange={handleConfigChange}
@@ -275,10 +274,10 @@ function App() {
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className={`fixed left-4 top-20 z-20 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
-              darkMode 
-                ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700' 
-                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+            className={`fixed left-4 top-20 z-20 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-sm ${
+              darkMode
+                ? 'border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800'
+                : 'border-[#E5E7EB] bg-white text-[#1E293B] hover:bg-slate-50'
             }`}
           >
             <Menu className="h-4 w-4" />
@@ -292,6 +291,16 @@ function App() {
             sidebarOpen ? 'md:ml-72' : 'ml-0'
           }`}
         >
+          {results && (
+            <div className="px-8 pt-6 pb-0">
+              <h2 className={cn(
+                'text-xl font-bold tracking-tight',
+                darkMode ? 'text-slate-100' : 'text-slate-900'
+              )}>
+                Classification Summary
+              </h2>
+            </div>
+          )}
           <SummaryCards
             results={results}
             isLoading={isRunning}
