@@ -218,7 +218,7 @@ function SummaryCards({ results, isLoading, parsedCount, filterStatus, onFilterC
   return (
     <section className={cn(
       'border-b bg-white px-8 py-3',
-      'border-slate-200 dark:border-slate-800 dark:bg-slate-900'
+      'border-[#E5E7EB] dark:border-slate-800 dark:bg-slate-900'
     )}>
       {!results && !isLoading && (
         <p className="text-xs text-slate-400 dark:text-slate-500">

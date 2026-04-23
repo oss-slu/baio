@@ -27,16 +27,23 @@ class LLMClient:
         self.model = model
         self.openrouter_key = os.getenv("OPENROUTER_API_KEY")
         self.gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        self.nvidia_key = os.getenv("NVCF_RUN_KEY")
 
-        # Treat placeholder value as unset
+        # Treat placeholder values as unset
         if self.openrouter_key == "your_openrouter_key_here":
             self.openrouter_key = None
+        if self.gemini_key == "your_gemini_key_here":
+            self.gemini_key = None
 
         if self.openrouter_key:
             self._backend = "openrouter"
         elif self.gemini_key:
             self._backend = "gemini"
             print("OpenRouter key not found; using Gemini API.", flush=True)
+        elif self.nvidia_key:
+            self._backend = "nvidia"
+            self.nvidia_model = "nvidia/llama-3.1-nemotron-nano-8b-v1"
+            print("Using NVIDIA NIM API (nemotron-nano-8b).", flush=True)
         else:
             self._backend = "mock"
             print("No LLM API key found; falling back to mock responses.", flush=True)
@@ -60,6 +67,8 @@ class LLMClient:
             return self._call_openrouter(messages, system_prompt)
         elif self._backend == "gemini":
             return self._call_gemini(messages, system_prompt)
+        elif self._backend == "nvidia":
+            return self._call_nvidia(messages, system_prompt)
         else:
             return self._mock_response(messages)
 
@@ -112,6 +121,34 @@ class LLMClient:
             return response.text
         except Exception as e:
             print(f"Gemini error: {e}. Falling back to mock response.", flush=True)
+            return self._mock_response(messages)
+
+    def _call_nvidia(self, messages: List[Dict[str, str]], system_prompt: str) -> str:
+        payload = {
+            "model": self.nvidia_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                *messages,
+            ],
+            "max_tokens": 1024,
+            "temperature": 0.7,
+            "top_p": 0.9,
+        }
+        headers = {
+            "Authorization": f"Bearer {self.nvidia_key}",
+            "Content-Type": "application/json",
+        }
+        try:
+            response = requests.post(
+                url="https://integrate.api.nvidia.com/v1/chat/completions",
+                headers=headers,
+                data=json.dumps(payload),
+                timeout=60,
+            )
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        except Exception as e:
+            print(f"NVIDIA NIM error: {e}. Falling back to mock response.", flush=True)
             return self._mock_response(messages)
 
     def _mock_response(self, messages: List[Dict[str, str]]) -> str:

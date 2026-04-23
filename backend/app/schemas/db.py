@@ -21,6 +21,7 @@ class SequenceResult(BaseModel):
     prediction: Literal["Virus", "Host", "Novel", "Uncertain", "Invalid"]
     confidence: float
     sequence_preview: str
+    full_sequence: Optional[str] = None
     organism_name: Optional[str] = None
     explanation: Optional[str] = None
     mahalanobis_distance: Optional[float] = None
