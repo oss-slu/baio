@@ -50,6 +50,9 @@ dependencies = [
     "uvicorn[standard]>=0.21",
     "python-multipart>=0.0.9",
     "sqlalchemy>=2.0",
+    "bcrypt>=5.0.0",
+    "pyjwt>=2.12.1",
+    "python-multipart>=0.0.26",
 ]
 
 [project.optional-dependencies]
