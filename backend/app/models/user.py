@@ -9,7 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(20), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String(72), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     classifications = relationship(
