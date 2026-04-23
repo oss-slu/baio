@@ -1,7 +1,15 @@
-from fastapi import Depends, HTTPException
-from ..database import get_db
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from pydantic import ValidationError
+import jwt
+
+from ..database import get_db
 from ..models import User
+from ..schemas.auth import TokenPayload
+from ..services.auth import decode_token
+
+_bearer_scheme = HTTPBearer()
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -9,17 +17,26 @@ def get_user_by_id(db: Session, user_id: int):
 
 
 def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer_scheme),
     db: Session = Depends(get_db),
-):
-    # TODO: Add JWT authentication:
-    # - Extract token from Authorization header
-    # - Decode token
-    # - Validate user identity
+) -> User:
+    try:
+        raw = decode_token(credentials.credentials)
+        payload = TokenPayload(**raw)
+        user_id = int(payload.sub)
+    except (jwt.PyJWTError, ValidationError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    # Temporary: just return the first user (for testing only)
-    user = db.query(User).first()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="No users found")
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     return user
