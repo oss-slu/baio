@@ -237,10 +237,15 @@ function ExplanationPanel({ row, risk }: { row: SequenceResult; risk: { level: R
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Summary</span>
             </div>
             <p className="text-[10px] leading-relaxed text-slate-600 dark:text-slate-400">{row.explanation}</p>
-            {row.sequence_preview && (
-              <p className="mt-1.5 break-all rounded bg-slate-100 px-1.5 py-1 font-dna text-[10px] leading-relaxed text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                {row.sequence_preview}
-              </p>
+            {(row.full_sequence || row.sequence_preview) && (
+              <div className="mt-1.5 rounded bg-slate-100 px-1.5 py-1 dark:bg-slate-900">
+                <p className="mb-0.5 font-mono text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">
+                  &gt;{row.sequence_id}
+                </p>
+                <p className="break-all font-mono text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                  {row.full_sequence ?? row.sequence_preview}
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -263,14 +268,14 @@ function ResultsDashboard({ results, isLoading, filterStatus = 'ALL' }: ResultsD
 
   return (
     <section className={cn(
-      'overflow-hidden rounded-xl border bg-white shadow-sm',
-      'border-slate-200',
+      'overflow-hidden rounded-xl border bg-white',
+      'border-[#E5E7EB]',
       'dark:border-slate-800 dark:bg-slate-900'
     )}>
       {/* Section header */}
       <div className={cn(
         'flex items-center justify-between border-b px-6 py-4',
-        'border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900'
+        'border-[#E5E7EB] bg-white dark:border-slate-800 dark:bg-slate-900'
       )}>
         <div>
           <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -301,7 +306,7 @@ function ResultsDashboard({ results, isLoading, filterStatus = 'ALL' }: ResultsD
           <thead>
             <tr className={cn(
               'border-b text-xs font-semibold uppercase tracking-wide',
-              'border-slate-100 bg-slate-50/80 text-slate-400',
+              'border-[#E5E7EB] bg-[#F9FAFB] text-slate-500',
               'dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-500'
             )}>
               <th className="px-6 py-3 text-left">Sequence ID</th>
