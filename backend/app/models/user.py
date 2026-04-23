@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, func
 from sqlalchemy.orm import relationship
 from ..database import Base
 
@@ -9,8 +9,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(20), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
+    hashed_password = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Link to classifications model (One -> Many)
     classifications = relationship(
         "Classification", back_populates="user", cascade="all, delete-orphan"
     )

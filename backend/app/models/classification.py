@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from ..database import Base
 from ..utils.sql_type_decorator import PydanticJSONType
-from ..schemas.db import SequenceResult
+from ..schemas.classification import SequenceResult
 
 
 class Classification(Base):

@@ -11,8 +11,8 @@ class ModelConfig(BaseModel):
 
 
 class SequenceInput(BaseModel):
-    sequence_id: str
-    sequence: str
+    id: constr(strip_whitespace=True, min_length=1)
+    sequence: constr(strip_whitespace=True, min_length=1)
 
 
 class ClassificationRequest(BaseModel):
@@ -22,7 +22,6 @@ class ClassificationRequest(BaseModel):
 
 
 class SequenceResult(BaseModel):
-    id: Optional[int] = None
     sequence_id: str
     length: int
     gc_content: float
@@ -48,17 +47,3 @@ class ClassificationResponse(BaseModel):
     source: str
     timestamp: str
     processing_time: float
-
-
-class ChatMessage(BaseModel):
-    role: Literal["user", "assistant", "system"]
-    content: constr(strip_whitespace=True, min_length=1)
-
-
-class ChatRequest(BaseModel):
-    messages: List[ChatMessage]
-    mode: str = "default"
-
-
-class ChatResponse(BaseModel):
-    reply: str
