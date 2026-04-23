@@ -40,3 +40,27 @@ def get_current_user(
         )
 
     return user
+
+
+def get_admin_user(current_user: User = Depends(get_current_user)) -> User:
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient privileges",
+        )
+    return current_user
+
+
+def authorize_user_target(user_id: int, current_user: User, db: Session) -> User:
+    if current_user.id == user_id:
+        return current_user
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient privileges"
+        )
+    target = get_user_by_id(db, user_id)
+    if target is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return target

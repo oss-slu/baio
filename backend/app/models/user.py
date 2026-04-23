@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, func
 from sqlalchemy.orm import relationship
 from ..database import Base
 
@@ -10,6 +10,7 @@ class User(Base):
     name = Column(String(20), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     hashed_password = Column(String(72), nullable=False)
+    is_admin = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     classifications = relationship(
