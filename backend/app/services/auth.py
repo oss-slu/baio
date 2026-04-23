@@ -11,7 +11,7 @@ if not JWT_SECRET:
     )
 
 JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 
 def hash_password(plain: str) -> str:
