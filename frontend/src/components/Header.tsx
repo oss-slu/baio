@@ -17,10 +17,10 @@ function HealthBadge({ healthOk }: { healthOk: boolean | null }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
-        healthOk === null && 'border-amber-400 bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700',
-        healthOk === true && 'border-emerald-400 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700',
-        healthOk === false && 'border-rose-400 bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300 dark:border-rose-700',
+        'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
+        healthOk === null && 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-400',
+        healthOk === true && 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400',
+        healthOk === false && 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-400',
       )}
     >
       <Activity className="h-3.5 w-3.5" />
@@ -38,8 +38,8 @@ function ModelInfoBadge() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition',
-          'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-          'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+          'border-[#E5E7EB] bg-white text-[#1E293B] hover:bg-slate-50 hover:border-slate-300',
+          'dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
         )}
       >
         <Cpu className="h-3.5 w-3.5 text-indigo-500" />
@@ -106,7 +106,7 @@ function ModelInfoBadge() {
   )
 }
 
-function Header({ 
+function Header({
   healthOk,
   darkMode,
   toggleDarkMode,
@@ -117,40 +117,38 @@ function Header({
     <header className={cn(
       'sticky top-0 z-40 border-b transition-colors',
       darkMode
-        ? 'border-indigo-900 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900'
-        : 'border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-cyan-50'
+        ? 'border-slate-800 bg-slate-950'
+        : 'border-[#E5E7EB] bg-white'
     )}>
       <div className="flex w-full items-center justify-between px-8 py-3">
         {/* Left — BAIO logo */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <div className={cn(
-            'flex h-11 w-11 items-center justify-center rounded-lg',
-            darkMode ? 'text-indigo-400' : 'text-indigo-600'
+            'flex h-9 w-9 items-center justify-center rounded-lg',
+            darkMode ? 'bg-slate-800 text-indigo-400' : 'bg-slate-100 text-indigo-600'
           )}>
-            <Dna className="h-10 w-10" />
+            <Dna className="h-5 w-5" />
           </div>
-          <p className="text-4xl font-custom uppercase bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-500 bg-clip-text text-transparent">
+          <p className={cn(
+            'text-lg font-bold tracking-tight',
+            darkMode ? 'text-white' : 'text-[#1E293B]'
+          )}>
             BAIO
           </p>
         </div>
 
-        {/* Right — title + actions */}
+        {/* Right — actions */}
         <div className="flex items-center gap-4">
-          <p className={cn(
-            'text-4xl font-custom2 whitespace-nowrap bg-gradient-to-r from-violet-500 via-indigo-500 to-cyan-500 bg-clip-text text-transparent'
-          )}>
-            Classification Summary
-          </p>
           {onToggleChat && (
             <button
               onClick={onToggleChat}
               className={cn(
                 'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
                 chatOpen
-                  ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-md'
+                  ? 'border-blue-600 bg-blue-600 text-white shadow-sm shadow-blue-600/20'
                   : darkMode
-                    ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? 'border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800'
+                    : 'border-[#E5E7EB] bg-white text-[#1E293B] hover:bg-slate-50'
               )}
               aria-label="Toggle AI Assistant"
             >
@@ -163,9 +161,9 @@ function Header({
             onClick={toggleDarkMode}
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-lg border transition-all',
-              darkMode 
-                ? 'border-slate-700 bg-slate-800 text-amber-400 hover:bg-slate-700' 
-                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              darkMode
+                ? 'border-slate-700 bg-slate-900 text-amber-400 hover:bg-slate-800'
+                : 'border-[#E5E7EB] bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700'
             )}
             aria-label="Toggle dark mode"
           >
