@@ -1,5 +1,7 @@
 # FASTQ Format Deep Dive
 
+> **Background reading — not BAIO-specific.** This document is a general reference on the FASTQ file format, paired-end sequencing, and related tooling. BAIO does not currently ingest FASTQ files directly; the primary input format is FASTA. Treat this guide as domain context, not an implementation reference.
+
 **Intro to FASTQ format**  
 **Definition**   
 Standard format file for storing sequences with their quality scores.  

@@ -1,5 +1,7 @@
 # Intro to Metagenomics
 
+> **Background reading — not BAIO-specific.** This document is a general introduction to metagenomics concepts (k-mer classification, alignment, marker genes, ML approaches). It is useful as context for contributors new to the domain, but it does not describe BAIO's implementation. For the actual architecture, see [`../ARCHITECTURE.md`](../ARCHITECTURE.md); for the classifier, see [`../models/CLASSICAL_ML.md`](../models/CLASSICAL_ML.md).
+
 **Metagenomics Definition:**
 
 - Is the study of genetic material directly from environmental or clinical samples, which allows for analysis of entire microbial communities  

@@ -27,12 +27,12 @@ DNA Sequences → K-mer Extraction (k=6) → TF-IDF Vectorization → Classifier
 - **Evaluation metrics**: Accuracy, Precision, Recall, F1-Score, ROC-AUC
 
 ### Relevant Code Files
-- **Main training**: [metaseq/train.py](../metaseq/train.py)
-- **Feature extraction**: [binary_classifiers/transformers/kmers_transformer.py](../binary_classifiers/transformers/kmers_transformer.py)
-- **Models**: [metaseq/models.py](../metaseq/models.py)
-- **Configuration**: [configs/binary_classifier.yaml](../configs/binary_classifier.yaml)
-- **Evaluation**: [binary_classifiers/evaluation.py](../binary_classifiers/evaluation.py)
-- **Data I/O**: [metaseq/dataio.py](../metaseq/dataio.py)
+- **Main training**: [metaseq/train.py](../../metaseq/train.py)
+- **Feature extraction**: [binary_classifiers/transformers/kmers_transformer.py](../../binary_classifiers/transformers/kmers_transformer.py)
+- **Models**: [metaseq/models.py](../../metaseq/models.py)
+- **Configuration**: [configs/binary_classifier.yaml](../../configs/binary_classifier.yaml)
+- **Evaluation**: [binary_classifiers/evaluation.py](../../binary_classifiers/evaluation.py)
+- **Data I/O**: [metaseq/dataio.py](../../metaseq/dataio.py)
 
 ---
 
@@ -402,7 +402,7 @@ Your codebase includes an advanced Evo2 large language model for generating sequ
 
 #### Current Integration
 
-Evo2 is already integrated in [binary_classifiers/evo2_embedder.py](../binary_classifiers/evo2_embedder.py) with fallback to Random Forest.
+Evo2 is already integrated in [binary_classifiers/evo2_embedder.py](../../binary_classifiers/evo2_embedder.py) with fallback to Random Forest.
 
 #### Usage
 
@@ -790,7 +790,7 @@ def plot_validation_curve(pipeline, X, y, param_name, param_range):
 
 ### 7.1 Key Metrics to Track
 
-Your evaluation pipeline ([binary_classifiers/evaluation.py](../binary_classifiers/evaluation.py)) already tracks these, but ensure monitoring includes:
+Your evaluation pipeline ([binary_classifiers/evaluation.py](../../binary_classifiers/evaluation.py)) already tracks these, but ensure monitoring includes:
 
 **Primary Metrics:**
 - **F1-Score**: Balanced measure of precision and recall
@@ -878,10 +878,10 @@ def analyze_errors(model, X_test, y_test):
 ## 9. Resources
 
 ### Documentation Links
-- [metaseq/train.py](../metaseq/train.py) - Main training script
-- [binary_classifiers/evaluation.py](../binary_classifiers/evaluation.py) - Evaluation metrics
-- [configs/binary_classifier.yaml](../configs/binary_classifier.yaml) - Configuration
-- [tests/test_metaseq_train.py](../tests/test_metaseq_train.py) - Training tests
+- [metaseq/train.py](../../metaseq/train.py) - Main training script
+- [binary_classifiers/evaluation.py](../../binary_classifiers/evaluation.py) - Evaluation metrics
+- [configs/binary_classifier.yaml](../../configs/binary_classifier.yaml) - Configuration
+- [tests/models/test_metaseq_train.py](../../tests/models/test_metaseq_train.py) - Training tests
 
 ### Scientific References
 - **K-mer feature importance**: https://academic.oup.com/bioinformatics/article/33/2/161/2525686

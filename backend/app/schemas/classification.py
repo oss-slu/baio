@@ -1,6 +1,13 @@
-from pydantic import BaseModel, Field, constr
 from typing import List, Literal, Optional
-from .routers import ModelConfig
+from pydantic import BaseModel, Field, constr
+
+
+class ModelConfig(BaseModel):
+    type: str = "Binary (Virus vs Host)"
+    confidence_threshold: float = Field(0.6, ge=0.0, le=1.0)
+    batch_size: int = Field(64, ge=1, le=1024)
+    enable_ood: bool = False
+    ood_threshold: float = Field(0.99, ge=0.0, le=1.0)
 
 
 class SequenceInput(BaseModel):
@@ -41,18 +48,3 @@ class ClassificationResponse(BaseModel):
     source: str
     timestamp: str
     processing_time: float
-
-
-class UserCreate(BaseModel):
-    name: str
-    email: str
-
-
-class UserResponse(BaseModel):
-    id: int
-    name: str
-    email: str
-    classifications: List[SequenceResult] = Field(default_factory=list)
-
-    class Config:
-        from_attributes = True

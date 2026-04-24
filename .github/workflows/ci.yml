@@ -5,9 +5,15 @@ permissions:
 
 on:
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   workflow_dispatch: {}
 
 concurrency:
@@ -26,25 +32,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Miniforge (Conda + Mamba)
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           auto-update-conda: true
           miniforge-version: latest
           activate-environment: baio
-          environment-file: environment.yml
           use-mamba: true
-          auto-activate-base: false
+          auto-activate: false
 
-      - name: Cache conda pkgs
-        uses: actions/cache@v4
+      - name: Cache conda env
+        id: cache-env
+        uses: actions/cache@v5
         with:
-          path: ~/.conda/pkgs
-          key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-
+          path: ${{ env.CONDA }}/envs/baio
+          key: conda-env-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yml') }}
+
+      - name: Create or update env
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: mamba env update -n baio -f environment.yml
 
       - name: Show tool versions
         run: |
@@ -80,7 +88,7 @@ jobs:
                 --cov-report=xml
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage.xml
@@ -105,17 +113,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Miniforge (Conda + Mamba)
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           auto-update-conda: true
           miniforge-version: latest
           activate-environment: baio
-          environment-file: environment.yml
           use-mamba: true
-          auto-activate-base: false
+          auto-activate: false
+
+      - name: Cache conda env
+        id: cache-env
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONDA }}/envs/baio
+          key: conda-env-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yml') }}
+
+      - name: Create or update env
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: mamba env update -n baio -f environment.yml
 
       - name: Install Evo2 dependencies
         run: |

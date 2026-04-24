@@ -5,8 +5,12 @@ from sqlalchemy.orm import Session
 # Import models and logic
 from ..database import get_db
 from ..services.classification import run_classification
-from ..schemas.routers import ModelConfig
-from ..schemas.db import ClassificationRequest, ClassificationResponse, SequenceResult
+from ..schemas.classification import (
+    ModelConfig,
+    ClassificationRequest,
+    ClassificationResponse,
+    SequenceResult,
+)
 from ..models import Classification, User
 
 # Import utilities

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Any
-from ..schemas.db import ClassificationResponse, SequenceResult
+from ..schemas.classification import ClassificationResponse, SequenceResult
 
 
 def create_classification_response(
