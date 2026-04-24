@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, status, Depends
+from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -23,8 +23,7 @@ def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> Response:
+) -> None:
     target = authorize_user_target(user_id, current_user, db)
     db.delete(target)
     db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)

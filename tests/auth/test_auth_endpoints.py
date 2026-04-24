@@ -1,4 +1,4 @@
-"""Tests for auth endpoints (Step 4, register only — login deferred to Step 7)."""
+"""Tests for auth endpoints: register, login, logout."""
 
 
 def test_register_success(register_user) -> None:
@@ -56,3 +56,26 @@ def test_register_ignores_attempt_to_set_is_admin(client) -> None:
     )
     assert resp.status_code == 201
     assert resp.json()["is_admin"] is False
+
+
+def test_logout_returns_204(client, register_user, login_user) -> None:
+    register_user()
+    login_user()
+    resp = client.post("/auth/logout")
+    assert resp.status_code == 204
+    assert resp.content == b""
+
+
+def test_logout_clears_access_cookie(client, register_user, login_user) -> None:
+    register_user()
+    login_user()
+    assert client.get("/users/1").status_code == 200
+
+    client.post("/auth/logout")
+
+    assert client.get("/users/1").status_code == 401
+
+
+def test_logout_without_cookie_is_idempotent(client) -> None:
+    resp = client.post("/auth/logout")
+    assert resp.status_code == 204

@@ -52,8 +52,8 @@ class Evo2Embedder:
     """
 
     MODEL_SIZES: dict[str, str] = {
-        "7b": "nvidia/evo2-7b",
-        "40b": "nvidia/evo2-40b",
+        "7b": "arcinstitute/evo2_7b",
+        "40b": "arcinstitute/evo2_40b",
     }
 
     def __init__(

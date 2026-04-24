@@ -144,18 +144,18 @@ def register_user(client):
 
 @pytest.fixture
 def login_user(client):
-    """Factory: log in a user, returns the access token string."""
+    """Factory: log in a user. The cookie is stored on the client's cookie jar
+    and auto-attached to subsequent requests; callers don't need a return value."""
 
     def _login(
         email: str = "test@example.com",
         password: str = "hunter22!",
-    ) -> str:
+    ) -> None:
         resp = client.post(
             "/auth/login",
             json={"email": email, "password": password},
         )
         assert resp.status_code == 200, f"login failed: {resp.status_code} {resp.text}"
-        return resp.json()["access_token"]
 
     return _login
 

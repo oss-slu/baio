@@ -16,7 +16,8 @@ def test_no_token_returns_401(client) -> None:
 
 
 def test_bad_token_returns_401(client) -> None:
-    resp = client.get("/users/1", headers=_auth_headers("garbage"))
+    client.cookies.set("access_token", "garbage")
+    resp = client.get("/users/1")
     assert resp.status_code == 401
     assert resp.json()["detail"] == "Could not validate credentials"
 

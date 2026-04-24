@@ -1,5 +1,4 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
 import jwt
@@ -8,27 +7,28 @@ from ..database import get_db
 from ..models import User
 from ..schemas.auth import TokenPayload
 from ..services.auth import decode_token
-
-_bearer_scheme = HTTPBearer()
+from ..utils.cookies import ACCESS_COOKIE_NAME
 
 
 def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(_bearer_scheme),
-    db: Session = Depends(get_db),
-) -> User:
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+    token = request.cookies.get(ACCESS_COOKIE_NAME)
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+        )
+
     try:
-        raw = decode_token(credentials.credentials)
+        raw = decode_token(token)
         payload = TokenPayload(**raw)
         user_id = int(payload.sub)
     except (jwt.PyJWTError, ValidationError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     user = db.query(User).filter(User.id == user_id).first()
@@ -36,7 +36,6 @@ def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     return user
