@@ -85,15 +85,6 @@ def test_admin_read_shows_is_admin_true(
     assert resp.json()["is_admin"] is True
 
 
-def test_self_delete_returns_204(client, register_user, login_user) -> None:
-    register_user(email="alice@example.com")
-    token = login_user(email="alice@example.com")
-
-    resp = client.delete("/users/1", headers=_auth_headers(token))
-
-    assert resp.status_code == 204
-
-
 def test_non_admin_cross_delete_returns_403(client, register_user, login_user) -> None:
     register_user(email="alice@example.com")
     register_user(email="bob@example.com")

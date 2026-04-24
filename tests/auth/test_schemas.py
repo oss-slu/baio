@@ -1,16 +1,9 @@
 """Tests for auth schemas (Step 3)."""
 
-import os
+import pytest
+from pydantic import ValidationError
 
-os.environ.setdefault(
-    "JWT_SECRET",
-    "test-secret-at-least-32-bytes-long-xxxxxxxxxx",
-)
-
-import pytest  # noqa: E402
-from pydantic import ValidationError  # noqa: E402
-
-from backend.app.schemas.auth import (  # noqa: E402
+from backend.app.schemas.auth import (
     Token,
     TokenPayload,
     UserCreate,
@@ -59,10 +52,6 @@ class TestUserLogin:
 
 
 class TestToken:
-    def test_default_token_type(self) -> None:
-        t = Token(access_token="abc")
-        assert t.token_type == "bearer"
-
     def test_serializes_to_oauth2_shape(self) -> None:
         t = Token(access_token="abc")
         assert t.model_dump() == {"access_token": "abc", "token_type": "bearer"}

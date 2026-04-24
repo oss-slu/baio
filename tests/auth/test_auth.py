@@ -1,20 +1,16 @@
-import os
+"""Tests for auth service primitives (Steps 1 & 2): bcrypt + JWT."""
+
 from datetime import timedelta
 
+import jwt
 import pytest
 
-os.environ.setdefault(
-    "JWT_SECRET",
-    "test-secret-at-least-32-bytes-long-xxxxxxxxxx",
-)
-
-from backend.app.services.auth import (  # noqa: E402
+from backend.app.services.auth import (
     create_access_token,
     decode_token,
     hash_password,
     verify_password,
 )
-import jwt  # noqa: E402
 
 
 def test_hash_password_returns_bcrypt_string() -> None:
