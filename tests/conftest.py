@@ -6,13 +6,15 @@ from pathlib import Path
 
 import pytest
 
-# JWT_SECRET must be set before any test module imports backend.app.services.auth,
-# which raises RuntimeError at import time if missing. Conftest runs before
-# pytest imports any test modules, so setting it here is early enough.
+# JWT_SECRET and CORS_ORIGINS must be set before any test module imports
+# backend.app — main.py and services.auth raise RuntimeError at import time if
+# missing. Conftest runs before pytest imports any test modules, so setting
+# them here is early enough.
 os.environ.setdefault(
     "JWT_SECRET",
     "test-secret-at-least-32-bytes-long-xxxxxxxxxx",
 )
+os.environ.setdefault("CORS_ORIGINS", "http://localhost:5173")
 
 # Add the project root to Python path so we can import our modules
 project_root = Path(__file__).parent.parent
