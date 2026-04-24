@@ -99,7 +99,7 @@ def test_refresh_with_unknown_jti_returns_401(client, register_user) -> None:
 
 def test_refresh_replay_revokes_all_user_tokens(client, register_user, test_db) -> None:
     """Replaying a rotated refresh token revokes every RefreshToken row for the user
-    and clears both cookies on the response."""
+    and instructs the client to clear both cookies."""
     register_user()
     old_cookie = client.cookies.get("refresh_token")
 
@@ -111,8 +111,14 @@ def test_refresh_replay_revokes_all_user_tokens(client, register_user, test_db) 
     assert resp.status_code == 401
 
     assert _active_token_count(test_db, user_id=1) == 0
-    assert client.cookies.get("access_token") is None
-    assert client.cookies.get("refresh_token") is None
+
+    set_cookie_headers = resp.headers.get_list("set-cookie")
+    assert any(
+        h.startswith("access_token=") and "Max-Age=0" in h for h in set_cookie_headers
+    )
+    assert any(
+        h.startswith("refresh_token=") and "Max-Age=0" in h for h in set_cookie_headers
+    )
 
 
 def test_refresh_new_access_token_authenticates(client, register_user) -> None:

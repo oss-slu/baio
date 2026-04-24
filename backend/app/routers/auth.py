@@ -132,8 +132,8 @@ def refresh(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"detail": "Could not validate credentials"},
         )
-        clear_access_cookie(response)
-        clear_refresh_cookie(response)
+        clear_access_cookie(resp)
+        clear_refresh_cookie(resp)
 
         return resp
 

@@ -13,7 +13,6 @@ services:
       RUNS_DIR: ${RUNS_DIR:-/data/runs}
       WEIGHTS_DIR: ${WEIGHTS_DIR:-/data/weights}
       API_URL_INTERNAL: http://api:8080
-      NEXT_PUBLIC_API_URL: http://localhost:8080
     volumes:
       - runs_data:${RUNS_DIR:-/data/runs}
       - weights_data:${WEIGHTS_DIR:-/data/weights}
