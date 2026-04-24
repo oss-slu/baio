@@ -430,9 +430,12 @@ baio/
 ├── data_processing/            # FASTA parsing and validation
 ├── examples/                   # Sample FASTA files for testing
 ├── tests/                      # Unit tests
-├── scripts/                    # Evaluation and utility scripts
+├── scripts/                    # CLI entrypoints + evaluation utilities
+│   ├── classify_cli.py         # DNA classification CLI
+│   ├── predict_class.py        # Thin prediction wrapper
+│   ├── retrain_model.py        # Retrain binary classifier
+│   └── modal_app.py            # Modal (GPU cloud) deployment entrypoint
 ├── weights/                    # Trained model weights
-├── modal_app.py                # Modal (GPU cloud) deployment entrypoint
 ├── .env                        # Your API keys (you create this)
 ├── .env.example                # Template for .env
 ├── environment.yml             # Conda environment definition
@@ -571,7 +574,7 @@ modal volume put baio-weights weights/support_vector_machine_best_model.pkl supp
 ### Step 4: Deploy
 
 ```bash
-modal deploy modal_app.py
+modal deploy scripts/modal_app.py
 ```
 
 Modal will print a URL like:
@@ -584,7 +587,7 @@ That is your live API endpoint — update `VITE_API_BASE` in your frontend `.env
 ### Step 5: Test locally before deploying
 
 ```bash
-modal serve modal_app.py
+modal serve scripts/modal_app.py
 ```
 
 This runs the app locally with the same Modal environment — useful for testing.

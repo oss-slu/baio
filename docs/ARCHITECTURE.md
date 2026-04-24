@@ -83,7 +83,7 @@ flowchart TD
 flowchart LR
     subgraph PROD[Production Artifact Path]
         DATA[data/*.fasta]
-        RETRAIN[retrain_model.py]
+        RETRAIN[scripts/retrain_model.py]
         KM1[KmerTransformer]
         CV[CountVectorizer]
         CLS[RandomForest / SVM training]
