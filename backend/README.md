@@ -65,7 +65,7 @@ Optional:
 
 ## Authentication
 
-Cookie-based JWTs with refresh-token rotation and reuse detection. See [`docs/auth.md`](../docs/auth.md) for the full design.
+Cookie-based JWTs with refresh-token rotation and reuse detection. See [`docs/AUTHENTICATION.md`](../docs/AUTHENTICATION.md) for the full design.
 
 ## Tests
 

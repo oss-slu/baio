@@ -4,6 +4,8 @@
 **Institution:** Saint Louis University
 **Scope:** Fine-tuning a pretrained genomic transformer model for virus/host classification
 
+> **Status: design proposal, not yet implemented.** This document sketches an intended approach using DNABERT-2 and proposes scripts (`train_transformer.py`, `metaseq/transformer_inference.py`) that do not currently exist in the repository. The production classifier today is the classical ML pipeline described in [`CLASSICAL_ML.md`](CLASSICAL_ML.md). Treat this guide as a roadmap, not a reference.
+
 ---
 
 ## 1. Background
