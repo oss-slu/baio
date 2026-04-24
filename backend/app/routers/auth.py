@@ -6,8 +6,17 @@ from ..database import get_db
 from ..models.user import User
 from ..schemas.auth import UserCreate, UserLogin
 from ..schemas.user import UserResponse
-from ..services.auth import create_access_token, hash_password, verify_password
-from ..utils.cookies import set_access_cookie, clear_access_cookie
+from ..services.auth import (
+    create_access_token,
+    create_refresh_token,
+    hash_password,
+    verify_password,
+)
+from ..utils.cookies import (
+    set_access_cookie,
+    clear_access_cookie,
+    set_refresh_cookie,
+)
 
 _DUMMY_HASH = hash_password("never-matches-any-real-password")
 
@@ -33,7 +42,9 @@ def register(
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered")
     db.refresh(user)
+
     set_access_cookie(response, create_access_token({"sub": str(user.id)}))
+    set_refresh_cookie(response, create_refresh_token(db, user.id))
 
     return user
 
@@ -50,6 +61,7 @@ def login(
             detail="Incorrect email or password",
         )
     set_access_cookie(response, create_access_token({"sub": str(user.id)}))
+    set_refresh_cookie(response, create_refresh_token(db, user.id))
 
     return user
 
