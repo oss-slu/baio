@@ -1,5 +1,10 @@
 """Tests for auth endpoints: register, login, logout."""
 
+import jwt
+
+from backend.app.models.refresh_token import RefreshToken
+from backend.app.services.auth import JWT_ALGORITHM, JWT_SECRET
+
 
 def test_register_success(register_user) -> None:
     resp = register_user(name="alice", email="alice@example.com", password="hunter22!")
@@ -77,5 +82,36 @@ def test_logout_clears_access_cookie(client, register_user, login_user) -> None:
 
 
 def test_logout_without_cookie_is_idempotent(client) -> None:
+    resp = client.post("/auth/logout")
+    assert resp.status_code == 204
+
+
+def test_logout_revokes_refresh_jti(client, register_user, test_db) -> None:
+    register_user()
+    cookie = client.cookies.get("refresh_token")
+    jti = jwt.decode(cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])["jti"]
+
+    client.post("/auth/logout")
+
+    db = test_db()
+    try:
+        row = db.query(RefreshToken).filter_by(jti=jti).first()
+        assert row is not None
+        assert row.revoked is True
+    finally:
+        db.close()
+
+
+def test_logout_clears_refresh_cookie(client, register_user) -> None:
+    register_user()
+    assert client.cookies.get("refresh_token") is not None
+
+    client.post("/auth/logout")
+
+    assert client.cookies.get("refresh_token") is None
+
+
+def test_logout_with_malformed_refresh_cookie_is_idempotent(client) -> None:
+    client.cookies.set("refresh_token", "garbage", path="/auth")
     resp = client.post("/auth/logout")
     assert resp.status_code == 204

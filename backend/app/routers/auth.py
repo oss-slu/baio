@@ -78,8 +78,22 @@ def login(
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(response: Response) -> None:
+def logout(request: Request, response: Response, db: Session = Depends(get_db)) -> None:
+    token = request.cookies.get(REFRESH_COOKIE_NAME)
+    if token is not None:
+        try:
+            payload = decode_token(token)
+            jti = payload.get("jti")
+            if jti is not None:
+                db.query(RefreshToken).filter(RefreshToken.jti == jti).update(
+                    {"revoked": True}
+                )
+                db.commit()
+        except jwt.PyJWTError:
+            pass
+
     clear_access_cookie(response)
+    clear_refresh_cookie(response)
 
 
 @router.post("/refresh", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
