@@ -13,9 +13,8 @@ class User(Base):
     is_admin = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    classifications = relationship(
-        "Classification", back_populates="user", cascade="all, delete-orphan"
-    )
+    classifications = relationship("Classification", cascade="all, delete-orphan")
+    refresh_tokens = relationship("RefreshToken", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User id={self.id} name={self.name} email={self.email}>"
