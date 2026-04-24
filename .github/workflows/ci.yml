@@ -5,9 +5,15 @@ permissions:
 
 on:
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   workflow_dispatch: {}
 
 concurrency:
@@ -34,17 +40,19 @@ jobs:
           auto-update-conda: true
           miniforge-version: latest
           activate-environment: baio
-          environment-file: environment.yml
           use-mamba: true
           auto-activate: false
 
-      - name: Cache conda pkgs
+      - name: Cache conda env
+        id: cache-env
         uses: actions/cache@v5
         with:
-          path: ~/.conda/pkgs
-          key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-
+          path: ${{ env.CONDA }}/envs/baio
+          key: conda-env-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yml') }}
+
+      - name: Create or update env
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: mamba env update -n baio -f environment.yml
 
       - name: Show tool versions
         run: |
@@ -113,9 +121,19 @@ jobs:
           auto-update-conda: true
           miniforge-version: latest
           activate-environment: baio
-          environment-file: environment.yml
           use-mamba: true
           auto-activate: false
+
+      - name: Cache conda env
+        id: cache-env
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONDA }}/envs/baio
+          key: conda-env-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yml') }}
+
+      - name: Create or update env
+        if: steps.cache-env.outputs.cache-hit != 'true'
+        run: mamba env update -n baio -f environment.yml
 
       - name: Install Evo2 dependencies
         run: |
