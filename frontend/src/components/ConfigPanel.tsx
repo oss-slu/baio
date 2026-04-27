@@ -1,4 +1,4 @@
-import { Loader2, PlayCircle, ShieldCheck, SlidersHorizontal, HelpCircle } from 'lucide-react'
+import { Loader2, PlayCircle, SlidersHorizontal, HelpCircle } from 'lucide-react'
 import type { ModelConfig } from '../types'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
@@ -43,11 +43,6 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
     )}>
       <div className="flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className={cn(
-            'flex h-10 w-10 items-center justify-center rounded-lg',
-          )}>
-            <SlidersHorizontal className="h-8 w-8 text-black dark:text-white" />
-          </div>
           <div>
             <p className="text-3xl font-normal font-custom3 tracking-wider text-black dark:text-white">
               Configuration
@@ -56,13 +51,13 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
         </div>
       </div>
 
-      <div className="mt-4  gap-4">
+      <div className="mt-4  gap-4 space-y-4">
         <div className={cn(
-          'space-y-2 rounded-xl border p-4',
+          'space-y-2 rounded-xl border p-1',
           'border-white bg-white',
           'dark:border-slate-600 dark:bg-slate-700/50'
         )}>
-          <label className="text-sm text-start font-custom2 tracking-widest uppercase font-bold  text-slate-800 dark:text-slate-200">Classification Type</label>
+          <label className="text-xs text-start font-custom2 tracking-wider uppercase font-bold  text-slate-950 dark:text-slate-200">Classification Type</label>
           <select
             value={config.type}
             onChange={(e) => onChange('type', e.target.value)}
@@ -84,9 +79,9 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-6">
           <div className={cn(
-            'space-y-2 rounded-xl border p-4',
+            'space-y-2 rounded-xl border p-1',
             'border-white bg-white',
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
@@ -104,7 +99,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           </div>
 
           <div className={cn(
-            'space-y-2 rounded-xl border p-4',
+            'space-y-2 rounded-xl border p-1',
             'border-white bg-white',
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
@@ -122,14 +117,13 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           </div>
         </div>
 
-        <div className="grid grid-r-2 gap-2">
+        <div className="grid grid-cols-2 gap-6">
           <div className={cn(
             'space-y-2 rounded-xl p-1',
             'dark:border-slate-600 dark:bg-slate-700/50'
           )}>
-            <div className="flex items-center justify-between gap-2 text-md font-custom2">
-              <span className="text-black tracking-widest uppercase text-sm font-bold dark:text-slate-400">Batch size</span>
-              <span className="font-bold text-black dark:text-emerald-400">{config.batch_size}</span>
+            <div className="flex items-center justify-between gap-2 text-xs font-custom2">
+              <span className="text-black tracking-wider uppercase font-bold dark:text-slate-400">Batch size</span>
             </div>
             <input
               type="number"
@@ -153,7 +147,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           )}>
             <div className="flex flex-col gap-2 justify-between">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-custom2 tracking-widest uppercase font-bold text-black dark:text-white">
+                <p className="text-xs font-custom2 tracking-wider uppercase font-bold text-black dark:text-white">
                   Novel / OOD detection
                 </p>
               </div>
@@ -182,14 +176,6 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
         'mt-5 flex flex-col gap-3 rounded-xl',
         'dark:border-emerald-900/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-blue-950/30'
       )}>
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-bold text-left uppercase tracking-widest text-black font-custom2 dark:text-slate-400">
-            Ready to Run
-          </p>
-          <p className="text-sm text-slate-700 font-custom2 dark:text-slate-300">
-            {parsedCount ? `${parsedCount} sequences queued for classification.` : 'Add FASTA to get started.'}
-          </p>
-        </div>
         <button
           type="button"
           onClick={onRun}
@@ -210,7 +196,7 @@ function ConfigPanel({ config, onChange, onRun, isRunning, parsedCount }: Config
           ) : (
             <>
               <PlayCircle className="h-4 w-4" />
-              Run Classification
+              {parsedCount ? 'Run Classification'  : 'Paste FASTA to Run'}
             </>
           )}
         </button>

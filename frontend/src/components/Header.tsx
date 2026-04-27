@@ -7,7 +7,9 @@ type HeaderProps = {
   darkMode: boolean
   toggleDarkMode: () => void
   chatOpen?: boolean
+  windowOpen?: boolean
   onToggleChat?: () => void
+  onToggleWindow?: () => void
 }
 
 function HealthBadge({ healthOk }: { healthOk: boolean | null }) {
@@ -111,7 +113,9 @@ function Header({
   darkMode,
   toggleDarkMode,
   chatOpen = false,
+  windowOpen = false,
   onToggleChat,
+  onToggleWindow,
 }: HeaderProps) {
   return (
     <header className={cn(
@@ -147,6 +151,23 @@ function Header({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {onToggleWindow && (
+            <button
+              onClick={onToggleWindow}
+              className={cn(
+                'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
+                windowOpen
+                  ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-md'
+                  : darkMode
+                    ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              )}
+              aria-label="Toggle AI Assistant"
+            >
+              <Bot className="h-4 w-4" />
+              Configuration
+            </button>
+          )}
           {onToggleChat && (
             <button
               onClick={onToggleChat}

@@ -63,7 +63,8 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
         <div className="flex flex-col items-center text-center gap-4">
-          <h1 className="text-5xl font-normal font-custom mt-40 text-slate-900 dark:text-white lg:text-6xl">
+          <h1 className="flex flex-row text-5xl items-center gap-2 font-normal font-custom mt-40 text-slate-900 dark:text-white lg:text-6xl">
+            <Dna className="h-20 w-20" />
             BAIO
           </h1>
 
@@ -74,7 +75,7 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
             <textarea
               placeholder={``}
               className={cn(
-                'h-5 w-40 resize-none rounded-xl text-center bordertext-sm outline-none transition',
+                'h-6 w-40 resize-none rounded-xl text-center bordertext-sm outline-none transition',
                 'border-slate-900 bg-slate-100 text-slate-800 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200',
                 'dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500 dark:focus:ring-emerald-800',
                 'placeholder:text-slate-400 dark:placeholder:text-slate-500'
@@ -90,7 +91,7 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
             <textarea
               placeholder={``}
               className={cn(
-                'h-5 w-40 resize-none rounded-xl text-center bordertext-sm outline-none transition',
+                'h-6 w-40 resize-none rounded-xl text-center bordertext-sm outline-none transition',
                 'border-slate-900 bg-slate-100 text-slate-800 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200',
                 'dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500 dark:focus:ring-emerald-800',
                 'placeholder:text-slate-400 dark:placeholder:text-slate-500'
@@ -98,18 +99,30 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
               spellCheck={false}
             />
           </div>
-
-          <button
-              onClick={onGetStarted}
-              className={cn(
-                'flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all',
-                'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700',
-                'hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5'
-              )}
-            >
-              <Play className="h-5 w-5" />
-              Get Started
-          </button>
+          <div className="flex flex-row items-center text-center gap-5">
+            <button
+                onClick={onGetStarted}
+                className={cn(
+                  'flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all',
+                  'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700',
+                  'hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5'
+                )}
+              >
+                <Play className="h-5 w-5" />
+                Get Started
+            </button>
+            <button
+                onClick={onGetStarted}
+                className={cn(
+                  'flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all',
+                  'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700',
+                  'hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5'
+                )}
+              >
+                <Play className="h-5 w-5" />
+                Sign in with Google
+            </button>
+          </div>
           
         </div>
       </div>
@@ -225,8 +238,8 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
               <button
                 onClick={() => setShowLogin(true)}
                 className={cn(
-                  'flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all',
-                  'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700',
+                  'flex items-center gap-2 rounded-xl px-6 py-3 text-base font-normal text-white font-custom3 transition-all',
+                  'bg-black from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700',
                   'hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5'
                 )}
               >
@@ -464,7 +477,7 @@ export default function LandingPage({ onGetStarted, darkMode, toggleDarkMode }: 
               </p>
               <button
                 onClick={onGetStarted}
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-primary-600 shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-normal font-custom3 text-primary-600 shadow-lg transition-all hover:bg-white/90"
               >
                 Launch BAIO
                 <ChevronRight className="h-5 w-5" />

@@ -16,6 +16,7 @@ import type {
   SequenceInput as SequenceInputType,
 } from './types'
 
+
 const defaultConfig: ModelConfig = {
   type: 'Binary (Virus vs Host)',
   confidence_threshold: 0.6,
@@ -59,6 +60,7 @@ function parseFasta(text: string): SequenceInputType[] {
 }
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [showLanding, setShowLanding] = useState(true)
   const [rawSequences, setRawSequences] = useState('')
   const [config, setConfig] = useState<ModelConfig>(defaultConfig)
@@ -66,8 +68,6 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [healthOk, setHealthOk] = useState<boolean | null>(null)
-  const [inputOpen, setInputOpen] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('darkMode') === 'true' ||
@@ -106,6 +106,8 @@ function App() {
   useEffect(() => {
     checkHealth().then(setHealthOk).catch(() => setHealthOk(false))
   }, [])
+
+
 
   const parsedSequences = useMemo(
     () => (rawSequences.trim() ? parseFasta(rawSequences) : []),
@@ -205,6 +207,7 @@ function App() {
 
 
 
+
       {error && (
         <div className={`mx-auto max-w-7xl px-4 pt-4 ${sidebarOpen ? 'md:ml-80' : ''} transition-all duration-300`}>
           <div className={`rounded-xl border px-4 py-3 ${
@@ -246,8 +249,6 @@ function App() {
               parsedCount={parsedSequences.length}
               onLoadSample={() => setRawSequences(sampleFasta)}
               isRunning={isRunning}
-              isOpen={inputOpen}
-              onToggle={() => setInputOpen((prev) => !prev)}
             />
 
             <div className="mt-4">
@@ -271,10 +272,10 @@ function App() {
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className={`fixed left-4 top-20 z-20 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-md ${
+            className={`fixed left-4 top-20 z-40 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium tracking-wide font-custom3 ${
               darkMode 
                 ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700' 
-                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                : 'bg-black text-white hover:bg-slate-150'
             }`}
           >
             <Menu className="h-4 w-4" />
