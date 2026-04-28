@@ -3,21 +3,27 @@
 Retrain binary classifier with COVID (Virus) and Human (Host) data.
 """
 
-import os
-import sys
-import warnings
-from pathlib import Path
+import os  # noqa: E402
+import sys  # noqa: E402
+import warnings  # noqa: E402
+from pathlib import Path  # noqa: E402
 
-import joblib
-import numpy as np
-from metaseq.dataio import load_fasta
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-from binary_classifiers.transformers.kmers_transformer import KmerTransformer
+import joblib  # noqa: E402
+import numpy as np  # noqa: E402
+from metaseq.dataio import load_fasta  # noqa: E402
+from sklearn.ensemble import RandomForestClassifier  # noqa: E402
+from sklearn.feature_extraction.text import CountVectorizer  # noqa: E402
+from sklearn.metrics import accuracy_score, classification_report  # noqa: E402
+from sklearn.model_selection import train_test_split  # noqa: E402
+from sklearn.svm import SVC  # noqa: E402
+
+from binary_classifiers.transformers.kmers_transformer import (  # noqa: E402
+    KmerTransformer,
+)
 
 warnings.filterwarnings("ignore")
 
