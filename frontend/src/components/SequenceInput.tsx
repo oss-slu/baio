@@ -8,8 +8,8 @@ type SequenceInputProps = {
   parsedCount: number
   onLoadSample: () => void
   isRunning: boolean
-  isOpen: boolean
-  onToggle: () => void
+  isOpen?: boolean
+  onClose?: () => void
 }
 
 function SequenceInput({

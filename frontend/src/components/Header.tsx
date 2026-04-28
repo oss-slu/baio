@@ -7,7 +7,9 @@ type HeaderProps = {
   darkMode: boolean
   toggleDarkMode: () => void
   chatOpen?: boolean
+  windowOpen?: boolean
   onToggleChat?: () => void
+  onToggleWindow?: () => void
 }
 
 function HealthBadge({ healthOk }: { healthOk: boolean | null }) {
@@ -111,7 +113,9 @@ function Header({
   darkMode,
   toggleDarkMode,
   chatOpen = false,
+  windowOpen = false,
   onToggleChat,
+  onToggleWindow,
 }: HeaderProps) {
   return (
     <header className={cn(
