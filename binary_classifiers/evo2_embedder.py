@@ -52,8 +52,8 @@ class Evo2Embedder:
     """
 
     MODEL_SIZES: dict[str, str] = {
-        "7b": "nvidia/evo2-7b",
-        "40b": "nvidia/evo2-40b",
+        "7b": "arcinstitute/evo2_7b",
+        "40b": "arcinstitute/evo2_40b",
     }
 
     def __init__(
@@ -83,7 +83,7 @@ class Evo2Embedder:
 
         if not TRANSFORMERS_AVAILABLE:
             print(
-                "WARNING: transformers library not installed. Install with: pip install transformers torch"
+                "WARNING: Evo2 dependencies not installed. Install with: pip install baio[evo2]"
             )
             return
 

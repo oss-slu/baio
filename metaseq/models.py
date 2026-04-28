@@ -1,4 +1,4 @@
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 from sklearn.base import BaseEstimator, TransformerMixin  # type: ignore[import-untyped]
 from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore[import-untyped]
 from sklearn.pipeline import Pipeline  # type: ignore[import-untyped]
@@ -26,7 +26,9 @@ class KmerTransformer(BaseEstimator, TransformerMixin):
         return " ".join(s[i : i + k] for i in range(len(s) - k + 1))
 
 
-def build_pipeline(model_name: str, params: Dict[str, Any] | None = None) -> Pipeline:
+def build_pipeline(
+    model_name: str, params: Optional[Dict[str, Any]] = None
+) -> Pipeline:
     params = params or {}
     k = int(params.get("k", 6))
     vectorizer = TfidfVectorizer(analyzer="word", token_pattern=r"\S+", lowercase=False)

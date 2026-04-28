@@ -1,3 +1,5 @@
+export type FilterStatus = 'ALL' | 'Virus' | 'Host' | 'Novel' | 'Uncertain'
+
 export type SequenceInput = {
   id: string
   sequence: string
@@ -18,6 +20,7 @@ export type SequenceResult = {
   prediction: 'Virus' | 'Host' | 'Novel' | 'Uncertain' | 'Invalid'
   confidence: number
   sequence_preview: string
+  full_sequence?: string
   organism_name?: string
   explanation?: string
   mahalanobis_distance?: number

@@ -1,0 +1,32 @@
+from datetime import datetime
+from typing import List, Any
+from ..schemas.db import ClassificationResponse, SequenceResult
+
+
+def create_classification_response(
+    sequences: List[SequenceResult], source: str = "db", ptime: Any = 0
+) -> ClassificationResponse:
+    virus_count = host_count = novel_count = uncertain_count = 0
+
+    for seq in sequences:
+        if seq.prediction == "Virus":
+            virus_count += 1
+        elif seq.prediction == "Host":
+            host_count += 1
+        elif seq.prediction == "Novel":
+            novel_count += 1
+        elif seq.prediction == "Uncertain":
+            uncertain_count += 1
+
+    response = ClassificationResponse(
+        total_sequences=len(sequences),
+        virus_count=virus_count,
+        host_count=host_count,
+        novel_count=novel_count,
+        uncertain_count=uncertain_count,
+        detailed_results=sequences,
+        source=source,
+        timestamp=datetime.now().isoformat(),
+        processing_time=ptime,
+    )
+    return response

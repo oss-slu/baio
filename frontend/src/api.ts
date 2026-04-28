@@ -36,7 +36,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
 export async function classifySequences(
   payload: ClassificationPayload,
 ): Promise<ClassificationResponse> {
-  return request<ClassificationResponse>('/classify', {
+  return request<ClassificationResponse>('/classifications/classify', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
@@ -53,7 +53,7 @@ export async function sendChat(
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    await request('/health', { method: 'GET' })
+    await request('/system/health', { method: 'GET' })
     return true
   } catch {
     return false

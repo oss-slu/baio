@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { classifySequences, checkHealth, sendChat } from './api'
+import { cn } from './lib/utils'
 import Header from './components/Header'
 import LandingPage from './components/LandingPage'
 import SequenceInput from './components/SequenceInput'
@@ -12,6 +13,7 @@ import SummaryCards from './components/SummaryCards'
 import type {
   ChatMessage,
   ClassificationResponse,
+  FilterStatus,
   ModelConfig,
   SequenceInput as SequenceInputType,
 } from './types'
@@ -80,6 +82,8 @@ function App() {
     setShowLanding(false)
   }
 
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>('ALL')
+
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
@@ -121,6 +125,7 @@ function App() {
       return
     }
 
+    setFilterStatus('ALL')
     setIsRunning(true)
     try {
       const response = await classifySequences({
@@ -182,9 +187,9 @@ function App() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode 
-        ? 'bg-slate-950 text-slate-100' 
-        : 'bg-slate-100 text-slate-900'
+      darkMode
+        ? 'bg-[#0f172a] text-slate-100'
+        : 'bg-[#f9fafb] text-slate-900'
     }`}>
       <Header
         healthOk={healthOk}
@@ -224,20 +229,18 @@ function App() {
         {/* Left Sidebar - Collapsible */}
         <div
           className={`fixed left-0 top-15 h-[calc(100vh-3.5rem)] z-30 transform transition-all duration-300 ease-in-out ${
-            sidebarOpen ? 'w-80' : 'w-0'
+            sidebarOpen ? 'w-72' : 'w-0'
           } overflow-hidden ${
-            darkMode 
-              ? 'border-r border-slate-800 bg-slate-900' 
-              : 'border-r border-slate-200 bg-white'
-          } shadow-xl`}
+            darkMode
+              ? 'border-r border-slate-800 bg-slate-900'
+              : 'border-r border-[#E5E7EB] bg-white'
+          }`}
         >
           {/* Sidebar Toggle Button */}
-          <div className="flex-col h-full w-full p-4 overflow-y-auto">
+          <div className="flex-col h-full w-full p-6 overflow-y-auto space-y-6">
             <button
               onClick={() => setSidebarOpen(false)}
-              className={`mb-4 font-normal font-custom2 flex items-center gap-2 text-sm ${
-                darkMode ? 'text-slate-50 hover:text-slate-200' : 'text-slate-950 hover:text-slate-700'
-              }`}
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
             >
               <ChevronLeft className="h-4 w-4" />
               Close Sidebar
@@ -251,7 +254,7 @@ function App() {
               isRunning={isRunning}
             />
 
-            <div className="mt-4">
+            <div className="border-t border-[#E5E7EB] pt-5 dark:border-slate-800">
               <ConfigPanel
                 config={config}
                 onChange={handleConfigChange}
@@ -285,24 +288,33 @@ function App() {
 
         {/* Main Content Area */}
         <div
-          className={`flex-row transition-all duration-300 ${
-            sidebarOpen ? 'md:ml-80' : 'ml-0'
+          className={`transition-all duration-300 ${
+            sidebarOpen ? 'md:ml-72' : 'ml-0'
           }`}
         >
-          <div className="flex flex-col">
-            <div className=" mx-auto w-full z-30">
-              <SummaryCards
-                    results={results}
-                    isLoading={isRunning}
-                    parsedCount={parsedSequences.length}
-                  />
+          {results && (
+            <div className="px-8 pt-6 pb-0">
+              <h2 className={cn(
+                'text-xl font-bold tracking-tight',
+                darkMode ? 'text-slate-100' : 'text-slate-900'
+              )}>
+                Classification Summary
+              </h2>
             </div>
-            <div className="fixed mx-auto h-80 max-w-full px-6 py-80 overflow-y-auto">           
-                <ResultsDashboard
-                  results={results}
-                  isLoading={isRunning}
-                />
-            </div>
+          )}
+          <SummaryCards
+            results={results}
+            isLoading={isRunning}
+            parsedCount={parsedSequences.length}
+            filterStatus={filterStatus}
+            onFilterChange={setFilterStatus}
+          />
+          <div className="px-8 py-6">
+            <ResultsDashboard
+              results={results}
+              isLoading={isRunning}
+              filterStatus={filterStatus}
+            />
           </div>
         </div>
         

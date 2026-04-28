@@ -209,6 +209,25 @@ This runs everything with one command. No need to set up Python or Node manually
 
 **Requirements:** Docker Desktop must be running.
 
+#### Step 1: Set up your `.env` file
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set your API keys (optional — the app works without them, but the AI chatbot will use mock responses):
+
+```
+OPENROUTER_API_KEY=your_openrouter_key_here
+GEMINI_API_KEY=your_gemini_key_here
+```
+
+> **No API keys?** That's fine. DNA classification works fully without them. The chatbot will fall back to built-in responses instead of a live AI model.
+
+#### Step 2: Build and run
+
 ```bash
 docker compose up --build
 ```
@@ -252,7 +271,7 @@ conda activate baio
 
 ```bash
 conda activate baio
-uvicorn api.main:app --reload --port 8080
+uvicorn backend.app.main:app --reload --port 8080 
 ```
 
 You should see:
@@ -305,7 +324,7 @@ conda activate baio
 
 ```bash
 conda activate baio
-uvicorn api.main:app --reload --port 8080
+uvicorn backend.app.main:app --reload --port 8080 
 ```
 
 You should see:
@@ -458,6 +477,26 @@ docker system prune -a
 docker compose up --build
 ```
 
+### Adding a new Python dependency
+
+All Python dependencies live in **`pyproject.toml`** — this is the single source of truth for both local and Docker environments.
+
+1. Add the package to the `dependencies` list in `pyproject.toml`:
+   ```toml
+   "your-package>=1.0",
+   ```
+2. Rebuild the Docker image:
+   ```bash
+   docker compose build api
+   docker compose up -d
+   ```
+3. For local development, reinstall:
+   ```bash
+   pip install -e .
+   ```
+
+> **Do not** add packages directly to the `Dockerfile` — use `pyproject.toml` so local and Docker environments stay in sync.
+
 ### Frontend shows "Cannot connect to API"
 The backend is not running. Make sure Terminal 1 (uvicorn) is still active and showing no errors.
 
@@ -480,6 +519,70 @@ pytest --cov=. tests/
 ```
 
 ---   
+
+## Deployment (Modal — GPU Cloud)
+
+Modal runs the backend on demand — you only pay when a request is processed. No idle cost. Evo2 inference runs on an A10G GPU that spins up automatically.
+
+**Cost:** ~$0 when idle. ~$0.30/hr only while actively running Evo2 inference.
+
+### Step 1: Install Modal and log in
+
+```bash
+pip install modal
+modal token new
+```
+
+This opens a browser to create a free Modal account and authenticate.
+
+### Step 2: Create secrets
+
+```bash
+modal secret create baio-secrets \
+  OPENROUTER_API_KEY=your_key_here \
+  GEMINI_API_KEY=your_key_here
+```
+
+### Step 3: Upload model weights
+
+```bash
+# Upload the trained classifier weights to Modal's persistent storage
+modal volume put baio-weights weights/random_forest_best_model.pkl random_forest_best_model.pkl
+modal volume put baio-weights weights/support_vector_machine_best_model.pkl support_vector_machine_best_model.pkl
+```
+
+### Step 4: Deploy
+
+```bash
+modal deploy modal_app.py
+```
+
+Modal will print a URL like:
+```
+https://your-username--baio-fastapi-app.modal.run
+```
+
+That is your live API endpoint — update `VITE_API_BASE` in your frontend `.env` to point to it.
+
+### Step 5: Test locally before deploying
+
+```bash
+modal serve modal_app.py
+```
+
+This runs the app locally with the same Modal environment — useful for testing.
+
+### How it works
+
+| Request type | Container | GPU | Cold start |
+|-------------|-----------|-----|-----------|
+| Classification (RandomForest/SVM) | CPU | No | ~5s |
+| Chat (LLM) | CPU | No | ~5s |
+| Evo2 inference | GPU (A10G) | Yes | ~30-90s |
+
+The CPU container has `keep_warm=1` so it's always ready. The GPU container scales to zero when not in use and spins up only when Evo2 is selected.
+
+---
 
 ## Contributors
 
