@@ -89,7 +89,6 @@ datasets/
 *.onnx
 *.pb
 *.tflite
-checkpoints/
 weights/
 
 # Logs
