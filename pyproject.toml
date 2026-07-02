@@ -93,8 +93,8 @@ notebook = [
 
 # Evo2 foundation-model path (requires NVIDIA GPU with 16GB+ VRAM)
 evo2 = [
-    "torch==2.8.0",
-    "transformers==4.56.1",
+    "torch==2.12.1",
+    "transformers==5.3.0",
     "tokenizers==0.22.0",
     "accelerate>=0.30",
     "datasets>=2.19",
