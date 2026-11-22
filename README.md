@@ -609,8 +609,6 @@ The CPU container has `keep_warm=1` so it's always ready. The GPU container scal
 - **Mainuddin** — Tech Lead
 - **Luis Palmejar** — Developer
 - **Kevin Yang** — Developer
-- **Vrinda Thakur** — Developer
-
 ---
 
 ## License
